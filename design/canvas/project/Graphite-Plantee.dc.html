@@ -213,7 +213,8 @@ class Component extends DCLogic {
     const FX = [
       { id: 'broche', name: 'Broche en fer', tag: "BIBELOT · 30 S DÈS 65 D'ADRÉNALINE" },
       { id: 'masse', name: "Masse-d'Os", tag: 'POUVOIR · 5 MIN' },
-      { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' }
+      { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' },
+      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' }
     ];
     const on = st.fx;
     const names = FX.filter((e) => on.indexOf(e.id) !== -1).map((e) => e.name);
@@ -256,13 +257,15 @@ class Component extends DCLogic {
     const fmt = (n, d) => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: d == null ? 1 : d });
     const armor = (dmg, ac) => (ac <= 0 || dmg <= 0) ? Math.max(0, dmg) : (ac < dmg / 2 ? dmg - ac : Math.min(1, dmg / (ac * 4)) * dmg);
     const bp = 72 * (1 + 25 / 200), ac = 45, T = 60, pb = 1.5;
-    // What is on in « Avec tes effets temporaires »: the Brooch's armor, Bonemass's blunt resistance past the shield.
+    // What is on in « Avec tes effets temporaires »: the Brooch's armor, Bonemass's blunt resistance past the shield,
+    // and Fader's power, a friend's, which halves the stagger at the shield and at the armor (Character.AddStaggerDamage).
     const on = this.state.fx;
     const fxArmor = on.indexOf('broche') !== -1 ? 20 : 0, fxBlunt = on.indexOf('masse') !== -1 ? 0.75 : 1;
+    const fxStagger = on.indexOf('fader') !== -1 ? 0.5 : 1;
     const verdict = (hit, power) => {
       const passes = armor(hit, power);
-      if (passes >= T) return 'bad';
-      return passes + armor(passes * fxBlunt, ac + fxArmor) >= T ? 'warn' : 'ok';
+      if (passes * fxStagger >= T) return 'bad';
+      return (passes + armor(passes * fxBlunt, ac + fxArmor)) * fxStagger >= T ? 'warn' : 'ok';
     };
     const colors = { ok: '#5BBF7E', warn: '#E5A84B', bad: '#EF6461' };
     const borders = { ok: '#276B43', warn: '#9C6A12', bad: '#8A2A28' };
