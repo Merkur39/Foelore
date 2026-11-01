@@ -5,8 +5,9 @@ import { useAppState, useUpdate } from '@/app/useAppState'
 import { useIsDesktop } from '@/app/useMediaQuery'
 import { openModal, useRoute } from '@/app/useRoute'
 import { attackAdvice } from '@/combat/advice'
-import { attackDamage, hardestHit, type AttackHit } from '@/combat/attack'
-import type { HitResult } from '@/combat/hit'
+import { attackDamage, hardestRange, type AttackHit, type RollRange } from '@/combat/attack'
+import { LOWEST_ROLL, type Guard, type HitResult } from '@/combat/hit'
+import type { OverTime } from '@/combat/overTime'
 import type { GameRuleEffect } from '@/data/types'
 import { game } from '@/data'
 import { creatureName, type FoundAttack } from '@/features/bestiary/model'
@@ -18,11 +19,19 @@ import { useSimulationOrigin } from '@/features/report/origins'
 import { ReportLink } from '@/features/report/ReportLink'
 import { formatNumber } from '@/i18n/format'
 import { useLanguage, useT } from '@/i18n/useT'
-import { BestiaryIcon, ChevronRightIcon, DodgeIcon, MinusIcon, PlusIcon } from '@/ui/icons'
+import type { OverTimeKind } from '@/i18n/fr'
+import {
+  BestiaryIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  DodgeIcon,
+  MinusIcon,
+  PlusIcon,
+} from '@/ui/icons'
 import { StepButton } from '@/ui/StepButton'
 import { verdictTone, type Tone } from '@/ui/tones'
 import { AdviceLine } from '@/ui/verdicts'
-import { findAttack, refOf, withRecent } from './model'
+import { findAttack, oddsFraction, refOf, withRecent } from './model'
 import styles from './SimulationScreen.module.css'
 
 const BAR_STEPS = [0, 25, 50, 75] as const
@@ -41,6 +50,17 @@ const oneDecimal = (value: number) => Math.round(value * 10) / 10
 
 const NONE_ON: readonly GameRuleEffect[] = []
 
+// What the status effects deal over time, and the damage type each takes from the hit.
+const OVER_TIME: readonly (readonly [OverTimeKind, 'fire' | 'poison' | 'spirit'])[] = [
+  ['burning', 'fire'],
+  ['poison', 'poison'],
+  ['spirit', 'spirit'],
+]
+const NOTHING: OverTime = { damage: 0, seconds: 0 }
+
+/** What a guard leaves on the stagger bar, never past its end. */
+const barTotal = ({ bar }: HitResult) => Math.min(bar.limit, bar.before + bar.shield + bar.armor)
+
 /** « L'attaque d'abord »: the attack of the address, else the last one simulated, against your
  * gear; a free value stands in for an attack on demand. */
 export function SimulationScreen({ route }: { readonly route: Route }) {
@@ -48,6 +68,8 @@ export function SimulationScreen({ route }: { readonly route: Route }) {
   const update = useUpdate()
   const ref = refOf(route) ?? recentAttacks[0] ?? null
   const found = ref ? findAttack(ref) : null
+  // « Détails » stays open from one attack to the next, until the player leaves the screen.
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   // The attack an address names joins the recent ones; the store saves them.
   useEffect(() => {
@@ -62,11 +84,23 @@ export function SimulationScreen({ route }: { readonly route: Route }) {
     <Simulator
       key={found ? `${found.fighter.id}/${found.attack.ids[0] ?? ''}` : 'none'}
       found={found}
+      detailsOpen={detailsOpen}
+      onDetails={() => {
+        setDetailsOpen((open) => !open)
+      }}
     />
   )
 }
 
-function Simulator({ found }: { readonly found: FoundAttack | null }) {
+function Simulator({
+  found,
+  detailsOpen,
+  onDetails,
+}: {
+  readonly found: FoundAttack | null
+  readonly detailsOpen: boolean
+  readonly onDetails: () => void
+}) {
   const t = useT()
   const route = useRoute()
   const isDesktop = useIsDesktop()
@@ -83,8 +117,11 @@ function Simulator({ found }: { readonly found: FoundAttack | null }) {
 
   const hits = attackMode ? (found?.attack.hits ?? null) : [freeHit(value)]
   const options = { stars: attackMode ? stars : 0, barBefore: bar / 100 }
-  const block = hits && hardestHit(defence, hits, world, { guard: 'block', ...options })
-  const parry = hits && hardestHit(defence, hits, world, { guard: 'parry', ...options })
+  const blockRange = hits && hardestRange(defence, hits, world, { guard: 'block', ...options })
+  const parryRange = hits && hardestRange(defence, hits, world, { guard: 'parry', ...options })
+  // The cards, the advice and the report read the top of the roll: never too kind.
+  const block = blockRange?.top ?? null
+  const parry = parryRange?.top ?? null
   const dodgeable = attackMode && found ? found.attack.hits.every((hit) => hit.dodgeable) : null
   const report = useSimulationOrigin({
     found: attackMode ? found : null,
@@ -216,13 +253,22 @@ function Simulator({ found }: { readonly found: FoundAttack | null }) {
     </div>
   )
 
-  const result = block && (
+  const result = blockRange && block && (
     <>
       <Advice block={block} parry={parry} dodgeable={dodgeable} />
       <div className={styles.cards}>
-        <ResultCard label={t.simulation.blocking} result={block} />
-        <ResultCard label={t.simulation.parrying} result={parry} />
+        <ResultCard
+          label={t.simulation.blocking}
+          result={block}
+          low={detailsOpen ? blockRange.low : null}
+        />
+        <ResultCard
+          label={t.simulation.parrying}
+          result={parry}
+          low={detailsOpen ? (parryRange?.low ?? null) : null}
+        />
       </div>
+      <Details block={blockRange} parry={parryRange} open={detailsOpen} onToggle={onDetails} />
       {attackMode && dodgeable !== null && (
         <span
           className={`${styles.dodge ?? ''} ${dodgeable ? (styles.ok ?? '') : (styles.bad ?? '')}`}
@@ -347,13 +393,16 @@ function Advice({
   return <AdviceLine tone={shown.tone} text={shown.text} className={styles.advice} />
 }
 
-/** One guard against the hit: its verdict, what you take, what it costs, and the bar it leaves. */
+/** One guard against the hit: its verdict, what you take, what it costs, and the bar it leaves; with
+ * `low`, the bar runs from the lowest roll (solid) to the highest (hatched). */
 function ResultCard({
   label,
   result,
+  low = null,
 }: {
   readonly label: string
   readonly result: HitResult | null
+  readonly low?: HitResult | null
 }) {
   const t = useT()
   const language = useLanguage()
@@ -368,16 +417,28 @@ function ResultCard({
     )
   }
   const tone = verdictTone(result.verdict)
-  const { before, shield, armor, limit } = result.bar
-  const total = Math.min(limit, before + shield + armor)
+  const { limit } = result.bar
+  const total = barTotal(result)
   const overflows = result.staggered
-  // Each part of the bar in its turn, never past the end.
+  const shown = low ?? result
+  // Each part of the bar in its turn, never past the end; then, open, the stretch the roll may add.
   let used = 0
-  const widths = [before, shield, armor].map((part) => {
+  const widths = [shown.bar.before, shown.bar.shield, shown.bar.armor].map((part) => {
     const width = Math.min(100 - used, (Math.max(0, part) / limit) * 100)
     used += width
     return width
   })
+  const lowTotal = barTotal(shown)
+  const stretch = Math.min(100 - used, Math.max(0, ((total - lowTotal) / limit) * 100))
+  const barLabel =
+    low && !low.staggered
+      ? t.simulation.barRangeLabel(
+          oneDecimal(lowTotal),
+          oneDecimal(total),
+          oneDecimal(limit),
+          overflows,
+        )
+      : t.simulation.barLabel(oneDecimal(total), oneDecimal(limit), overflows)
   return (
     <div role="group" aria-label={label} className={`${styles.card ?? ''} ${styles[tone] ?? ''}`}>
       <span aria-hidden="true" className={styles.label}>
@@ -389,19 +450,153 @@ function ResultCard({
         <span className={styles.unit}>{t.simulation.taken}</span>
       </span>
       <span className={styles.stamina}>{t.simulation.stamina(Math.round(result.stamina))}</span>
-      <div
-        role="img"
-        aria-label={t.simulation.barLabel(oneDecimal(total), oneDecimal(limit), overflows)}
-        className={styles.bar}
-      >
+      <div role="img" aria-label={barLabel} className={styles.bar}>
         <span className={styles.barBefore} style={{ width: `${String(widths[0])}%` }} />
         <span className={styles.barShield} style={{ width: `${String(widths[1])}%` }} />
         <span className={styles.barArmor} style={{ width: `${String(widths[2])}%` }} />
+        {stretch > 0 && (
+          <span className={styles.barRange} style={{ width: `${String(stretch)}%` }} />
+        )}
       </div>
       <span className={`${styles.barText ?? ''} ${overflows ? (styles.overflows ?? '') : ''}`}>
         {overflows
           ? t.simulation.barOverflows
           : t.simulation.barTotal(oneDecimal(total), oneDecimal(limit))}
+      </span>
+    </div>
+  )
+}
+
+/** What « Détails » says of a guard across the roll: what lands at once, then how often its verdict comes,
+ * what burns or poisons after, and the bar it fills. */
+function useDetailLines() {
+  const t = useT()
+  const language = useLanguage()
+  return (guard: Guard, { low, top, odds }: RollRange) => {
+    const lines: string[] = []
+    if (odds < 1) {
+      const [times, of] = oddsFraction(odds)
+      lines.push(t.simulation.details.odds(guard, top.verdict, times, of, low.verdict))
+    }
+    for (const [kind, type] of OVER_TIME) {
+      const atTop = top[kind]
+      if (atTop === null) continue
+      const name = game.damageTypes[type][language]
+      const rounded = ({ damage, seconds }: OverTime) => ({ damage: oneDecimal(damage), seconds })
+      lines.push(
+        atTop.damage === 0
+          ? t.simulation.details.fizzled(name, kind)
+          : t.simulation.details.overTime(name, rounded(low[kind] ?? NOTHING), rounded(atTop)),
+      )
+    }
+    if (!top.staggered && top.verdict !== 'unblockable') {
+      lines.push(
+        t.simulation.details.bar(
+          oneDecimal(barTotal(low)),
+          oneDecimal(barTotal(top)),
+          oneDecimal(top.bar.limit),
+        ),
+      )
+    }
+    return {
+      taken: t.simulation.details.range(oneDecimal(low.direct), oneDecimal(top.direct)),
+      lines,
+    }
+  }
+}
+
+/** « Détails », folded under the cards: for each guard, what the game deals across its roll, and what burns
+ * or poisons after. Nothing for a hit the game does not roll that leaves nothing over time. */
+function Details({
+  block,
+  parry,
+  open,
+  onToggle,
+}: {
+  readonly block: RollRange
+  readonly parry: RollRange | null
+  readonly open: boolean
+  readonly onToggle: () => void
+}) {
+  const t = useT()
+  const listId = useId()
+  const linesOf = useDetailLines()
+  const ranges = parry ? [block, parry] : [block]
+  const rolled = ranges.some((range) => range.rolled)
+  const lasts = ranges.some((range) => OVER_TIME.some(([kind]) => range.top[kind] !== null))
+  if (!rolled && !lasts) return null
+  const blocked = linesOf('block', block)
+  const parried = parry && linesOf('parry', parry)
+  // A hit no guard takes reads the same either way: one line.
+  const rows =
+    parried === null
+      ? [{ label: t.simulation.blocking, ...blocked }]
+      : JSON.stringify(blocked) === JSON.stringify(parried)
+        ? [{ label: t.simulation.hit, ...blocked }]
+        : [
+            { label: t.simulation.blocking, ...blocked },
+            { label: t.simulation.parrying, ...parried },
+          ]
+
+  return (
+    <div className={styles.details}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={listId}
+        className={styles.detailsHead}
+        onClick={onToggle}
+      >
+        <span className={styles.detailsTitles}>
+          <span className={styles.detailsTitle}>{t.simulation.details.title}</span>
+          <span className={styles.detailsSummary}>
+            {rolled
+              ? t.simulation.details.rolled(Math.round(LOWEST_ROLL * 100))
+              : t.simulation.details.unrolled}
+          </span>
+        </span>
+        <ChevronDownIcon size={18} className={styles.detailsChevron} />
+      </button>
+      <div
+        id={listId}
+        role="group"
+        aria-label={t.simulation.details.title}
+        hidden={!open}
+        className={styles.detailsList}
+      >
+        {rows.map((row) => (
+          <DetailRow key={row.label} {...row} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function DetailRow({
+  label,
+  taken,
+  lines,
+}: {
+  readonly label: string
+  readonly taken: string
+  readonly lines: readonly string[]
+}) {
+  const t = useT()
+  const labelId = useId()
+  return (
+    <div role="group" aria-labelledby={labelId} className={styles.detailRow}>
+      <span id={labelId} className={styles.detailGuard}>
+        {label}
+      </span>
+      <span className={styles.detailLines}>
+        <span className={styles.detailTaken}>
+          {taken} <span className={styles.unit}>{t.simulation.taken}</span>
+        </span>
+        {lines.map((line) => (
+          <span key={line} className={styles.detailNote}>
+            {line}
+          </span>
+        ))}
       </span>
     </div>
   )

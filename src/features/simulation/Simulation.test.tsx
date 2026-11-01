@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { App } from '@/app/App'
@@ -236,6 +236,139 @@ describe('Simulation', () => {
       await user.click(screen.getByRole('button', { name: "Attaque d'un monstre" }))
 
       expect(card()).toHaveTextContent("Masse-d'Os")
+    })
+  })
+
+  describe('Détails', () => {
+    const details = () => screen.getByRole('button', { name: /^Détails/ })
+    const opened = () => screen.getByRole('group', { name: 'Détails' })
+    const row = (guard: string) => within(opened()).getByRole('group', { name: guard })
+    // Open, « Détails » has a line of each guard's name too: the card comes first.
+    const card = (guard: string) => screen.getAllByRole('group', { name: guard })[0]!
+    const bar = (of: HTMLElement) => within(of).getByRole('img')
+
+    it('folds what the game rolls under the cards, closed at first', () => {
+      window.history.replaceState(null, '', '#/simulation/Troll/troll_groundslam')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      expect(details()).toHaveAttribute('aria-expanded', 'false')
+      expect(details()).toHaveTextContent('Chaque coup varie de 87 à 100 %')
+      expect(screen.queryByRole('group', { name: 'Détails' })).not.toBeInTheDocument()
+      expect(bar(blocking())).toHaveAccessibleName('Barre de stagger : 16,4 sur 60')
+    })
+
+    it('gives, open, what each guard takes from the lowest roll to the highest, the bars drawn so', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Troll/troll_groundslam')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      await user.click(details())
+
+      expect(details()).toHaveAttribute('aria-expanded', 'true')
+      expect(row('En bloquant')).toHaveTextContent('0,7 à 1,3 subis')
+      expect(row('En bloquant')).toHaveTextContent('barre 12,1 à 16,4 / 60')
+      expect(row('En parant')).toHaveTextContent('0,3 à 0,6 subis')
+      expect(bar(card('En bloquant'))).toHaveAccessibleName('Barre de stagger : 12,1 à 16,4 sur 60')
+      expect(card('En bloquant')).toHaveTextContent('1,3 subis')
+    })
+
+    it('says how often the verdict comes when the roll changes it', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Troll/troll_groundslam')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+      await user.click(screen.getByRole('button', { name: 'Valeur libre' }))
+      for (let step = 0; step < 8; step += 1) {
+        await user.click(screen.getByRole('button', { name: 'Monter de 5' }))
+      }
+
+      await user.click(details())
+
+      expect(card('En bloquant')).toHaveTextContent('tu titubes')
+      expect(row('En bloquant')).toHaveTextContent('tu titubes 1 fois sur 3, sinon tu tiens')
+      expect(row('En bloquant')).not.toHaveTextContent('barre')
+      expect(bar(card('En bloquant'))).toHaveAccessibleName(
+        'Barre de stagger : 47,6 sur 60 au plus bas, elle peut déborder',
+      )
+    })
+
+    it('tells the fire apart, up to what burns at the top of the roll', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Goblin/GoblinTorch')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      await user.click(details())
+
+      expect(card('En bloquant')).toHaveTextContent('3,5 subis')
+      expect(row('En bloquant')).toHaveTextContent('1 à 1,7 subis')
+      expect(row('En bloquant')).toHaveTextContent("puis jusqu'à 1,7 de feu en 5 s")
+      expect(row('En parant')).toHaveTextContent('trop peu de feu passe pour brûler')
+    })
+
+    it('tells the poison apart, over its seconds', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Leech/Leech_BiteAttack')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      await user.click(details())
+
+      expect(row('En bloquant')).toHaveTextContent('0,4 à 0,8 subis')
+      expect(row('En bloquant')).toHaveTextContent('puis 1,5 à 2,7 de poison en 3 à 4 s')
+    })
+
+    it('reads a hit no guard takes on one line, and says when the game does not roll it', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Fader/Fader_Flamebreath')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      expect(details()).toHaveTextContent('Ce coup ne varie pas')
+      await user.click(details())
+
+      expect(row('Le coup')).toHaveTextContent('0 subis')
+      expect(row('Le coup')).toHaveTextContent('puis 20 de feu en 5 s')
+      expect(within(opened()).queryByRole('group', { name: 'En bloquant' })).not.toBeInTheDocument()
+    })
+
+    it('leaves them out for a hit the game does not roll that leaves nothing over time', () => {
+      window.history.replaceState(
+        null,
+        '',
+        '#/simulation/Fenring_Cultist_Hildir/Fenring_attack_IceNova',
+      )
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+
+      expect(screen.queryByRole('button', { name: /^Détails/ })).not.toBeInTheDocument()
+    })
+
+    it('stays open from one attack to the next', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Troll/troll_groundslam')
+      renderWithStore(<App />, { language: 'fr', gear: MOCKUP_GEAR })
+      await user.click(details())
+
+      act(() => {
+        window.location.hash = '#/simulation/Leech/Leech_BiteAttack'
+      })
+
+      await waitFor(() => {
+        expect(opened()).toHaveTextContent('de poison')
+      })
+    })
+
+    it('reads in English', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Goblin/GoblinTorch')
+      renderWithStore(<App />, { language: 'en', gear: MOCKUP_GEAR })
+
+      const button = screen.getByRole('button', { name: /^Details/ })
+      expect(button).toHaveTextContent('Every hit varies from 87 to 100%')
+      await user.click(button)
+
+      const blocked = within(screen.getByRole('group', { name: 'Details' })).getByRole('group', {
+        name: 'Blocking',
+      })
+      expect(blocked).toHaveTextContent('1 to 1.7 taken')
+      expect(blocked).toHaveTextContent('then up to 1.7 fire over 5 s')
+      expect(blocked).toHaveTextContent('bar 10.4 to 14.2 / 60')
     })
   })
 

@@ -1,5 +1,6 @@
 import { APP_NAME, PUBLISHER } from '@/app/brand'
 import type { Theme } from '@/app/store'
+import type { Guard, Verdict } from '@/combat/hit'
 import type { BiomeId } from '@/data/types'
 import type { Language } from './detect'
 import { formatNumber } from './format'
@@ -25,6 +26,24 @@ function noneOf(types: readonly string[]) {
       : (words[0] ?? '')
   return /^[aeiouyéèêh]/i.test(listed) ? `d'${listed}` : `de ${listed}`
 }
+const range = (low: number, top: number) => (low === top ? n(top) : `${n(low)} à ${n(top)}`)
+// What a guard comes to, as « Détails » says how often.
+const outcome = (guard: Guard, verdict: Verdict) =>
+  verdict === 'broken'
+    ? guard === 'block'
+      ? 'le blocage cède'
+      : 'la parade cède'
+    : verdict === 'staggered'
+      ? 'tu titubes'
+      : 'tu tiens'
+
+/** What « Détails » says a status effect deals, rounded. */
+export interface OverTimeRange {
+  readonly damage: number
+  readonly seconds: number
+}
+export type OverTimeKind = 'burning' | 'poison' | 'spirit'
+
 // French guillemets hold their words apart with a no-break space.
 const NO_BREAK_SPACE = String.fromCharCode(0xa0)
 const quoted = (name: string) => `«${NO_BREAK_SPACE}${name}${NO_BREAK_SPACE}»`
@@ -413,6 +432,29 @@ export const fr = {
     barOverflows: 'barre : déborde',
     barLabel: (total: number, limit: number, overflows: boolean) =>
       `Barre de stagger : ${n(total)} sur ${n(limit)}${overflows ? ', elle déborde' : ''}`,
+    /** The bar from the lowest roll to the highest, while « Détails » is open. */
+    barRangeLabel: (low: number, top: number, limit: number, overflows: boolean) =>
+      overflows
+        ? `Barre de stagger : ${n(low)} sur ${n(limit)} au plus bas, elle peut déborder`
+        : `Barre de stagger : ${range(low, top)} sur ${n(limit)}`,
+    details: {
+      title: 'Détails',
+      rolled: (lowest: number) => `Chaque coup varie de ${n(lowest)} à 100 %`,
+      unrolled: 'Ce coup ne varie pas',
+      range: (low: number, top: number) => range(low, top),
+      /** `low` is the verdict of the lowest roll, `top` that of the highest, `times` in `of` rolls. */
+      odds: (guard: Guard, top: Verdict, times: number, of: number, low: Verdict) =>
+        `${outcome(guard, top)} ${n(times)} fois sur ${n(of)}, sinon ${outcome(guard, low)}`,
+      /** `type` is the game's name of the damage; `low` is 0 when the lowest roll starts nothing. */
+      overTime: (type: string, low: OverTimeRange, top: OverTimeRange) =>
+        `puis ${low.damage === 0 ? `jusqu'à ${n(top.damage)}` : range(low.damage, top.damage)} ${noneOf([type])} en ${low.seconds === 0 ? n(top.seconds) : range(low.seconds, top.seconds)} s`,
+      // Spirit only deals damage, as the game says it: no verb of its own.
+      fizzled: (type: string, kind: OverTimeKind) =>
+        kind === 'spirit'
+          ? `trop peu de dégâts ${noneOf([type])} passent`
+          : `trop peu ${noneOf([type])} passe pour ${kind === 'burning' ? 'brûler' : 'empoisonner'}`,
+      bar: (low: number, top: number, limit: number) => `barre ${range(low, top)} / ${n(limit)}`,
+    },
     dodgeable: 'Esquivable en roulade',
     undodgeable: 'Pas esquivable en roulade',
     hits: (count: number) =>

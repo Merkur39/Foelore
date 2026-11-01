@@ -3,7 +3,7 @@
 Read-only tooling that writes `src/data/game.json` from the local Valheim install: creatures (health,
 stagger and whether they can play one, weaknesses, weak spots, where they live and at which levels,
 attacks with every hit they deal, their timing, AI conditions and summons, what their death deals and
-brings), the status effects attacks carry or leave, blockers for the Arsenal (with how each is obtained and upgraded), the player's block and dodge
+brings), the status effects attacks carry or leave and how burning, spirit and poison deal what a hit leaves over time, blockers for the Arsenal (with how each is obtained and upgraded), the player's block and dodge
 values, the world difficulty presets, and the game's own French and English names. It never writes to
 the game folder, and the app ships numbers and names only, no game art.
 

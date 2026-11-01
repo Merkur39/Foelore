@@ -1,4 +1,5 @@
 import { APP_NAME, PUBLISHER } from '@/app/brand'
+import type { Guard, Verdict } from '@/combat/hit'
 import { formatNumber } from './format'
 import type { Catalog } from './fr'
 
@@ -13,6 +14,16 @@ const listOf = (words: readonly string[]) =>
     words.map((word) => word.toLocaleLowerCase('en')),
   )
 const quoted = (name: string) => `“${name}”`
+const range = (low: number, top: number) => (low === top ? n(top) : `${n(low)} to ${n(top)}`)
+// What a guard comes to, as Details says how often.
+const outcome = (guard: Guard, verdict: Verdict) =>
+  verdict === 'broken'
+    ? guard === 'block'
+      ? 'the block gives way'
+      : 'the parry gives way'
+    : verdict === 'staggered'
+      ? 'you stagger'
+      : 'you hold'
 const staminaShare = (share: number) =>
   `${n(Math.abs(share))}% ${share < 0 ? 'less' : 'more'} stamina`
 
@@ -334,6 +345,25 @@ export const en: Catalog = {
     barOverflows: 'bar: overflows',
     barLabel: (total, limit, overflows) =>
       `Stagger bar: ${n(total)} of ${n(limit)}${overflows ? ', it overflows' : ''}`,
+    barRangeLabel: (low, top, limit, overflows) =>
+      overflows
+        ? `Stagger bar: ${n(low)} of ${n(limit)} at the lowest, it may overflow`
+        : `Stagger bar: ${range(low, top)} of ${n(limit)}`,
+    details: {
+      title: 'Details',
+      rolled: (lowest) => `Every hit varies from ${n(lowest)} to 100%`,
+      unrolled: 'This hit does not vary',
+      range: (low, top) => range(low, top),
+      odds: (guard, top, times, of, low) =>
+        `${outcome(guard, top)} ${plural(times, 'time', 'times')} in ${n(of)}, else ${outcome(guard, low)}`,
+      overTime: (type, low, top) =>
+        `then ${low.damage === 0 ? `up to ${n(top.damage)}` : range(low.damage, top.damage)} ${type.toLocaleLowerCase('en')} over ${low.seconds === 0 ? n(top.seconds) : range(low.seconds, top.seconds)} s`,
+      fizzled: (type, kind) =>
+        kind === 'spirit'
+          ? `too little ${type.toLocaleLowerCase('en')} damage gets through`
+          : `too little ${type.toLocaleLowerCase('en')} gets through to ${kind === 'burning' ? 'burn' : 'poison'}`,
+      bar: (low, top, limit) => `bar ${range(low, top)} / ${n(limit)}`,
+    },
     dodgeable: 'Dodgeable by rolling',
     undodgeable: 'Not dodgeable by rolling',
     hits: (count) => `This attack lands ${n(count)} hits: each card shows the hardest.`,

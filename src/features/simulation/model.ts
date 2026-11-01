@@ -6,6 +6,22 @@ import { fightersOf, type FoundAttack } from '@/features/bestiary/model'
 
 /** How many attacks « Choisir une attaque » keeps at hand. */
 const MAX_RECENT = 2
+// How far from the share « Détails » may say it.
+const ODDS_TOLERANCE = 0.03
+
+const FRACTIONS = Array.from({ length: 9 }, (_, index) => index + 2).flatMap((q) =>
+  Array.from({ length: q - 1 }, (_, n) => [n + 1, q] as const),
+)
+
+/** A share of the rolls as a player says it, [n, q] for « n in q »: the simplest, q up to 10, that falls
+ * within 3 points of it; else the nearest. */
+export function oddsFraction(share: number): readonly [number, number] {
+  const gap = ([n, q]: readonly [number, number]) => Math.abs(n / q - share)
+  return (
+    FRACTIONS.find((fraction) => gap(fraction) <= ODDS_TOLERANCE) ??
+    FRACTIONS.reduce((best, fraction) => (gap(fraction) < gap(best) ? fraction : best))
+  )
+}
 
 /** The recent attacks once `ref` is simulated: it comes first, once. */
 export function withRecent(recents: readonly AttackRef[], ref: AttackRef): readonly AttackRef[] {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { blockerOf } from '@/app/context'
 import type { Defence } from '@/combat/block'
 import type { World } from '@/combat/world'
+import { game } from '@/data'
 import { blockPowerParts, FORGE_MAX_LEVEL, maxLevel, withstand } from './model'
 
 const silverShield: Defence = {
@@ -12,6 +13,7 @@ const silverShield: Defence = {
   staggerFactor: 0.4,
   blockStaminaDrain: 10,
   parryStaminaDrain: 0,
+  overTime: game.player.overTime,
 }
 const normal: World = { difficulty: 'normal', players: 1 }
 

@@ -5,6 +5,12 @@ import { resolveHit, type Guard } from './hit'
 import { gaugeScale, maxHit, type Endurance } from './maxHit'
 import type { Difficulty, World } from './world'
 
+// The Burning, Spirit and Poison prefabs in 1.0.21.
+const overTime = {
+  burning: { ttl: 5, interval: 1 },
+  spirit: { ttl: 3, interval: 0.5 },
+  poison: { baseTtl: 1, ttlPerDamage: 5, ttlPower: 0.5, interval: 1 },
+}
 const silverShield: Defence = {
   blockPower: 81,
   parryPower: 121.5,
@@ -13,6 +19,7 @@ const silverShield: Defence = {
   staggerFactor: 0.4,
   blockStaminaDrain: 10,
   parryStaminaDrain: 0,
+  overTime,
 }
 const normal: World = { difficulty: 'normal', players: 1 }
 
@@ -46,6 +53,7 @@ describe('maxHit', () => {
       staggerFactor: fc.constant(0.4),
       blockStaminaDrain: fc.constant(10),
       parryStaminaDrain: fc.constant(0),
+      overTime: fc.constant(overTime),
       staggerModifier: fc.double({ min: -0.9, max: 1, noNaN: true }),
     })
     const world = fc.record({
