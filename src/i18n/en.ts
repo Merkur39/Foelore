@@ -8,6 +8,7 @@ const plurals = new Intl.PluralRules('en')
 const plural = (count: number, one: string, other: string) =>
   `${n(count)} ${plurals.select(count) === 'one' ? one : other}`
 const players = (count: number) => plural(count, 'player', 'players')
+const rowState = { equipped: ', equipped', carried: ', carried', group: ', from the group' }
 const capitalised = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`
 const listOf = (words: readonly string[]) =>
   new Intl.ListFormat('en', { type: 'conjunction' }).format(
@@ -103,6 +104,9 @@ export const en: Catalog = {
     addDrink: 'Add a drink',
     carriedNote:
       "Not counted by default: switch them on in a creature's sheet or in the Simulation, while they are active.",
+    group: 'Group powers',
+    groupNote: 'Those a player casts within 10 m of you; switch them on like yours.',
+    addGroupPower: 'Add a group power',
   },
   lists: {
     back: 'Back to Your gear, changing nothing',
@@ -116,6 +120,8 @@ export const en: Catalog = {
       power: 'Your power',
       drink: 'Your drink',
       moreDrink: 'One more drink',
+      group: 'Group power',
+      moreGroup: 'One more group power',
     },
     search: {
       hand: 'Search what you hold',
@@ -127,6 +133,8 @@ export const en: Catalog = {
       power: 'Search a power',
       drink: 'Search a drink',
       moreDrink: 'Search a drink',
+      group: 'Search a power',
+      moreGroup: 'Search a power',
     },
     none: {
       helmet: 'No helmet',
@@ -136,6 +144,7 @@ export const en: Catalog = {
       trinket: 'No trinket',
       power: 'No power',
       drink: 'Remove this drink',
+      group: 'Remove this power',
     },
     noneNote: {
       helmet: 'takes off the one you wear',
@@ -143,7 +152,7 @@ export const en: Catalog = {
       legs: 'takes off the ones you wear',
       cape: 'takes off the one you wear',
       trinket: 'takes off the one you carry',
-      power: 'takes off the one you carry',
+      power: 'takes off yours',
     },
     count: (count, category) => `${n(count)} ${category.toLocaleLowerCase('en')}`,
     countOf: (shown, all) => `${n(shown)} of ${n(all)}`,
@@ -162,9 +171,17 @@ export const en: Catalog = {
         ? 'A drink is taken only once.'
         : `Your ${new Intl.ListFormat('en', { type: 'conjunction' }).format(carried)} ${carried.length === 1 ? 'is' : 'are'} already carried: a drink is taken only once.`,
     drinkSwap: (drink) => `Pick another to replace your ${drink}, or remove it.`,
+    groupOnce: (own, group) => {
+      const there = [...(own === null ? [] : [`${own} (yours)`]), ...group]
+      return there.length === 0
+        ? 'A power counts once.'
+        : `Already there: ${new Intl.ListFormat('en', { type: 'conjunction' }).format(there)}. A power counts once.`
+    },
+    groupSwap: (power) => `Pick another to replace ${power}, or remove it.`,
   },
   effects: {
     kinds: { trinket: 'Trinket', power: 'Power', consumable: 'Drink' },
+    groupPower: 'Group power',
     duration: (seconds) =>
       seconds >= 60 && seconds % 60 === 0 ? `${n(seconds / 60)} min` : `${n(seconds)} s`,
     fromAdrenaline: (duration, adrenaline) => `${duration} from ${n(adrenaline)} adrenaline`,
@@ -188,16 +205,17 @@ export const en: Catalog = {
     idleNoHit: 'Changes no hit',
     notDealt: (types) =>
       `no ${new Intl.ListFormat('en', { type: 'disjunction' }).format(types.map((type) => type.toLocaleLowerCase('en')))}`,
-    resistedBy: {
-      helmet: 'your helmet already resists',
-      chest: 'your chest already resists',
-      legs: 'your legs already resist',
-      cape: 'your cape already resists',
-      set: 'your set already resists',
-      trinket: 'your trinket already resists',
-      power: 'your power already resists',
-      consumable: 'your drink already resists',
+    coveredBy: {
+      helmet: 'already covered by your helmet',
+      chest: 'already covered by your chest',
+      legs: 'already covered by your legs',
+      cape: 'already covered by your cape',
+      set: 'already covered by your set',
+      trinket: 'already covered by your trinket',
+      power: 'already covered by your power',
+      consumable: 'already covered by your drink',
     },
+    coveredByPower: (power) => `already covered by ${power}`,
     setupLine: (names) =>
       `Temporary effects on: ${new Intl.ListFormat('en', { type: 'conjunction' }).format(names)}`,
   },
@@ -446,6 +464,8 @@ export const en: Catalog = {
     },
     carryLede:
       'Read from the game: the powers, and the trinkets and drinks that change a fight. Carrying it adds it to Your gear; you switch it on in a creature’s sheet or in the Simulation.',
+    powersLede:
+      'Read from the game: the powers, and the trinkets and drinks that change a fight. Equipping a power makes it yours in Your gear; you switch it on in a creature’s sheet or in the Simulation.',
     sort: 'Sort by',
     columns: {
       type: 'Type',
@@ -468,6 +488,7 @@ export const en: Catalog = {
     setSize: (size) => `${n(size)} pieces`,
     equipped: 'Equipped',
     carried: 'Carried',
+    group: 'Group',
     equip: 'Equip',
     carry: 'Carry',
     equipLabel: (item) => `Equip: ${item}`,
@@ -475,10 +496,9 @@ export const en: Catalog = {
     choose: 'Choose',
     chooseLabel: (item) => `Choose: ${item}`,
     takeOff: 'Take off',
-    pickLabel: (item, state) =>
-      `${item}${state === 'equipped' ? ', equipped' : state === 'carried' ? ', carried' : ''}. Choose.`,
+    pickLabel: (item, state) => `${item}${state === null ? '' : rowState[state]}. Choose.`,
     rowLabel: (item, state) =>
-      `${item}${state === 'equipped' ? ', equipped' : state === 'carried' ? ', carried' : ''}. Open in Your gear.`,
+      `${item}${state === null ? '' : rowState[state]}. Open in Your gear.`,
     search: 'Search the whole Arsenal',
     searchPlaceholder: 'Item, piece or effect, everywhere',
     searchPlaceholderShort: 'Search everywhere',

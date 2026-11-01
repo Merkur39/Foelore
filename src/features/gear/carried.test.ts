@@ -41,11 +41,12 @@ describe('carriable', () => {
 })
 
 describe('carriedEffects', () => {
-  it('lists what is carried as the sheet does: the trinket, the power, then the drinks', () => {
+  it("lists what is carried as the sheet does: the trinket, the power, the drinks, the group's", () => {
     const carried = {
       trinket: 'TrinketIronHealth',
       power: 'GP_Bonemass',
       drinks: ['Potion_frostresist', 'Potion_barleywine'],
+      group: ['GP_Fader', 'GP_Moder'],
     }
 
     expect(carriedEffects(carried).map(({ id }) => id)).toEqual([
@@ -53,11 +54,15 @@ describe('carriedEffects', () => {
       'GP_Bonemass',
       'Potion_frostresist',
       'Potion_barleywine',
+      'GP_Fader',
+      'GP_Moder',
     ])
   })
 
   it('lists nothing when nothing is carried', () => {
     expect(carriedEffects(NOTHING_CARRIED)).toEqual([])
-    expect(carriedEffects({ trinket: null, power: 'GP_Moder', drinks: [] })).toHaveLength(1)
+    expect(
+      carriedEffects({ trinket: null, power: 'GP_Moder', drinks: [], group: [] }),
+    ).toHaveLength(1)
   })
 })

@@ -4,12 +4,17 @@ import { MOCKUP_GEAR, MOCKUP_PIECES } from '../../../test/utils'
 import { listOf, pickInto } from './lists'
 
 // The mockups' gear: the silver shield N3, iron and the wolf cape N3, carrying the Iron Brooch, Bonemass's
-// power and the Frost Resistance Mead.
+// power and the Frost Resistance Mead, with Fader's power from the group.
 const GEAR: Gear = {
   ...MOCKUP_GEAR,
   armor: 0,
   pieces: MOCKUP_PIECES,
-  carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: ['Potion_frostresist'] },
+  carried: {
+    trinket: 'TrinketIronHealth',
+    power: 'GP_Bonemass',
+    drinks: ['Potion_frostresist'],
+    group: ['GP_Fader'],
+  },
 }
 
 describe('pickInto', () => {
@@ -69,6 +74,24 @@ describe('pickInto', () => {
       'Potion_bzerker',
     ])
   })
+
+  it("adds a group's power, swaps one for another, and takes one off", () => {
+    const added = pickInto(GEAR, { kind: 'group', index: null }, 'GP_Moder')
+    expect(added.carried?.group).toEqual(['GP_Fader', 'GP_Moder'])
+
+    expect(pickInto(added, { kind: 'group', index: 0 }, 'GP_Queen').carried?.group).toEqual([
+      'GP_Queen',
+      'GP_Moder',
+    ])
+    expect(pickInto(added, { kind: 'group', index: 0 }, null).carried?.group).toEqual(['GP_Moder'])
+  })
+
+  it("takes a power out of the group's when it becomes one's own: a power counts once", () => {
+    expect(pickInto(GEAR, { kind: 'power' }, 'GP_Fader').carried).toMatchObject({
+      power: 'GP_Fader',
+      group: [],
+    })
+  })
 })
 
 describe('listOf', () => {
@@ -102,6 +125,21 @@ describe('listOf', () => {
       category: 'drinks',
       current: 'Potion_bzerker',
       choices: ['Potion_barleywine', 'Potion_poisonresist', 'Potion_bzerker'],
+    })
+  })
+
+  it("leaves out of a group's list one's own power and the group's in other rows", () => {
+    const group = { ...GEAR, carried: { ...GEAR.carried!, group: ['GP_Fader', 'GP_Moder'] } }
+
+    expect(listOf(group, { kind: 'group', index: null })).toEqual({
+      category: 'powers',
+      current: null,
+      choices: ['GP_Eikthyr', 'GP_TheElder', 'GP_Yagluth', 'GP_Queen'],
+    })
+    expect(listOf(group, { kind: 'group', index: 0 })).toEqual({
+      category: 'powers',
+      current: 'GP_Fader',
+      choices: ['GP_Eikthyr', 'GP_TheElder', 'GP_Yagluth', 'GP_Queen', 'GP_Fader'],
     })
   })
 })

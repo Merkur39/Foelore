@@ -34,6 +34,22 @@ describe('gearDefence', () => {
     expect(defence.modifiers).toEqual({ spirit: 'immune', frost: 'resistant', fire: 'resistant' })
   })
 
+  it('stacks two powers on at once as the game does: resistances merged, stagger summed', () => {
+    const defence = gearDefence({ ...silver, armor: 45 }, [
+      effectOf('GP_Bonemass'),
+      effectOf('GP_Fader'),
+    ])
+
+    expect(defence.modifiers).toEqual({
+      spirit: 'immune',
+      blunt: 'slightlyResistant',
+      slash: 'slightlyResistant',
+      pierce: 'slightlyResistant',
+      fire: 'resistant',
+    })
+    expect(defence.staggerModifier).toBe(-0.5)
+  })
+
   it("keeps an earlier player's typed armor while they wear no piece", () => {
     expect(gearDefence({ ...silver, armor: 45 }).armor).toBe(45)
   })
@@ -41,7 +57,7 @@ describe('gearDefence', () => {
   it('leaves out what is carried until it is switched on', () => {
     const carrying: Gear = {
       ...silver,
-      carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: [] },
+      carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: [], group: [] },
     }
 
     expect(gearDefence(carrying)).toEqual(gearDefence(silver))

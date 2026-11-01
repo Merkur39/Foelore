@@ -17,7 +17,7 @@ export function useListHeading() {
             HAND.reduce((sum, option) => sum + categorySize(option), 0),
             language,
           )
-        : key === 'moreDrink'
+        : key === 'moreDrink' || key === 'moreGroup'
           ? t.lists.countOf(choices?.length ?? 0, categorySize(category))
           : t.lists.count(categorySize(category), t.arsenal.categories[category])
     return { title: t.lists.titles[key], aside }

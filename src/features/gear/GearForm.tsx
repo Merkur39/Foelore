@@ -15,7 +15,7 @@ import { ChevronRightIcon, MinusIcon, PlusIcon } from '@/ui/icons'
 import { NumberField } from '@/ui/NumberField'
 import { StepButton } from '@/ui/StepButton'
 import { effectOf, NOTHING_CARRIED, type Carried } from './carried'
-import { allDrinksCarried, type GearList } from './lists'
+import { allDrinksCarried, allPowersTaken, type GearList } from './lists'
 import { blockPowerParts, leveled, maxLevel, withstand, type GuardGauge } from './model'
 import { pieceOf, SLOTS, summarize, type Pieces } from './pieces'
 import styles from './GearForm.module.css'
@@ -25,17 +25,20 @@ const MAX_HEALTH = 999
 
 /** The fields of « Ton équipement », and what you can take with them in `world`, worked out again as
  * `gear` changes: in its dialog, and as a question of the first arrival. Each row of what is held, worn
- * or carried opens its list (`onOpenList`), where it is picked. */
+ * or carried opens its list (`onOpenList`), where it is picked. The group's powers only with `withGroup`:
+ * the first arrival asks for your own gear. */
 export function GearForm({
   gear,
   world,
   onChange,
   onOpenList,
+  withGroup = false,
 }: {
   readonly gear: Gear
   readonly world: World
   readonly onChange: (change: Partial<Gear>) => void
   readonly onOpenList: (list: GearList) => void
+  readonly withGroup?: boolean
 }) {
   const t = useT()
   const language = useLanguage()
@@ -146,6 +149,13 @@ export function GearForm({
         full={allDrinksCarried(gear)}
         onOpenList={onOpenList}
       />
+      {withGroup && (
+        <GroupSection
+          group={(gear.carried ?? NOTHING_CARRIED).group}
+          full={allPowersTaken(gear)}
+          onOpenList={onOpenList}
+        />
+      )}
     </div>
   )
 }
@@ -275,6 +285,54 @@ function CarriedSection({
         )}
       </div>
       <p className={styles.note}>{t.gear.carriedNote}</p>
+    </section>
+  )
+}
+
+/** The powers players of the group cast on you, each its row like yours, and a way to add one neither
+ * yours nor the group's yet, while there is any. */
+function GroupSection({
+  group,
+  full,
+  onOpenList,
+}: {
+  readonly group: readonly string[]
+  readonly full: boolean
+  readonly onOpenList: (list: GearList) => void
+}) {
+  const t = useT()
+  const headingId = useId()
+  return (
+    <section aria-labelledby={headingId} className={styles.section}>
+      <h3 id={headingId} className={styles.label}>
+        {t.gear.group}
+      </h3>
+      <div className={styles.rows}>
+        {group.map((power, index) => (
+          <CarriedRow
+            key={power}
+            label={t.effects.kinds.power}
+            id={power}
+            none={t.gear.noPower}
+            onOpen={() => {
+              onOpenList({ kind: 'group', index })
+            }}
+          />
+        ))}
+        {!full && (
+          <button
+            type="button"
+            className={styles.add}
+            onClick={() => {
+              onOpenList({ kind: 'group', index: null })
+            }}
+          >
+            <PlusIcon size={16} />
+            {t.gear.addGroupPower}
+          </button>
+        )}
+      </div>
+      <p className={styles.note}>{t.gear.groupNote}</p>
     </section>
   )
 }

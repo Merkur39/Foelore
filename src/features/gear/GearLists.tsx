@@ -29,6 +29,15 @@ function noteOf(t: Catalog, gear: Gear, list: GearList, language: 'fr' | 'en'): 
         ? t.lists.drinkOnce(carried.drinks.map((id) => effectOf(id).name[language]))
         : t.lists.drinkSwap(effectOf(drink).name[language])
     }
+    case 'group': {
+      const power = list.index === null ? undefined : carried.group[list.index]
+      return power === undefined
+        ? t.lists.groupOnce(
+            carried.power === null ? null : effectOf(carried.power).name[language],
+            carried.group.map((id) => effectOf(id).name[language]),
+          )
+        : t.lists.groupSwap(effectOf(power).name[language])
+    }
   }
 }
 
@@ -76,11 +85,14 @@ export function GearListView({
           onPick(UNARMED)
         },
       }
-    : start.current === null || key === 'hand' || key === 'moreDrink'
+    : start.current === null || key === 'hand' || key === 'moreDrink' || key === 'moreGroup'
       ? null
       : {
           label: t.lists.none[key],
-          note: key === 'drink' ? effectOf(start.current).name[language] : t.lists.noneNote[key],
+          note:
+            key === 'drink' || key === 'group'
+              ? effectOf(start.current).name[language]
+              : t.lists.noneNote[key],
           onPick: () => {
             onPick(null)
           },

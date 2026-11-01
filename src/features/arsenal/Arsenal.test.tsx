@@ -6,12 +6,17 @@ import { MOCKUP_GEAR, MOCKUP_PIECES, renderWithStore } from '../../../test/utils
 import { setViewportWidth } from '../../../test/viewport'
 
 // The mockups' gear: the silver shield, iron and the wolf cape, carrying the Iron Brooch, Bonemass's
-// power and the Frost Resistance Mead.
+// power and the Frost Resistance Mead, with Fader's power from the group.
 const GEAR = {
   ...MOCKUP_GEAR,
   armor: 0,
   pieces: MOCKUP_PIECES,
-  carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: ['Potion_frostresist'] },
+  carried: {
+    trinket: 'TrinketIronHealth',
+    power: 'GP_Bonemass',
+    drinks: ['Potion_frostresist'],
+    group: ['GP_Fader'],
+  },
 }
 const fr = { language: 'fr', gear: GEAR } as const
 const list = (name: string) => within(screen.getByRole('list', { name })).getAllByRole('link')
@@ -63,7 +68,7 @@ describe('Arsenal', () => {
     )
   })
 
-  it('lists what one carries, what you carry first, how long it lasts and what it changes', async () => {
+  it("lists what one carries, yours first then the group's, how long it lasts and what it changes", async () => {
     const user = userEvent.setup()
     window.history.replaceState(null, '', '#/arsenal')
     renderWithStore(<App />, fr)
@@ -73,20 +78,22 @@ describe('Arsenal', () => {
     expect(window.location.hash).toBe('#/arsenal/powers')
     const powers = list('Pouvoirs')
     expect(powers.map((power) => power.getAttribute('aria-label'))).toEqual([
-      "Masse-d'Os, emporté. Ouvrir dans Ton équipement.",
+      "Masse-d'Os, équipé. Ouvrir dans Ton équipement.",
+      'Pouvoir de Fader, du groupe. Ouvrir dans Ton équipement.',
       'Eikthyr. Ouvrir dans Ton équipement.',
       "L'Aîné. Ouvrir dans Ton équipement.",
       'Moder. Ouvrir dans Ton équipement.',
       'Yagluth. Ouvrir dans Ton équipement.',
       'La Reine. Ouvrir dans Ton équipement.',
-      'Pouvoir de Fader. Ouvrir dans Ton équipement.',
     ])
+    expect(powers[0]).toHaveTextContent('Équipé')
+    expect(powers[1]).toHaveTextContent('Du groupe')
     expect(powers[0]).toHaveTextContent('5 min · recharge 20 min')
     expect(powers[0]).toHaveTextContent('Contondant, Coupant et Perforant ×0,75')
     expect(powers[0]).toHaveTextContent("Bloquer rend 5 d'endurance")
-    expect(powers[1]).toHaveTextContent('5 min · recharge 20 min')
-    expect(powers[1]).toHaveTextContent('Ne change aucun coup')
-    expect(powers[6]).toHaveTextContent('Tu titubes 2× moins vite')
+    expect(powers[2]).toHaveTextContent('5 min · recharge 20 min')
+    expect(powers[2]).toHaveTextContent('Ne change aucun coup')
+    expect(powers[1]).toHaveTextContent('Tu titubes 2× moins vite')
   })
 
   it('opens Your gear with the item picked, at the level of the one it replaces', async () => {
@@ -263,9 +270,13 @@ describe('Arsenal', () => {
 
       const powers = screen.getByRole('table', { name: 'Pouvoirs' })
       expect(within(powers).getByRole('columnheader', { name: 'Recharge' })).toBeInTheDocument()
-      expect(within(powers).getAllByRole('row')[1]).toHaveTextContent('Emporté')
+      expect(within(powers).getAllByRole('row')[1]).toHaveTextContent('Équipé')
+      expect(within(powers).getAllByRole('row')[2]).toHaveTextContent('Du groupe')
+      expect(
+        within(powers).getByRole('link', { name: 'Équiper : Pouvoir de Fader' }),
+      ).toBeInTheDocument()
 
-      await user.click(within(powers).getByRole('link', { name: 'Emporter : Moder' }))
+      await user.click(within(powers).getByRole('link', { name: 'Équiper : Moder' }))
 
       const dialog = await screen.findByRole('dialog', { name: 'Ton équipement' })
       expect(within(dialog).getByRole('button', { name: 'Pouvoir : Moder' })).toBeInTheDocument()

@@ -8,9 +8,12 @@ export interface Carried {
   readonly power: string | null
   /** Each a different drink: the game takes one of each at a time. */
   readonly drinks: readonly string[]
+  /** The powers players of the group cast within 10 m of you (Player.ActivateGuardianPower): each a
+   * different one, never your own, since the same power again only restarts its time. */
+  readonly group: readonly string[]
 }
 
-export const NOTHING_CARRIED: Carried = { trinket: null, power: null, drinks: [] }
+export const NOTHING_CARRIED: Carried = { trinket: null, power: null, drinks: [], group: [] }
 
 /** The kinds of effects one carries: a trinket, a guardian power, drinks. */
 export type CarriedKind = Extract<RuleEffectKind, 'trinket' | 'power' | 'consumable'>
@@ -74,6 +77,9 @@ export const carriable = (kind: CarriedKind): CarriedEffect[] =>
     .filter((effect): effect is CarriedEffect => effect.kind === kind)
     .toSorted((a, b) => rank(a) - rank(b))
 
-/** What is carried, as a creature's sheet lists it: the trinket, the power, then the drinks. */
-export const carriedEffects = ({ trinket, power, drinks }: Carried): CarriedEffect[] =>
-  [trinket, power, ...drinks].flatMap((id) => (id === null ? [] : [effectOf(id)])).filter(isCarried)
+/** What is carried, as a creature's sheet lists it: the trinket, the power, the drinks, then the
+ * group's powers. */
+export const carriedEffects = ({ trinket, power, drinks, group }: Carried): CarriedEffect[] =>
+  [trinket, power, ...drinks, ...group]
+    .flatMap((id) => (id === null ? [] : [effectOf(id)]))
+    .filter(isCarried)

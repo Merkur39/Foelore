@@ -160,7 +160,7 @@ describe('Reporting', () => {
       ...MOCKUP_GEAR,
       armor: 0,
       pieces: MOCKUP_PIECES,
-      carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: [] },
+      carried: { trinket: 'TrinketIronHealth', power: 'GP_Bonemass', drinks: [], group: [] },
     })
     await user.click(screen.getByRole('button', { name: /^Avec tes effets temporaires/ }))
     const effects = screen.getByRole('group', { name: 'Tes effets temporaires' })

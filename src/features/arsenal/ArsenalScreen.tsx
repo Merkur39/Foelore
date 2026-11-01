@@ -260,7 +260,8 @@ function Lede({ category, skill }: { readonly category: ArsenalCategory; readonl
         {t.arsenal.pickLevel.hand}
       </>
     )
-  return family === 'armor' ? t.arsenal.pickLevel.armor : t.arsenal.carryLede
+  if (family === 'armor') return t.arsenal.pickLevel.armor
+  return category === 'powers' ? t.arsenal.powersLede : t.arsenal.carryLede
 }
 
 /** A category the search found something in: its name and count, then its family. */

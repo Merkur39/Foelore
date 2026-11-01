@@ -67,6 +67,20 @@ describe('idleOf', () => {
     })
   })
 
+  it("names the group's power that already resists: Fader's against a Fuling shaman", () => {
+    const group: Gear = {
+      ...worn,
+      carried: { trinket: null, power: null, drinks: ['Potion_barleywine'], group: ['GP_Fader'] },
+    }
+
+    expect(
+      idleOf(
+        effectOf('Potion_barleywine'),
+        against(group, creatureHits(creature('GoblinShaman')), ['GP_Fader']),
+      ),
+    ).toEqual({ kind: 'resisted', by: { kind: 'group', id: 'GP_Fader' } })
+  })
+
   it("names a complete set's bonus: the Fenris blessing against a Cultist's Flames", () => {
     const fenris: Gear = {
       ...bare,

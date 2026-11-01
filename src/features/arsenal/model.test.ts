@@ -102,6 +102,22 @@ describe('effectRows', () => {
     expect(effectRows('powers', carrying)[0]).toMatchObject({ id: 'GP_Yagluth', carried: true })
   })
 
+  it("lists your power first, then the group's, then the others", () => {
+    const carrying = { ...NOTHING_CARRIED, power: 'GP_Yagluth', group: ['GP_Fader', 'GP_Moder'] }
+
+    expect(
+      effectRows('powers', carrying).map(({ id, carried, group }) => [id, carried, group]),
+    ).toEqual([
+      ['GP_Yagluth', true, false],
+      ['GP_Moder', false, true],
+      ['GP_Fader', false, true],
+      ['GP_Eikthyr', false, false],
+      ['GP_TheElder', false, false],
+      ['GP_Bonemass', false, false],
+      ['GP_Queen', false, false],
+    ])
+  })
+
   it('lists the trinkets and the drinks as Your gear does', () => {
     expect(ids(effectRows('trinkets', NOTHING_CARRIED))).toEqual([
       'TrinketIronHealth',

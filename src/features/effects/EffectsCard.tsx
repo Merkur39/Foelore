@@ -2,7 +2,7 @@ import { useId, useState } from 'react'
 import { useAppState } from '@/app/useAppState'
 import type { Hit } from '@/combat/hit'
 import type { GameCreature } from '@/data/types'
-import type { CarriedEffect } from '@/features/gear/carried'
+import { NOTHING_CARRIED, type CarriedEffect } from '@/features/gear/carried'
 import { useLanguage, useT } from '@/i18n/useT'
 import { ChevronDownIcon } from '@/ui/icons'
 import styles from './EffectsCard.module.css'
@@ -32,6 +32,7 @@ export function EffectsCard({
   const listId = useId()
   if (carried.length === 0) return null
   const names = on.map((effect) => effect.name[language])
+  const { group } = gear.carried ?? NOTHING_CARRIED
   const against: Against = { gear, on, hits, world, stars }
 
   return (
@@ -64,6 +65,7 @@ export function EffectsCard({
           <EffectRow
             key={effect.id}
             effect={effect}
+            group={group.includes(effect.id)}
             lit={on.includes(effect)}
             against={against}
             onToggle={() => {
@@ -79,11 +81,14 @@ export function EffectsCard({
 
 function EffectRow({
   effect,
+  group,
   lit,
   against,
   onToggle,
 }: {
   readonly effect: CarriedEffect
+  /** A power the group casts on you, told apart from yours. */
+  readonly group: boolean
   readonly lit: boolean
   readonly against: Against
   readonly onToggle: () => void
@@ -102,7 +107,7 @@ function EffectRow({
           {effect.name[language]}
         </span>
         <span id={`${id}-tag`} className={styles.tag}>
-          {wording.tag(effect)}
+          {wording.tag(effect, group)}
         </span>
         {idle && (
           <span id={`${id}-note`} className={styles.note}>

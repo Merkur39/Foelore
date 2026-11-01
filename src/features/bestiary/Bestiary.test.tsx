@@ -391,6 +391,7 @@ describe('Bestiary', () => {
         trinket: 'TrinketIronHealth',
         power: 'GP_Bonemass',
         drinks: ['Potion_frostresist'],
+        group: [],
       },
     }
     const card = () => screen.getByRole('button', { name: /^Avec tes effets temporaires/ })
@@ -460,6 +461,49 @@ describe('Bestiary', () => {
 
       expect(card()).toHaveTextContent("Masse-d'Os")
       expect(read('Pare-le : en bloquant, tu titubes')).toBe(true)
+    })
+
+    it("lists the group's powers after the drinks, and counts them: Fader's has the Lox blocked whole", async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/bestiary/plains/Lox')
+      const carried = { ...CARRYING.carried, group: ['GP_Fader', 'GP_Moder'] }
+      renderWithStore(<App />, { language: 'fr', gear: { ...CARRYING, carried } })
+
+      await user.click(card())
+
+      expect(effect('Pouvoir de Fader')).toHaveAccessibleDescription('Pouvoir du groupe · 5 min')
+      expect(effects()).toHaveTextContent(
+        /Hydromel de résistance au gel.*Pouvoir de Fader.*ModerPouvoir du groupe · 5 minNe change rien : pas de glace/,
+      )
+      await user.click(effect('Pouvoir de Fader'))
+
+      expect(card()).toHaveTextContent('Pouvoir de Fader')
+      expect(read('Tu bloques tout sans tituber')).toBe(true)
+    })
+
+    it("says what already covers what a row would: the group's power by its name, your cape", async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/bestiary/plains/GoblinShaman')
+      const carried = { ...CARRYING.carried, drinks: ['Potion_barleywine'], group: ['GP_Fader'] }
+      const { unmount } = renderWithStore(<App />, {
+        language: 'fr',
+        gear: { ...CARRYING, carried },
+      })
+      await user.click(card())
+      await user.click(effect('Pouvoir de Fader'))
+
+      expect(effects()).toHaveTextContent(
+        "Vin d'orge de résistance au feuBoisson · 10 minNe change rien : déjà couvert par le Pouvoir de Fader",
+      )
+      unmount()
+
+      window.history.replaceState(null, '', '#/bestiary/mountain/Dragon')
+      renderWithStore(<App />, { language: 'fr', gear: CARRYING })
+      await user.click(card())
+
+      expect(effects()).toHaveTextContent(
+        'Hydromel de résistance au gelBoisson · 10 minNe change rien : déjà couvert par ta cape',
+      )
     })
 
     it('holds in the Simulation of its attacks, until another creature', async () => {

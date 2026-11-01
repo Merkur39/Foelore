@@ -2,18 +2,19 @@ import { blockerOf } from '@/app/context'
 import type { Gear } from '@/app/store'
 import type { ArmorSlot } from '@/data/types'
 import { categoryOf, FAMILIES, type ArsenalCategory } from '@/features/arsenal/model'
-import { carriable, NOTHING_CARRIED } from './carried'
+import { carriable, NOTHING_CARRIED, type CarriedKind } from './carried'
 import { leveled, maxLevel } from './model'
 import { pieceOf, type Pieces } from './pieces'
 
-/** A row of Your gear, as the list it opens: what is held, a slot, the trinket, the power, a drink (by
- * its place among those carried) or one more drink (index null). */
+/** A row of Your gear, as the list it opens: what is held, a slot, the trinket, the power, a drink or a
+ * group's power (by its place among those carried), or one more of either (index null). */
 export type GearList =
   | { readonly kind: 'hand' }
   | { readonly kind: 'piece'; readonly slot: ArmorSlot }
   | { readonly kind: 'trinket' }
   | { readonly kind: 'power' }
   | { readonly kind: 'drink'; readonly index: number | null }
+  | { readonly kind: 'group'; readonly index: number | null }
 
 const SLOT_CATEGORIES: Record<ArmorSlot, ArsenalCategory> = {
   helmet: 'helmets',
@@ -27,8 +28,8 @@ export interface ListOf {
   readonly category: ArsenalCategory
   /** What the row holds now, null when it holds nothing. */
   readonly current: string | null
-  /** The drinks it offers, in the order of Your gear: a drink only once among those carried. Null when it
-   * offers the whole category. */
+  /** The drinks or the group's powers it offers, in the order of Your gear: a drink only once among
+   * those carried, a power only once with one's own. Null when it offers the whole category. */
   readonly choices: readonly string[] | null
 }
 
@@ -55,16 +56,29 @@ export function listOf(gear: Gear, list: GearList): ListOf {
     case 'drink': {
       const current = list.index === null ? null : (carried.drinks[list.index] ?? null)
       const others = carried.drinks.filter((drink) => drink !== current)
-      return {
-        category: 'drinks',
-        current,
-        choices: carriable('consumable')
-          .map(({ id }) => id)
-          .filter((id) => !others.includes(id)),
-      }
+      return { category: 'drinks', current, choices: ids('consumable', others) }
+    }
+    case 'group': {
+      const current = list.index === null ? null : (carried.group[list.index] ?? null)
+      const others = [carried.power, ...carried.group.filter((power) => power !== current)]
+      return { category: 'powers', current, choices: ids('power', others) }
     }
   }
 }
+
+const ids = (kind: CarriedKind, others: readonly (string | null)[]) =>
+  carriable(kind)
+    .map(({ id }) => id)
+    .filter((id) => !others.includes(id))
+
+// A list of Your gear once `id` is picked in its row: one more (index null), another in its place, or
+// none.
+const placed = (items: readonly string[], index: number | null, id: string | null) =>
+  index === null
+    ? [...items, ...(id === null ? [] : [id])]
+    : id === null
+      ? items.filter((_, at) => at !== index)
+      : items.map((item, at) => (at === index ? id : item))
 
 const without = (pieces: Pieces, slot: ArmorSlot): Pieces =>
   Object.fromEntries(Object.entries(pieces).filter(([key]) => key !== slot))
@@ -92,17 +106,15 @@ export function pickInto(gear: Gear, list: GearList, id: string | null): Gear {
     case 'trinket':
       return { ...gear, carried: { ...carried, trinket: id } }
     case 'power':
-      return { ...gear, carried: { ...carried, power: id } }
-    case 'drink': {
-      const { index } = list
-      const drinks =
-        index === null
-          ? [...carried.drinks, ...(id === null ? [] : [id])]
-          : id === null
-            ? carried.drinks.filter((_, at) => at !== index)
-            : carried.drinks.map((drink, at) => (at === index ? id : drink))
-      return { ...gear, carried: { ...carried, drinks } }
-    }
+      // A power counts once: one of the group's that becomes one's own leaves the group's.
+      return {
+        ...gear,
+        carried: { ...carried, power: id, group: carried.group.filter((power) => power !== id) },
+      }
+    case 'drink':
+      return { ...gear, carried: { ...carried, drinks: placed(carried.drinks, list.index, id) } }
+    case 'group':
+      return { ...gear, carried: { ...carried, group: placed(carried.group, list.index, id) } }
   }
 }
 
@@ -112,7 +124,8 @@ export const UNARMED = 'PlayerUnarmed'
 /** What is held switches between these. */
 export const HAND: readonly ArsenalCategory[] = FAMILIES[0].categories
 
-/** The copy a list is keyed by: what is held, a slot, the trinket, the power, a drink or one more. */
+/** The copy a list is keyed by: what is held, a slot, the trinket, the power, a drink or a group's
+ * power, or one more of either. */
 export const keyOf = (list: GearList) =>
   list.kind === 'piece'
     ? list.slot
@@ -120,7 +133,18 @@ export const keyOf = (list: GearList) =>
       ? list.index === null
         ? 'moreDrink'
         : 'drink'
-      : list.kind
+      : list.kind === 'group'
+        ? list.index === null
+          ? 'moreGroup'
+          : 'group'
+        : list.kind
+
+/** Whether every power is yours or the group's already: « Ajouter un pouvoir du groupe » has nothing
+ * left to add. */
+export const allPowersTaken = (gear: Gear) => {
+  const { power, group } = gear.carried ?? NOTHING_CARRIED
+  return (power === null ? 0 : 1) + group.length >= carriable('power').length
+}
 
 /** Whether every drink is carried already: « Ajouter une boisson » has nothing left to add. */
 export const allDrinksCarried = (gear: Gear) =>

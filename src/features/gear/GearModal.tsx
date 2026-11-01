@@ -94,6 +94,7 @@ export function GearModal() {
           setDraft((current) => ({ ...current, ...change }))
         }}
         onOpenList={setList}
+        withGroup
       />
     </Modal>
   )

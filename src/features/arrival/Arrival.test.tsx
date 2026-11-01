@@ -77,6 +77,17 @@ describe('The first arrival', () => {
     expect(store.getState().gear).toEqual(DEFAULT_STATE.gear)
   })
 
+  it("asks for your own gear: the group's powers wait for Ton équipement", async () => {
+    const user = userEvent.setup()
+    firstLaunch()
+    const dialog = await answerWhere(user, 'Forêt noire')
+
+    expect(within(dialog).getByRole('region', { name: 'Ce que tu emportes' })).toBeInTheDocument()
+    expect(
+      within(dialog).queryByRole('region', { name: 'Pouvoirs du groupe' }),
+    ).not.toBeInTheDocument()
+  })
+
   it('opens a row’s list under the question’s step, and comes back to the question', async () => {
     const user = userEvent.setup()
     firstLaunch()
