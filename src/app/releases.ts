@@ -30,6 +30,31 @@ export interface Release {
  */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.16.0',
+    date: '2026-11-01',
+    notes: [
+      {
+        kind: 'new',
+        title: { fr: "Les pouvoirs du groupe s'ajoutent au tien", en: 'Group powers add to yours' },
+        detail: {
+          fr: 'Ajoute-les dans Ton équipement, puis allume-les sur la fiche comme le tien.',
+          en: 'Add them in Your gear, then switch them on in the sheet like yours.',
+        },
+      },
+      {
+        kind: 'improved',
+        title: {
+          fr: 'Une ligne grisée dit ce qui la couvre déjà',
+          en: 'A greyed row says what already covers it',
+        },
+        detail: {
+          fr: "Par exemple « déjà couvert par ta cape », ou par le pouvoir d'un ami.",
+          en: "For instance “already covered by your cape”, or by a friend's power.",
+        },
+      },
+    ],
+  },
+  {
     version: '1.15.3',
     date: '2026-11-01',
     notes: [
