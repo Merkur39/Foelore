@@ -164,10 +164,34 @@ a{color:#BBA6F7}a:hover{color:#D5C8FB}
                   <span style="width: {{ r.s0 }}%; background: #342D47"></span>
                   <span style="width: {{ r.s1 }}%; background: {{ r.fill }}"></span>
                   <span style="width: {{ r.s2 }}%; background: {{ r.color }}"></span>
+                  <span style="width: {{ r.s3 }}%; background: repeating-linear-gradient(135deg, {{ r.color }} 0 2px, transparent 2px 5px)"></span>
                 </div>
                 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{ r.barColor }}">{{ r.barTxt }}</span>
               </div>
             </sc-for>
+          </div>
+          <div style="flex: none; border: 1px solid #342D47; border-radius: 6px; background: #110F18">
+            <button type="button" onClick="{{ details.fold }}" aria-expanded="{{ details.expanded }}" aria-controls="d-details" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; box-sizing: border-box; padding: 8px 12px; text-align: left">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 15px; line-height: 20px; color: #E9E5F3">Détails</span>
+                <span style="font-size: 12px; line-height: 16px; color: #A9A2BF">Chaque coup varie de 87 à 100 %</span>
+              </span>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A9A2BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; transition: transform 0.15s; transform: {{ details.chevron }}"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <sc-if value="{{ details.open }}" hint-placeholder-val="{{ false }}">
+            <div id="d-details" role="group" aria-label="Détails" style="padding: 0 12px 2px">
+              <sc-for list="{{ details.rows }}" as="d" hint-placeholder-count="2">
+                <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid #241F33">
+                  <span style="padding-top: 3px; font-size: 11px; letter-spacing: 0.08em; color: #A9A2BF">{{ d.guard }}</span>
+                  <span style="min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #E9E5F3">{{ d.taken }} <span style="font-size: 11px; color: #8D86A4">subis</span></span>
+                    <sc-if value="{{ d.hasOdds }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 16px; color: #A9A2BF">{{ d.odds }}</span></sc-if>
+                    <sc-if value="{{ d.hasBar }}" hint-placeholder-val="{{ true }}"><span style="font-size: 12px; line-height: 16px; color: #A9A2BF">{{ d.bar }}</span></sc-if>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+            </sc-if>
           </div>
           <sc-if value="{{ isAttack }}" hint-placeholder-val="{{ true }}">
             <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #A9A2BF">
@@ -190,7 +214,7 @@ a{color:#BBA6F7}a:hover{color:#D5C8FB}
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { fx: [], fxOpen: false, mode: 'attack', stars: 0, barPct: 0, value: 90, crashed: true };
+    this.state = { fx: [], fxOpen: false, mode: 'attack', stars: 0, barPct: 0, value: 90, crashed: true, details: false };
   }
   // « Avec tes effets temporaires »: what Ton équipement says the player carries, a switch each; folded, what is on.
   fxCard(id, muted) {
@@ -254,15 +278,17 @@ class Component extends DCLogic {
     const colors = { ok: '#6FC594', warn: '#E3AA4C', bad: '#F0726A' };
     const fills = { ok: '#2F7A52', warn: '#A86F12', bad: '#812C28' };
     const words = { ok: 'TIENT', warn: 'TU TITUBES', bad: 'BRISÉ' };
-    const resolve = (mode, parry) => {
+    // The game rolls every hit an attack builds, and a free value alike: the hit times √U(0.75, 1).
+    const resolve = (mode, parry, roll) => {
+      const h = hit * roll;
       const power = parry ? bp * pb : bp;
-      const passes = armor(hit, power);
+      const passes = armor(h, power);
       const bar0 = T * st.barPct / 100;
       const broke = bar0 + passes >= T;
       // SEMan.ModifyBlockStaminaUsage: each effect its share of the drain and a flat amount; a parry that holds pays twice.
       const drain = (d) => d + d * fxShare + fxFlat;
-      const cost = parry ? (broke ? drain(0) : drain(0) + drain(0)) : drain(10 * Math.min(1, (hit - passes) / power));
-      const taken = broke ? armor(hit * fxBlunt, ac + fxArmor) : armor(passes * fxBlunt, ac + fxArmor);
+      const cost = parry ? (broke ? drain(0) : drain(0) + drain(0)) : drain(10 * Math.min(1, (h - passes) / power));
+      const taken = broke ? armor(h * fxBlunt, ac + fxArmor) : armor(passes * fxBlunt, ac + fxArmor);
       const shown = taken > 0.1 ? taken : 0;
       const staggered = broke || bar0 + passes + shown >= T;
       const state = broke ? 'bad' : (staggered ? 'warn' : 'ok');
@@ -273,6 +299,7 @@ class Component extends DCLogic {
       }, []);
       const total = Math.min(T, bar0 + passes + shown);
       return {
+        shown: shown, total: total, staggered: staggered, segs: segs,
         state: state, mode: mode, word: words[state], color: colors[state], fill: fills[state],
         border: state === 'ok' ? '#342D47' : fills[state],
         taken: shown > 0 ? fmt(shown) : '0',
@@ -283,8 +310,43 @@ class Component extends DCLogic {
         aria: 'Barre de stagger : ' + fmt(total) + ' sur ' + fmt(T) + (staggered ? ', elle déborde' : '') + ' (déjà ' + fmt(bar0) + ', passe le bouclier ' + fmt(passes) + ', après armure ' + fmt(shown) + ')'
       };
     };
-    const b = resolve('EN BLOQUANT', false);
-    const p = resolve('EN PARANT', true);
+    // The cards read the top of the roll; open, « Détails » draws their bars from the lowest roll (solid) to the
+    // highest (hatched), and says how often the top's verdict comes: U evenly over [0.75, 1].
+    const LOW = Math.sqrt(0.75);
+    const open = st.details;
+    const guard = (mode, parry) => {
+      const top = resolve(mode, parry, 1);
+      const low = resolve(mode, parry, LOW);
+      let same = 0;
+      for (let i = 0; i <= 200; i++) if (resolve(mode, parry, Math.sqrt(0.75 + (0.25 * i) / 200)).state === top.state) same++;
+      const shown = open ? low : top;
+      const used = shown.segs.reduce((s, x) => s + x, 0);
+      const stretch = open ? Math.min(100 - used, Math.max(0, ((top.total - low.total) / T) * 100)) : 0;
+      return Object.assign({}, top, {
+        low: low, share: same / 201,
+        s0: shown.segs[0].toFixed(2), s1: shown.segs[1].toFixed(2), s2: shown.segs[2].toFixed(2), s3: stretch.toFixed(2)
+      });
+    };
+    const b = guard('EN BLOQUANT', false);
+    const p = guard('EN PARANT', true);
+    const span = (lo, hi) => (fmt(lo) === fmt(hi) ? fmt(hi) : fmt(lo) + ' à ' + fmt(hi));
+    // « p fois sur q », q up to 10: the simplest within 2.5 points, else the nearest.
+    const often = (share) => {
+      const all = [];
+      for (let q = 2; q <= 10; q++) for (let n = 1; n < q; n++) all.push([n, q]);
+      const near = all.find((f) => Math.abs(f[0] / f[1] - share) <= 0.025);
+      const f = near || all.reduce((best, g) => (Math.abs(g[0] / g[1] - share) < Math.abs(best[0] / best[1] - share) ? g : best));
+      return f[0] + ' fois sur ' + f[1];
+    };
+    const says = { ok: 'tu tiens', warn: 'tu titubes', bad: 'brisé' };
+    const detail = (g) => ({
+      guard: g.mode,
+      taken: span(g.low.shown, g.shown),
+      hasOdds: g.share < 0.999,
+      odds: says[g.state] + ' ' + often(g.share) + ', sinon ' + says[g.low.state],
+      hasBar: !g.staggered,
+      bar: 'barre ' + span(g.low.total, g.total) + ' / ' + fmt(T)
+    });
     let advice;
     if (b.state === 'ok') advice = { s: 'ok', text: 'Bloque-le : tu tiens sans tituber' };
     else if (p.state === 'ok') advice = { s: 'warn', text: b.state === 'bad' ? 'Pare-le : le blocage cède' : 'Pare-le : en bloquant, tu titubes' };
@@ -308,7 +370,14 @@ class Component extends DCLogic {
       dec: () => this.setState({ value: Math.max(0, this.state.value - 5) }),
       inc: () => this.setState({ value: this.state.value + 5 }),
       advice: { text: advice.text, color: colors[advice.s], isOk: advice.s === 'ok', isWarn: advice.s === 'warn', isBad: advice.s === 'bad' },
-      results: [b, p]
+      results: [b, p],
+      details: {
+        open: open,
+        expanded: String(open),
+        chevron: open ? 'rotate(180deg)' : 'none',
+        fold: () => this.setState({ details: !this.state.details }),
+        rows: [detail(b), detail(p)]
+      }
     };
   }
 }

@@ -4092,6 +4092,98 @@
       "h": 900,
       "title": "A · Itération 1 · desktop",
       "page": "nouveautes"
+    },
+    "Degats-Auj.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1736,
+      "h": 1220,
+      "title": "Aujourd’hui · le haut du jet, sans le dire",
+      "page": "degats"
+    },
+    "Degats-A.dc.html": {
+      "x": 0,
+      "y": 1620,
+      "w": 1736,
+      "h": 1220,
+      "title": "A · Des fourchettes, sur la carte",
+      "page": "degats"
+    },
+    "Degats-A-Desktop.dc.html": {
+      "x": 1816,
+      "y": 1620,
+      "w": 1440,
+      "h": 900,
+      "title": "A · desktop",
+      "page": "degats"
+    },
+    "Degats-B.dc.html": {
+      "x": 0,
+      "y": 3240,
+      "w": 1736,
+      "h": 1220,
+      "title": "B · « Jusqu’à », et une ligne",
+      "page": "degats"
+    },
+    "Degats-B-Desktop.dc.html": {
+      "x": 1816,
+      "y": 3240,
+      "w": 1440,
+      "h": 900,
+      "title": "B · desktop",
+      "page": "degats"
+    },
+    "Degats-C.dc.html": {
+      "x": 0,
+      "y": 4860,
+      "w": 1736,
+      "h": 1220,
+      "title": "C · Le plus fort sur la carte, le détail replié",
+      "page": "degats"
+    },
+    "Degats-C-Desktop.dc.html": {
+      "x": 1816,
+      "y": 4860,
+      "w": 1440,
+      "h": 900,
+      "title": "C · desktop",
+      "page": "degats"
+    },
+    "Degats-C1.dc.html": {
+      "x": 0,
+      "y": 6480,
+      "w": 2580,
+      "h": 1220,
+      "title": "Itération 1 · C, avec « Détails »",
+      "is_interactive": true,
+      "page": "degats"
+    },
+    "Degats-C1-Desktop.dc.html": {
+      "x": 2660,
+      "y": 6480,
+      "w": 1440,
+      "h": 900,
+      "title": "Itération 1 · C · desktop",
+      "is_interactive": true,
+      "page": "degats"
+    },
+    "Degats-C2.dc.html": {
+      "x": 0,
+      "y": 8100,
+      "w": 2580,
+      "h": 1220,
+      "title": "Itération 2 · C, les barres en fourchette",
+      "is_interactive": true,
+      "page": "degats"
+    },
+    "Degats-C2-Desktop.dc.html": {
+      "x": 2660,
+      "y": 8100,
+      "w": 1440,
+      "h": 900,
+      "title": "Itération 2 · C · desktop",
+      "is_interactive": true,
+      "page": "degats"
     }
   },
   "createdOnFiles": {
@@ -5063,6 +5155,30 @@
       "maxW": 1440,
       "page": "nouveautes",
       "w": 240
+    },
+    "degats-row1": {
+      "kind": "title1",
+      "text": "Dégâts · le jet du jeu, la brûlure et le poison (#64)",
+      "x": 0,
+      "y": -300,
+      "maxW": 3256,
+      "page": "degats"
+    },
+    "degats-row2": {
+      "kind": "title1",
+      "text": "Itération 1 · C, avec « Détails »",
+      "x": 0,
+      "y": 6180,
+      "maxW": 4100,
+      "page": "degats"
+    },
+    "degats-row3": {
+      "kind": "title1",
+      "text": "Itération 2 · C, les barres en fourchette",
+      "x": 0,
+      "y": 7800,
+      "maxW": 4100,
+      "page": "degats"
     }
   },
   "order": [
@@ -5524,7 +5640,18 @@
     "Nouveautes-C.dc.html",
     "Nouveautes-Textes.dc.html",
     "Nouveautes-A1.dc.html",
-    "Nouveautes-A1-Desktop.dc.html"
+    "Nouveautes-A1-Desktop.dc.html",
+    "Degats-Auj.dc.html",
+    "Degats-A.dc.html",
+    "Degats-A-Desktop.dc.html",
+    "Degats-B.dc.html",
+    "Degats-B-Desktop.dc.html",
+    "Degats-C.dc.html",
+    "Degats-C-Desktop.dc.html",
+    "Degats-C1.dc.html",
+    "Degats-C1-Desktop.dc.html",
+    "Degats-C2.dc.html",
+    "Degats-C2-Desktop.dc.html"
   ],
   "pages": [
     {
@@ -5550,6 +5677,10 @@
     {
       "id": "nouveautes",
       "name": "Nouveautés · pistes"
+    },
+    {
+      "id": "degats",
+      "name": "Dégâts · pistes"
     },
     {
       "id": "braise",
@@ -5596,6 +5727,9 @@
     "competence-row1",
     "encaisses-row1",
     "nouveautes-row1",
+    "degats-row1",
+    "degats-row2",
+    "degats-row3",
     "m-row1-braise",
     "m-row2-braise",
     "m-row3-braise",
