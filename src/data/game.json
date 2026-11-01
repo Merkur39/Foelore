@@ -118,6 +118,44 @@
       "mountain"
     ]
   },
+  "wet": {
+    "name": {
+      "fr": "Humide",
+      "en": "Wet"
+    },
+    "ttl": 120,
+    "modifiers": {
+      "fire": "resistant",
+      "frost": "weak",
+      "lightning": "weak"
+    },
+    "biomes": [
+      "meadows",
+      "blackForest",
+      "swamp",
+      "plains",
+      "ocean"
+    ]
+  },
+  "barrier": {
+    "name": {
+      "fr": "Barrière magique",
+      "en": "Magic barrier"
+    },
+    "staff": {
+      "fr": "Bâton de protection",
+      "en": "Staff of Protection"
+    },
+    "skill": {
+      "fr": "Magie du sang",
+      "en": "Blood Magic"
+    },
+    "absorb": 200,
+    "absorbPerSkill": 5,
+    "ttlPerLevel": 60,
+    "maxLevel": 4,
+    "radius": 5
+  },
   "biomes": [
     {
       "id": "meadows",
@@ -559,6 +597,7 @@
               "damages": {
                 "pierce": 20
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -947,6 +986,7 @@
               "damages": {
                 "blunt": 60
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -973,6 +1013,7 @@
               "damages": {
                 "blunt": 70
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -983,6 +1024,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1010,6 +1052,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1037,6 +1080,7 @@
               "damages": {
                 "blunt": 70
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1063,6 +1107,7 @@
               "damages": {
                 "blunt": 60
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1403,6 +1448,7 @@
               "damages": {
                 "blunt": 55
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1483,6 +1529,7 @@
               "damages": {
                 "slash": 50
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1510,6 +1557,7 @@
               "damages": {
                 "slash": 25
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1536,6 +1584,7 @@
               "damages": {
                 "slash": 25
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1569,6 +1618,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1731,6 +1781,7 @@
               "damages": {
                 "pierce": 35
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1762,6 +1813,7 @@
               "damages": {
                 "blunt": 60
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1834,6 +1886,7 @@
               "damages": {
                 "slash": 48
               },
+              "toolDamage": 15,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -1967,6 +2020,7 @@
               "damages": {
                 "slash": 48
               },
+              "toolDamage": 10,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -2336,6 +2390,7 @@
               "damages": {
                 "blunt": 60
               },
+              "toolDamage": 160,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -2363,6 +2418,7 @@
               "damages": {
                 "blunt": 80
               },
+              "toolDamage": 160,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -2390,6 +2446,7 @@
               "damages": {
                 "blunt": 80
               },
+              "toolDamage": 160,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -2537,6 +2594,7 @@
                 "blunt": 60,
                 "poison": 40
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": true,
@@ -2563,6 +2621,7 @@
             "blunt": 60,
             "poison": 40
           },
+          "toolDamage": 100,
           "staggerMultiplier": 1,
           "blockable": false,
           "dodgeable": true,
@@ -2701,6 +2760,7 @@
                 "blunt": 80,
                 "poison": 50
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3307,6 +3367,7 @@
               "damages": {
                 "pierce": 110
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3333,6 +3394,7 @@
               "damages": {
                 "blunt": 110
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3359,6 +3421,7 @@
               "damages": {
                 "blunt": 110
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3385,6 +3448,7 @@
               "damages": {
                 "blunt": 110
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3448,6 +3512,7 @@
               "damages": {
                 "slash": 60
               },
+              "toolDamage": 15,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3675,6 +3740,7 @@
               "damages": {
                 "pierce": 120
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3703,6 +3769,7 @@
               "damages": {
                 "slash": 110
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3731,6 +3798,7 @@
                 "pierce": 30,
                 "frost": 200
               },
+              "toolDamage": 400,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3764,6 +3832,7 @@
               "damages": {
                 "frost": 200
               },
+              "toolDamage": 400,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -3996,6 +4065,7 @@
               "damages": {
                 "blunt": 130
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4021,6 +4091,7 @@
               "damages": {
                 "blunt": 130
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4255,6 +4326,7 @@
               "damages": {
                 "blunt": 120
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4275,6 +4347,7 @@
             "damages": {
               "blunt": 20
             },
+            "toolDamage": 40,
             "staggerMultiplier": 1,
             "blockable": true,
             "dodgeable": true,
@@ -4429,6 +4502,7 @@
               "damages": {
                 "slash": 130
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4456,6 +4530,7 @@
               "damages": {
                 "slash": 120
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4482,6 +4557,7 @@
               "damages": {
                 "slash": 60
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4515,6 +4591,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4652,6 +4729,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4677,6 +4755,7 @@
               "damages": {
                 "blunt": 130
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4780,6 +4859,7 @@
                 "fire": 40,
                 "lightning": 20
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4812,6 +4892,7 @@
                 "blunt": 40,
                 "fire": 120
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -4841,6 +4922,7 @@
                 "fire": 65,
                 "lightning": 65
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5091,6 +5173,7 @@
               "damages": {
                 "blunt": 100
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5146,6 +5229,7 @@
               "damages": {
                 "blunt": 120
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5823,6 +5907,7 @@
               "damages": {
                 "slash": 100
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5856,6 +5941,7 @@
                 "pierce": 140,
                 "poison": 100
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5930,6 +6016,7 @@
                 "blunt": 40,
                 "poison": 40
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -5984,6 +6071,7 @@
               "damages": {
                 "slash": 130
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6012,6 +6100,7 @@
               "damages": {
                 "pierce": 150
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6539,6 +6628,7 @@
               "damages": {
                 "pierce": 160
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6566,6 +6656,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6602,6 +6693,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6639,6 +6731,7 @@
               "damages": {
                 "pierce": 160
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6667,6 +6760,7 @@
               "damages": {
                 "pierce": 160
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6734,6 +6828,7 @@
                 "blunt": 75,
                 "slash": 75
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6761,6 +6856,7 @@
               "damages": {
                 "blunt": 120
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6790,6 +6886,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 150,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -6962,6 +7059,7 @@
                 "blunt": 80,
                 "pierce": 140
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -7025,6 +7123,7 @@
                 "blunt": 70,
                 "fire": 30
               },
+              "toolDamage": 320,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": true,
@@ -7037,6 +7136,7 @@
                 "blunt": 70,
                 "fire": 30
               },
+              "toolDamage": 320,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": true,
@@ -7059,6 +7159,7 @@
             "blunt": 70,
             "fire": 30
           },
+          "toolDamage": 320,
           "staggerMultiplier": 1,
           "blockable": false,
           "dodgeable": true,
@@ -7408,6 +7509,7 @@
                 "fire": 120,
                 "spirit": 80
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -7447,6 +7549,7 @@
               "damages": {
                 "pierce": 210
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -7475,6 +7578,7 @@
               "damages": {
                 "pierce": 200
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -7502,6 +7606,7 @@
               "damages": {
                 "pierce": 140
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -7529,6 +7634,7 @@
               "damages": {
                 "fire": 60
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": true,
@@ -7567,6 +7673,7 @@
                 "blunt": 40,
                 "fire": 120
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -7580,6 +7687,7 @@
                 "fire": 80,
                 "spirit": 80
               },
+              "toolDamage": 60,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -7656,6 +7764,7 @@
                 "fire": 80,
                 "spirit": 80
               },
+              "toolDamage": 60,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -7693,6 +7802,7 @@
                 "blunt": 40,
                 "fire": 120
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -7706,6 +7816,7 @@
                 "fire": 80,
                 "spirit": 80
               },
+              "toolDamage": 60,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -7742,6 +7853,7 @@
                 "fire": 120,
                 "spirit": 80
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -8069,6 +8181,7 @@
               "damages": {
                 "slash": 40
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8123,6 +8236,7 @@
                 "slash": 90,
                 "spirit": 30
               },
+              "toolDamage": 50,
               "staggerMultiplier": 1.5,
               "blockable": true,
               "dodgeable": true,
@@ -8200,6 +8314,7 @@
                 "slash": 75,
                 "pierce": 45
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8287,6 +8402,7 @@
                 "slash": 130,
                 "spirit": 30
               },
+              "toolDamage": 50,
               "staggerMultiplier": 1.5,
               "blockable": true,
               "dodgeable": true,
@@ -8503,6 +8619,7 @@
                 "blunt": 75,
                 "slash": 30
               },
+              "toolDamage": 300,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8741,6 +8858,7 @@
               "damages": {
                 "slash": 160
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8772,7 +8890,8 @@
               "blockable": true,
               "dodgeable": true,
               "scaling": "attack",
-              "source": "weapon"
+              "source": "weapon",
+              "toolDamage": 40
             }
           ],
           "ai": {
@@ -8795,6 +8914,7 @@
               "damages": {
                 "slash": 170
               },
+              "toolDamage": 90,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8822,6 +8942,7 @@
               "damages": {
                 "blunt": 160
               },
+              "toolDamage": 160,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8849,6 +8970,7 @@
               "damages": {
                 "slash": 150
               },
+              "toolDamage": 20,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8875,6 +8997,7 @@
               "damages": {
                 "slash": 150
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8908,6 +9031,7 @@
               "damages": {
                 "slash": 170
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8934,6 +9058,7 @@
               "damages": {
                 "slash": 140
               },
+              "toolDamage": 20,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -8960,6 +9085,7 @@
               "damages": {
                 "slash": 150
               },
+              "toolDamage": 60,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9032,6 +9158,7 @@
                 "blunt": 30,
                 "lightning": 120
               },
+              "toolDamage": 30,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9060,6 +9187,7 @@
                 "lightning": 110,
                 "spirit": 15
               },
+              "toolDamage": 20,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9124,6 +9252,7 @@
               "damages": {
                 "blunt": 220
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9151,6 +9280,7 @@
               "damages": {
                 "blunt": 200
               },
+              "toolDamage": 140,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9161,6 +9291,7 @@
               "damages": {
                 "blunt": 220
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9188,6 +9319,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 180,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9204,6 +9336,7 @@
               "damages": {
                 "blunt": 50
               },
+              "toolDamage": 30,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -9272,6 +9405,7 @@
                 "blunt": 160,
                 "frost": 100
               },
+              "toolDamage": 90,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9308,6 +9442,7 @@
                 "blunt": 180,
                 "frost": 100
               },
+              "toolDamage": 75,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9337,6 +9472,7 @@
                 "blunt": 100,
                 "frost": 100
               },
+              "toolDamage": 35,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9375,6 +9511,7 @@
                 "pierce": 100,
                 "frost": 40
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9824,6 +9961,7 @@
               "damages": {
                 "blunt": 160
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -9855,6 +9993,7 @@
               "damages": {
                 "blunt": 160
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -9894,6 +10033,7 @@
               "damages": {
                 "blunt": 160
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -9934,6 +10074,7 @@
                 "blunt": 150,
                 "frost": 20
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -9969,6 +10110,7 @@
                 "blunt": 125,
                 "pierce": 125
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -9997,6 +10139,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 400,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -10080,6 +10223,7 @@
                     "fire": 50,
                     "frost": 50
                   },
+                  "toolDamage": 600,
                   "staggerMultiplier": 0.8,
                   "blockable": true,
                   "dodgeable": true,
@@ -10115,6 +10259,7 @@
                   "damages": {
                     "blunt": 150
                   },
+                  "toolDamage": 600,
                   "staggerMultiplier": 1,
                   "blockable": true,
                   "dodgeable": true,
@@ -10150,6 +10295,7 @@
                   "damages": {
                     "blunt": 250
                   },
+                  "toolDamage": 400,
                   "staggerMultiplier": 0.8,
                   "blockable": true,
                   "dodgeable": true,
@@ -10191,6 +10337,7 @@
                   "damages": {
                     "blunt": 150
                   },
+                  "toolDamage": 400,
                   "staggerMultiplier": 0.8,
                   "blockable": true,
                   "dodgeable": true,
@@ -10227,6 +10374,7 @@
                     "blunt": 100,
                     "frost": 100
                   },
+                  "toolDamage": 200,
                   "staggerMultiplier": 1,
                   "blockable": true,
                   "dodgeable": true,
@@ -10288,6 +10436,7 @@
                     "fire": 50,
                     "frost": 50
                   },
+                  "toolDamage": 600,
                   "staggerMultiplier": 1,
                   "blockable": true,
                   "dodgeable": true,
@@ -10359,6 +10508,7 @@
               "damages": {
                 "pierce": 150
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10520,6 +10670,7 @@
               "damages": {
                 "pierce": 80
               },
+              "toolDamage": 40,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10551,6 +10702,7 @@
               "damages": {
                 "blunt": 150
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10658,6 +10810,7 @@
                 "blunt": 100,
                 "poison": 70
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10765,6 +10918,7 @@
               "damages": {
                 "pierce": 150
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10793,6 +10947,7 @@
               "damages": {
                 "slash": 160
               },
+              "toolDamage": 2000,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10821,6 +10976,7 @@
                 "pierce": 50,
                 "frost": 100
               },
+              "toolDamage": 400,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10854,6 +11010,7 @@
               "damages": {
                 "frost": 180
               },
+              "toolDamage": 400,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10930,6 +11087,7 @@
                 "fire": 40,
                 "lightning": 40
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -10962,6 +11120,7 @@
                 "fire": 75,
                 "lightning": 90
               },
+              "toolDamage": 200,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11048,6 +11207,7 @@
               "damages": {
                 "slash": 100
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11081,6 +11241,7 @@
                 "pierce": 100,
                 "poison": 100
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11113,6 +11274,7 @@
                 "blunt": 40,
                 "poison": 40
               },
+              "toolDamage": 100,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11167,6 +11329,7 @@
               "damages": {
                 "slash": 130
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11195,6 +11358,7 @@
               "damages": {
                 "pierce": 150
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11265,6 +11429,7 @@
                 "fire": 80,
                 "spirit": 40
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,
@@ -11304,6 +11469,7 @@
               "damages": {
                 "pierce": 180
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -11332,6 +11498,7 @@
               "damages": {
                 "pierce": 170
               },
+              "toolDamage": 600,
               "staggerMultiplier": 0.8,
               "blockable": true,
               "dodgeable": true,
@@ -11359,6 +11526,7 @@
               "damages": {
                 "pierce": 140
               },
+              "toolDamage": 600,
               "staggerMultiplier": 1,
               "blockable": true,
               "dodgeable": true,
@@ -11386,6 +11554,7 @@
               "damages": {
                 "fire": 60
               },
+              "toolDamage": 80,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": true,
@@ -11424,6 +11593,7 @@
                 "fire": 80,
                 "spirit": 80
               },
+              "toolDamage": 60,
               "staggerMultiplier": 1,
               "blockable": false,
               "dodgeable": false,

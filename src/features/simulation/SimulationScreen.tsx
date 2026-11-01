@@ -5,7 +5,13 @@ import { useAppState, useUpdate } from '@/app/useAppState'
 import { useIsDesktop } from '@/app/useMediaQuery'
 import { openModal, useRoute } from '@/app/useRoute'
 import { attackAdvice } from '@/combat/advice'
-import { attackDamage, hardestRange, type AttackHit, type RollRange } from '@/combat/attack'
+import {
+  attackBarrier,
+  attackDamage,
+  hardestRange,
+  type AttackHit,
+  type RollRange,
+} from '@/combat/attack'
 import { LOWEST_ROLL, type Guard, type HitResult } from '@/combat/hit'
 import type { OverTime } from '@/combat/overTime'
 import type { GameRuleEffect } from '@/data/types'
@@ -102,6 +108,7 @@ function Simulator({
   readonly onDetails: () => void
 }) {
   const t = useT()
+  const language = useLanguage()
   const route = useRoute()
   const isDesktop = useIsDesktop()
   const [mode, setMode] = useState<'attack' | 'value'>('attack')
@@ -132,7 +139,13 @@ function Simulator({
     parry,
     dodgeable,
     on,
+    barrier: attackMode && (lit.barrier?.on ?? false),
   })
+  // The group's Magic barrier, while it is on: how many such hits it takes before what the cards read.
+  const shield =
+    attackMode && found && lit.barrier?.on
+      ? attackBarrier(lit.barrier.capacity, found.attack.hits, world, stars)
+      : null
 
   const modeSwitch = (
     <div role="group" aria-label={t.simulation.source} className={styles.segments}>
@@ -255,6 +268,11 @@ function Simulator({
 
   const result = blockRange && block && (
     <>
+      {shield && (
+        <p className={styles.barrier}>
+          {t.barrier.takes(game.barrier.name[language], shield.hits, Math.round(shield.counted))}
+        </p>
+      )}
       <Advice block={block} parry={parry} dodgeable={dodgeable} />
       <div className={styles.cards}>
         <ResultCard

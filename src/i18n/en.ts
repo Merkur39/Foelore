@@ -35,8 +35,8 @@ export const en: Catalog = {
     mainNavigation: 'Main navigation',
     settings: 'Settings',
     context: 'Your setup',
-    contextSummary: (blockPower, enemyScale) =>
-      `Your setup: Block ${n(blockPower)} ×${n(enemyScale)}`,
+    contextSummary: (blockPower, enemyScale, wet) =>
+      `Your setup: Block ${n(blockPower)} ×${n(enemyScale)}${wet ? ', wet' : ''}`,
     contextPower: (blockPower) => `Block ${n(blockPower)}`,
     contextScale: (enemyScale) => `×${n(enemyScale)}`,
     contextNote: 'Every verdict hangs on it',
@@ -104,9 +104,13 @@ export const en: Catalog = {
     addDrink: 'Add a drink',
     carriedNote:
       "Not counted by default: switch them on in a creature's sheet or in the Simulation, while they are active.",
-    group: 'Group powers',
-    groupNote: 'Those a player casts within 10 m of you; switch them on like yours.',
+    group: 'From the group',
+    groupNote:
+      'What a player casts near you; switch it on like yours. The Magic barrier hangs on the Blood Magic of its caster.',
     addGroupPower: 'Add a group power',
+    addBarrier: 'Add a Magic barrier',
+    barrierCast: (skill, level) => `Cast with ${skill} ${n(level)}`,
+    barrierLines: (from, to, capacity) => `${n(from)} to ${n(to)} min · absorbs ${n(capacity)}`,
   },
   lists: {
     back: 'Back to Your gear, changing nothing',
@@ -216,8 +220,33 @@ export const en: Catalog = {
       consumable: 'already covered by your drink',
     },
     coveredByPower: (power) => `already covered by ${power}`,
+    coveredByWeather: (wet) => `already covered by ${wet}`,
     setupLine: (names) =>
       `Temporary effects on: ${new Intl.ListFormat('en', { type: 'conjunction' }).format(names)}`,
+  },
+  barrier: {
+    lede: (staff, radius, from, to) =>
+      `The ${staff} casts it on its caster and on the players within ${n(radius)} m, for ${n(from)} to ${n(to)} min by its level. You switch it on then on a creature's sheet or in the Simulation.`,
+    skill: (skill) => `${skill} of its caster`,
+    lower: (skill) => `Less ${skill}`,
+    raise: (skill) => `More ${skill}`,
+    absorbs: 'It absorbs',
+    how: (base, perLevel, skill) =>
+      `${n(base)}, plus ${n(perLevel)} per level of ${skill}. It counts the whole hit, chop and pickaxe included, and absorbs whole the one that breaks it.`,
+    add: 'Add',
+    remove: 'Remove the barrier',
+    tag: (capacity, from, to) =>
+      `From the group · absorbs ${n(capacity)} · ${n(from)} to ${n(to)} min`,
+    hits: (hits, counted) =>
+      `Barrier: ${plural(hits, 'hit', 'hits')}${counted === null ? '' : ` (counts ${n(counted)})`}`,
+    takes: (name, hits, counted) =>
+      `${name}: it takes ${plural(hits, 'hit', 'hits')} like this one (counts ${n(counted)}), then:`,
+  },
+  weather: {
+    label: 'Weather',
+    note: (_biome, name) =>
+      `Counted for every creature of the ${name}, until you switch it off or change biome.`,
+    beside: (biome, wet) => `${biome} · ${wet}`,
   },
   world: {
     summary: (difficulty, count) =>

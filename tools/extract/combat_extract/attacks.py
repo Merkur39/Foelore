@@ -16,7 +16,8 @@ the 1.0.21 code does.
 - Scaling (Attack.ModifyDamage, Character.RPC_Damage): "attack" for a hit the attack built (stars and
   world), "world" for own damage with the creature as owner, "none" without owner (an Aoe spawned by
   SpawnAbility or by an EffectList). Generic damage is "trueDamage" (blocks, armour and resistances
-  ignore it).
+  ignore it). Chop and pickaxe are "toolDamage": no player takes them, but a Magic barrier counts them
+  (SE_Shield.OnDamaged adds HitData.GetTotalDamage).
 - An Aoe hits the same target every m_hitInterval during m_ttl once active (Aoe.CustomFixedUpdate,
   Aoe.Update). Without triggers "max" is exact. With triggers it hits on contact, then again each time
   Update clears its hit list, the first time at once: "max" is one more than ttl over the interval, an
@@ -61,7 +62,7 @@ import struct
 from collections import defaultdict
 
 from . import components, source
-from .damage import DAMAGE_TYPES
+from .damage import DAMAGE_TYPES, TOOL_TYPES
 
 WEAPON_TYPES = {3, 4, 14, 15, 22}  # ItemData.IsWeapon: one-handed, bow, two-handed, torch, two-handed left
 HORIZONTAL, VERTICAL, PROJECTILE, AREA = 0, 1, 2, 4
@@ -127,6 +128,9 @@ def _hit(raw, factor, blockable, dodgeable, scaling, source, stagger=1):
     hit = {"damages": damages(raw, factor)}
     if raw.get("m_damage"):
         hit["trueDamage"] = _number(raw["m_damage"] * factor)
+    tools = sum(raw.get("m_" + t, 0) for t in TOOL_TYPES)
+    if tools:
+        hit["toolDamage"] = _number(tools * factor)
     hit.update(staggerMultiplier=_number(stagger), blockable=bool(blockable), dodgeable=bool(dodgeable),
                scaling=scaling, source=source)
     return hit
@@ -333,6 +337,8 @@ def _projectile(game, projectile, setup, depth):
             # the game divides the shared hit again for every spawn: the first one gets this, the next ones less
             share = 1 / projectile["m_spawnCount"]
             inherited = dict(inherited, damages={t: _number(v * share) for t, v in inherited["damages"].items()})
+            if "toolDamage" in inherited:
+                inherited["toolDamage"] = _number(inherited["toolDamage"] * share)
         spawned = _spawn(game, prefab, "children", {"hit": inherited, "owner": owner}, depth + 1)
         spawned = _on_chance(_times(spawned, projectile["m_spawnCount"]), chance)
         on_you = projectile["m_spawnOnCharacters"] and not (projectile["m_groundHitOnly"] or projectile["m_staticHitOnly"])
@@ -578,7 +584,7 @@ def creature_attacks(index, characters, found=None):
     differ from AI_DEFAULTS, "chain"?: {"length", "lastMultiplier"}, "animation": {"name", "random",
     "chain"}, "leaves"?: [{"statusEffect", "duration"?}]}; the entry also gets "trample": {"minSpeed",
     "hits"} with a MovementDamage, and "deathSummons" when its death brings creatures.
-    hit: {"damages", "trueDamage"?, "staggerMultiplier", "blockable", "dodgeable", "scaling": attack |
+    hit: {"damages", "trueDamage"?, "toolDamage"?, "staggerMultiplier", "blockable", "dodgeable", "scaling": attack |
     world | none, "source": weapon | projectile | aoe | impact, "radius"?, "count"?, "countMin"?, "bursts"?:
     {"count", "every"}, "ticks"?: {"every", "max"?, "delay"?}, "chance"? (of each one), "afterMiss"?,
     "onDeath"?}.

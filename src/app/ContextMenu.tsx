@@ -1,6 +1,7 @@
 import { useId, useRef } from 'react'
 import { useT } from '@/i18n/useT'
-import { ChevronDownIcon, ShieldIcon, WorldIcon } from '@/ui/icons'
+import { useWet } from '@/features/weather/wet'
+import { ChevronDownIcon, RainIcon, ShieldIcon, WorldIcon } from '@/ui/icons'
 import { enemyScale, gearBlockPower } from './context'
 import { ContextChips } from './ContextChips'
 import styles from './ContextMenu.module.css'
@@ -16,13 +17,14 @@ export function ContextMenu() {
   const titleId = useId()
   const power = gearBlockPower(gear)
   const scale = enemyScale(world)
+  const wet = useWet().on
 
   return (
     <div className={styles.contextMenu}>
       <button
         type="button"
         aria-haspopup="dialog"
-        aria-label={t.shell.contextSummary(power, scale)}
+        aria-label={t.shell.contextSummary(power, scale, wet)}
         className={styles.summary}
         onClick={() => sheet.current?.showModal()}
       >
@@ -34,6 +36,7 @@ export function ContextMenu() {
           <WorldIcon size={15} strokeWidth={2} className={styles.icon} />
           {t.shell.contextScale(scale)}
         </span>
+        {wet && <RainIcon size={15} strokeWidth={2} className={styles.icon} />}
         <ChevronDownIcon size={16} strokeWidth={2} className={styles.chevron} />
       </button>
       <dialog

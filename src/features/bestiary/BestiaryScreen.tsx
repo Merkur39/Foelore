@@ -12,6 +12,7 @@ import type { GameAttack, GameCreature } from '@/data/types'
 import { BrokenRow } from '@/features/report/Crash'
 import { orElse, type Crash } from '@/features/report/model'
 import { useOpenReport } from '@/features/report/useReport'
+import { useWet } from '@/features/weather/wet'
 import type { Language } from '@/i18n/detect'
 import { useLanguage, useT } from '@/i18n/useT'
 import { ChevronRightIcon, CloseIcon, SearchIcon } from '@/ui/icons'
@@ -101,7 +102,9 @@ export function BestiaryScreen({ route }: { readonly route: Route }) {
 
 function Finder({ place, selected }: { readonly place: Place; readonly selected: string | null }) {
   const t = useT()
+  const language = useLanguage()
   const update = useUpdate()
+  const wet = useWet().on
   const searching = place.query.trim() !== ''
   return (
     <>
@@ -112,9 +115,10 @@ function Finder({ place, selected }: { readonly place: Place; readonly selected:
         <>
           <BiomeStepper
             biome={place.biome}
-            detail={(index, total) =>
-              t.bestiary.biomeCount(index, total, creaturesOf(place.biome).length)
-            }
+            detail={(index, total) => {
+              const count = t.bestiary.biomeCount(index, total, creaturesOf(place.biome).length)
+              return wet ? t.weather.beside(count, game.wet.name[language]) : count
+            }}
             onChange={(biome) => {
               // Only a pick says where the player is: a creature found in another biome does not.
               update({ biome })

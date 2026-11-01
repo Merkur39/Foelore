@@ -600,3 +600,11 @@
 .thresholds:hover {
   color: var(--ink);
 }
+
+/* The group's Magic barrier, while it is on: what it takes, before what the cards read. */
+.barrier {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--secondary);
+}

@@ -44,7 +44,8 @@ WORLD_PRESET_NAMES[WORLD_PRESETS["Default"]] = "menu_default"
 CHAIN_WINDOW = 0.2  # Attack.Start: a chain goes on when the next swing starts this soon after the last
 CLASSES = sorted(
     set(attack_data.CLASSES) | set(spawns.CLASSES) | set(arsenal.CLASSES) | set(rules.CLASSES)
-    | {"Player", "Game", "WeakSpot", "KeySlider", "KeyButton", "SE_Stats", "SE_Burning", "SE_Poison", "MonsterAI"}
+    | {"Player", "Game", "WeakSpot", "KeySlider", "KeyButton", "SE_Stats", "SE_Burning", "SE_Poison", "MonsterAI",
+       "SE_Wet", "SE_Shield", "Aoe"}
 )
 TAG = re.compile(r"<[^>]+>")
 WEAK_SPOT = re.compile(r"^weak_?spot_?", re.I)
@@ -219,7 +220,9 @@ class _Game:
         return ({"fr": name["fr"], "en": name["en"]}, "curation") if name else (None, None)
 
     def named_attacks(self, creature, prefabs, report, used):
-        """Named attacks of a creature and its variants, identical ones merged."""
+        """Named attacks of a creature and its variants, identical ones merged. What the player takes decides:
+        attacks that differ by their chop and pickaxe only are merged, and keep the heavier of each hit's, the
+        Magic barrier counting the worst."""
         merged = {}
         for prefab in prefabs:
             for attack in self.final_attacks(prefab):
@@ -230,11 +233,19 @@ class _Game:
                     report.unnamed.append((creature, attack["id"]))
                     name = {"fr": "", "en": ""}
                 found = dict({"ids": [attack["id"]], "name": name}, **{k: v for k, v in attack.items() if k != "id"})
-                key = json.dumps({k: v for k, v in found.items() if k != "ids"}, sort_keys=True)
+                found["hits"] = [dict(hit) for hit in found["hits"]]  # merging may raise their toolDamage
+                felt = dict({k: v for k, v in found.items() if k != "ids"},
+                            hits=[{k: v for k, v in hit.items() if k != "toolDamage"} for hit in found["hits"]])
+                key = json.dumps(felt, sort_keys=True)
                 if key not in merged:
                     merged[key] = found
-                elif attack["id"] not in merged[key]["ids"]:
+                    continue
+                if attack["id"] not in merged[key]["ids"]:
                     merged[key]["ids"].append(attack["id"])
+                for kept, hit in zip(merged[key]["hits"], found["hits"]):
+                    tools = max(kept.get("toolDamage", 0), hit.get("toolDamage", 0))
+                    if tools:
+                        kept["toolDamage"] = tools
         return list(merged.values())
 
     # ------------------------------------------------------------------ creatures
@@ -378,6 +389,53 @@ def _freezing(found, names, biomes):
     }
 
 
+def _wet(found, names, biomes):
+    """Wet (SE_Wet), which Player.UpdateEnvStatusEffects gives in a wet weather (EnvSetup.m_isWet) away from a
+    roof and a shield generator's dome, and Character.UpdateWater in water deep enough: its m_mods merge like
+    any effect's, and it lasts m_ttl once the rain stops. `biomes` holds the biome ids in the order game.json
+    lists them."""
+    se = next(row["data"] for row in found.rows("SE_Wet") if row["data"]["m_Name"] == "Wet")
+    wet = {setup["m_name"] for row in found.rows("EnvMan") for setup in row["data"]["m_environments"]
+           if setup["m_isWet"]}
+    where = {spawns.BIOMES[bit] for bit, weathers in spawns.weathers(found).items()
+             if bit in spawns.BIOMES and weathers & wet}
+    return {
+        "name": names(se["m_name"]),
+        "ttl": _round(se["m_ttl"]),
+        "modifiers": pair_modifiers(se["m_mods"]),
+        "biomes": [biome for biome in biomes if biome in where],
+    }
+
+
+# Skills.SkillType, as its localisation keys name them.
+SKILLS = {10: "bloodmagic"}
+
+
+def _barrier(found, names):
+    """The Magic barrier (SE_Shield) a staff casts: its attack's area (an Aoe that takes the attack's
+    settings, so the staff's skill) gives it to the caster and every friendly player within its m_radius, and
+    SE_Shield.SetLevel makes it absorb m_absorbDamage + m_absorbDamagePerSkillLevel × the caster's skill
+    (m_absorbDamageWorldLevel more per world level, a console key Your world does not hold) for
+    m_ttlPerItemLevel × the staff's level."""
+    shields = {row["data"]["m_Name"]: row["data"] for row in found.rows("SE_Shield")}
+    areas = {row["go"]: row["data"] for row in found.rows("Aoe") if row["go_ref"] == row["root_ref"]}
+    for _, shared in sorted(arsenal.obtainable(found).items()):
+        area = areas.get((shared["m_attack"]["m_attackProjectile"] or {}).get("_name"))
+        se = area and shields.get(area["m_statusEffect"])
+        if se:
+            return {
+                "name": names(se["m_name"]),
+                "staff": names(shared["m_name"]),
+                "skill": names("skill_" + SKILLS[shared["m_skillType"]]),
+                "absorb": _round(se["m_absorbDamage"]),
+                "absorbPerSkill": _round(se["m_absorbDamagePerSkillLevel"]),
+                "ttlPerLevel": se["m_ttlPerItemLevel"],
+                "maxLevel": shared["m_maxQuality"],
+                "radius": _round(area["m_radius"]),
+            }
+    raise ValueError("no staff casts a Magic barrier")
+
+
 def _over_time(found):
     """How the status effects Character.RPC_Damage hands the fire, spirit and poison of a hit to deal it over time:
     Burning and Spirit (SE_Burning) share the dose between m_ttl / m_damageInterval ticks; Poison (SE_Poison)
@@ -507,6 +565,8 @@ def build(index, curation, workers=8):
         "world": _world(found, names),
         "player": _player(found),
         "freezing": _freezing(found, names, curation["biomes"]),
+        "wet": _wet(found, names, curation["biomes"]),
+        "barrier": _barrier(found, names),
         "biomes": [{"id": b, "name": names(BIOME_KEYS[b])} for b in curation["biomes"]],
         "damageTypes": {t: names("inventory_" + t) for t in DAMAGE_TYPES},
         "toolTypes": {t: names("inventory_" + t) for t in TOOL_TYPES},

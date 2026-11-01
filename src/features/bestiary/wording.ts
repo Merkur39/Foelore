@@ -5,6 +5,7 @@ import type { AttackVerdicts } from '@/combat/attack'
 import type { Verdict } from '@/combat/hit'
 import { game } from '@/data'
 import type { GameAttack, GameHit, GameRuleEffect } from '@/data/types'
+import { useWet } from '@/features/weather/wet'
 import type { Language } from '@/i18n/detect'
 import type { Catalog } from '@/i18n/fr'
 import { formatNumber } from '@/i18n/format'
@@ -68,10 +69,12 @@ export const dodgeShown = (dodgeable: boolean | null, t: Catalog): Shown => ({
 
 const NONE_ON: readonly GameRuleEffect[] = []
 
-/** The gear and the world every verdict is worked out with, and the effects switched on, if any. */
+/** The gear and the world every verdict is worked out with, the effects switched on, if any, and Wet when it
+ * is on in Your setup. */
 export function useFight(on: readonly GameRuleEffect[] = NONE_ON) {
   const { gear, world } = useAppState()
-  const defence = useMemo(() => gearDefence(gear, on), [gear, on])
+  const wet = useWet().on
+  const defence = useMemo(() => gearDefence(gear, on, wet), [gear, on, wet])
   return { defence, world }
 }
 

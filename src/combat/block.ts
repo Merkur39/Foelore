@@ -67,6 +67,8 @@ export interface Profile {
   readonly pieces?: readonly ArmorPiece[]
   /** In the order they came. */
   readonly effects?: readonly Effect[]
+  /** Wet (SE_Wet): its resistances come among the effects, this shortens the burns. */
+  readonly wet?: boolean
 }
 
 /** The values a hit is resolved against. */
@@ -93,6 +95,8 @@ export interface Defence {
   /** …then the effects' share of that, and their flat amount (SEMan.ModifyBlockStaminaUsage). */
   readonly blockStaminaEffects?: number
   readonly blockStaminaFlat?: number
+  /** Wet: a burn deals its first tick only (SE_Burning.UpdateStatusEffect). */
+  readonly wet?: boolean
 }
 
 // ItemDrop.ItemData.GetBlockPower: the skill adds up to half of the base value.
@@ -129,6 +133,7 @@ export function defenceOf({
   maxHealth,
   pieces = [],
   effects = [],
+  wet = false,
 }: Profile): Defence {
   const parry = parryPower(blocker, level, skill)
   return {
@@ -156,5 +161,6 @@ export function defenceOf({
     blockStaminaGear: sumOf(pieces, (piece) => piece.blockStaminaModifier),
     blockStaminaEffects: sumOf(effects, (effect) => effect.blockStaminaModifier),
     blockStaminaFlat: sumOf(effects, (effect) => effect.blockStaminaFlat),
+    wet,
   }
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { defenceOf } from '@/combat/block'
 import { damageMultiplier, type DamageModifier } from '@/combat/modifiers'
 import { DAMAGE_TYPES } from '@/combat/damage'
-import { resolveHit } from '@/combat/hit'
+import { barrierTakes, resolveHit } from '@/combat/hit'
 import { worldScale } from '@/combat/world'
 import { game } from '.'
 
@@ -32,11 +32,16 @@ const names = [
   ...game.blockers.map((b) => b.name),
   ...game.armorPieces.map((p) => p.name),
   game.freezing.name,
+  game.wet.name,
+  game.barrier.name,
+  game.barrier.staff,
+  game.barrier.skill,
   ...(game.forge ? [game.forge.name] : []),
   ...game.ruleEffects.map((e) => e.name),
 ]
 const modifierSets = [
   game.player.modifiers,
+  game.wet.modifiers,
   ...statusEffects.map((s) => s.modifiers),
   ...game.blockers.map((b) => b.modifiers),
   ...game.armorPieces.map((p) => p.modifiers),
@@ -238,6 +243,27 @@ describe('game data', () => {
       blockStaminaGear: -0.2,
       blockStaminaEffects: -1,
       blockStaminaFlat: -5,
+    })
+  })
+})
+
+describe('Wet and the Magic barrier', () => {
+  it('rain in the biomes the game data lists', () => {
+    expect(game.wet.biomes.every((biome) => biomeIds.has(biome))).toBe(true)
+    expect(game.wet.biomes).toContain('swamp')
+    expect(game.wet.biomes).not.toContain('mountain')
+  })
+
+  it("counts the Lox's Stomp 320 for a barrier, its chop and pickaxe included", () => {
+    const lox = game.creatures.find((creature) => creature.id === 'Lox')!
+    const stomp = lox.attacks.find((attack) => attack.ids.includes('lox_stomp'))!.hits[0]!
+    const capacity = game.barrier.absorb + game.barrier.absorbPerSkill * 20
+
+    expect(
+      barrierTakes(capacity, stomp, { difficulty: 'normal', players: 1 }, { stars: 0 }),
+    ).toEqual({
+      counted: 320,
+      hits: 1,
     })
   })
 })

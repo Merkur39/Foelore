@@ -23,14 +23,20 @@ export const gearBlockPower = (gear: Gear) =>
   blockPower(blockerOf(gear.blocker), gear.level, gear.skill)
 
 /** What a hit is resolved against with this gear, under the player's own rules: the pieces worn and the
- * bonus of a complete set count, what is carried only once switched on (`on`, after the sets). */
-export const gearDefence = (gear: Gear, on: readonly GameRuleEffect[] = []): Defence =>
+ * bonus of a complete set count, what is carried only once switched on (`on`, after the sets), Wet when
+ * it is on (its resistances last). */
+export const gearDefence = (gear: Gear, on: readonly GameRuleEffect[] = [], wet = false): Defence =>
   defenceOf({
     ...gear,
     blocker: blockerOf(gear.blocker),
     player: game.player,
     pieces: wornPieces(gear.pieces ?? {}),
-    effects: [...setEffects(gear.pieces ?? {}), ...on],
+    effects: [
+      ...setEffects(gear.pieces ?? {}),
+      ...on,
+      ...(wet ? [{ modifiers: game.wet.modifiers }] : []),
+    ],
+    wet,
   })
 
 /** What the world multiplies the hits monsters land on you by. */

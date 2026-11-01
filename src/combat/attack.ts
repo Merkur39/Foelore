@@ -1,6 +1,7 @@
 import { verdictSeverity, worstVerdict } from './advice'
 import type { Defence } from './block'
 import {
+  barrierTakes,
   listedDamage,
   LOWEST_ROLL,
   resolveHit,
@@ -120,3 +121,18 @@ export function hardestRange(
 /** The largest hit of an attack as the game lists it at these stars; null when it only summons. */
 export const attackDamage = (hits: readonly AttackHit[], stars: number) =>
   hits.length === 0 ? null : Math.max(...hits.map((hit) => listedDamage(hit, stars)))
+
+/** What a Magic barrier of `capacity` makes of an attack, by its heaviest hit for the barrier: the most it
+ * counts, so the fewest such hits it takes. Null for an attack that only summons. */
+export function attackBarrier(
+  capacity: number,
+  hits: readonly AttackHit[],
+  world: World,
+  stars: number,
+): ReturnType<typeof barrierTakes> | null {
+  const taken = hits.map((hit) => barrierTakes(capacity, hit, world, { stars }))
+  return taken.reduce<ReturnType<typeof barrierTakes> | null>(
+    (heaviest, next) => (heaviest === null || next.counted > heaviest.counted ? next : heaviest),
+    null,
+  )
+}

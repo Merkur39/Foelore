@@ -201,7 +201,7 @@ function withPieces({ pieces, ...gear }: Gear): Gear {
 
 // What is carried is checked one by one too: an effect the game no longer has, or of another kind, is
 // dropped, a drink kept once, a group's power once and never one's own (players of earlier versions have
-// none); what is no record of it at all carries nothing.
+// none), a barrier by a whole Blood Magic of 0 to 100; what is no record of it at all carries nothing.
 function withCarried({ carried, ...gear }: Gear): Gear {
   if (!isRecord(carried)) return gear
   const effectId = (kind: CarriedKind, value: unknown) =>
@@ -219,6 +219,9 @@ function withCarried({ carried, ...gear }: Gear): Gear {
     power,
     drinks: listed(carried.drinks, 'consumable'),
     group: listed(carried.group, 'power').filter((id) => id !== power),
+    ...(Number.isInteger(carried.barrier) && isNumber(carried.barrier, 0, 100)
+      ? { barrier: carried.barrier }
+      : {}),
   }
   return { ...gear, carried: kept }
 }

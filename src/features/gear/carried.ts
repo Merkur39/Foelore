@@ -11,6 +11,9 @@ export interface Carried {
   /** The powers players of the group cast within 10 m of you (Player.ActivateGuardianPower): each a
    * different one, never your own, since the same power again only restarts its time. */
   readonly group: readonly string[]
+  /** The Magic barrier a player casts on the group, by the Blood Magic of its caster, 0 to 100: left out
+   * without one. */
+  readonly barrier?: number
 }
 
 export const NOTHING_CARRIED: Carried = { trinket: null, power: null, drinks: [], group: [] }
@@ -83,3 +86,21 @@ export const carriedEffects = ({ trinket, power, drinks, group }: Carried): Carr
   [trinket, power, ...drinks, ...group]
     .flatMap((id) => (id === null ? [] : [effectOf(id)]))
     .filter(isCarried)
+
+/** What a Magic barrier absorbs, cast with this Blood Magic (SE_Shield.SetLevel). */
+export const barrierCapacity = (bloodMagic: number) =>
+  game.barrier.absorb + game.barrier.absorbPerSkill * bloodMagic
+
+/** How long a Magic barrier lasts, in minutes, at the staff's first level and its last. */
+export const barrierMinutes = [
+  game.barrier.ttlPerLevel / 60,
+  (game.barrier.ttlPerLevel * game.barrier.maxLevel) / 60,
+] as const
+
+/** What is carried with the group's Magic barrier cast with this Blood Magic, or without one. */
+export function withBarrier(carried: Carried, bloodMagic: number | undefined): Carried {
+  const { trinket, power, drinks, group } = carried
+  return bloodMagic === undefined
+    ? { trinket, power, drinks, group }
+    : { trinket, power, drinks, group, barrier: bloodMagic }
+}

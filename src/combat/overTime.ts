@@ -32,10 +32,18 @@ const NONE: OverTime = { damage: 0, seconds: 0 }
 // SE_Burning.m_minimumDamageTick: with nothing burning yet, a dose this small a tick starts no burn.
 const MIN_BURN_TICK = 0.2
 
-/** SE_Burning.AddFireDamage (and AddSpiritDamage), with nothing burning yet. */
-export function burning(rule: TickRule, dose: number): OverTime {
+// SE_Burning.UpdateStatusEffect: on a wet player (SE_Wet), a burn's time gains five times the frame's on top of
+// it while fire is left, so it runs six times as fast.
+const WET_PACE = 6
+
+/** SE_Burning.AddFireDamage (and AddSpiritDamage), with nothing burning yet. On a wet player, a burn lasts a
+ * sixth of its time and deals the ticks that fit in it, at least its first: one fifth of the dose for Burning. */
+export function burning(rule: TickRule, dose: number, wet = false): OverTime {
   const ticks = Math.floor(rule.ttl / rule.interval)
-  return dose / ticks < MIN_BURN_TICK ? NONE : { damage: dose, seconds: rule.ttl }
+  if (dose / ticks < MIN_BURN_TICK) return NONE
+  if (!wet) return { damage: dose, seconds: rule.ttl }
+  const dealt = Math.max(1, Math.floor(rule.ttl / WET_PACE / rule.interval))
+  return { damage: (dose / ticks) * dealt, seconds: rule.ttl / WET_PACE }
 }
 
 /** SE_Poison.AddDamage, with nothing poisoning yet: each tick goes through Character.ApplyDamage, which drops

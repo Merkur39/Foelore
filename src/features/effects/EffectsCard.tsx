@@ -1,19 +1,22 @@
 import { useId, useState } from 'react'
 import { useAppState } from '@/app/useAppState'
 import type { Hit } from '@/combat/hit'
+import { game } from '@/data'
 import type { GameCreature } from '@/data/types'
-import { NOTHING_CARRIED, type CarriedEffect } from '@/features/gear/carried'
+import { barrierMinutes, NOTHING_CARRIED, type CarriedEffect } from '@/features/gear/carried'
+import { useWet } from '@/features/weather/wet'
 import { useLanguage, useT } from '@/i18n/useT'
 import { ChevronDownIcon } from '@/ui/icons'
 import styles from './EffectsCard.module.css'
-import { useLit } from './lit'
+import { BARRIER, useLit } from './lit'
 import { idleOf, type Against } from './model'
 import { useEffectWording } from './wording'
 
 /**
- * « Avec tes effets temporaires », folded: what Your gear carries, a switch each, counted at once on
- * the creature's sheet and in the Simulation of its attacks. What changes nothing against `hits` is
- * greyed, without a switch unless it is on, and says why. Nothing when nothing is carried.
+ * « Avec tes effets temporaires », folded: what Your gear carries, then the group's Magic barrier, a switch
+ * each, counted at once on the creature's sheet and in the Simulation of its attacks. What changes nothing
+ * against `hits` is greyed, without a switch unless it is on, and says why. Nothing when nothing is
+ * carried.
  */
 export function EffectsCard({
   creature,
@@ -27,13 +30,17 @@ export function EffectsCard({
   const t = useT()
   const language = useLanguage()
   const { gear, world } = useAppState()
-  const { carried, on, toggle } = useLit(creature)
+  const { carried, on, barrier, toggle } = useLit(creature)
+  const wet = useWet().on
   const [open, setOpen] = useState(false)
   const listId = useId()
-  if (carried.length === 0) return null
-  const names = on.map((effect) => effect.name[language])
+  if (carried.length === 0 && barrier === null) return null
+  const names = [
+    ...on.map((effect) => effect.name[language]),
+    ...(barrier?.on ? [game.barrier.name[language]] : []),
+  ]
   const { group } = gear.carried ?? NOTHING_CARRIED
-  const against: Against = { gear, on, hits, world, stars }
+  const against: Against = { gear, on, hits, world, stars, wet }
 
   return (
     <div className={styles.card}>
@@ -73,6 +80,15 @@ export function EffectsCard({
             }}
           />
         ))}
+        {barrier && (
+          <BarrierRow
+            capacity={barrier.capacity}
+            lit={barrier.on}
+            onToggle={() => {
+              toggle(BARRIER)
+            }}
+          />
+        )}
         <p className={styles.holds}>{t.effects.holds}</p>
       </div>
     </div>
@@ -130,6 +146,47 @@ function EffectRow({
           </span>
         </button>
       )}
+    </div>
+  )
+}
+
+/** The group's Magic barrier: what it absorbs and how long it lasts, a switch always, since it takes
+ * every hit. */
+function BarrierRow({
+  capacity,
+  lit,
+  onToggle,
+}: {
+  readonly capacity: number
+  readonly lit: boolean
+  readonly onToggle: () => void
+}) {
+  const t = useT()
+  const language = useLanguage()
+  const id = useId()
+  return (
+    <div className={styles.row}>
+      <div className={styles.text}>
+        <span id={`${id}-name`} className={styles.name}>
+          {game.barrier.name[language]}
+        </span>
+        <span id={`${id}-tag`} className={styles.tag}>
+          {t.barrier.tag(capacity, ...barrierMinutes)}
+        </span>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={lit}
+        aria-labelledby={`${id}-name`}
+        aria-describedby={`${id}-tag`}
+        className={styles.switch}
+        onClick={onToggle}
+      >
+        <span aria-hidden="true" className={styles.track}>
+          <span className={styles.knob} />
+        </span>
+      </button>
     </div>
   )
 }

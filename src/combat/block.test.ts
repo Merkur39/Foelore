@@ -92,7 +92,12 @@ describe('defenceOf', () => {
       blockStaminaGear: 0,
       blockStaminaEffects: 0,
       blockStaminaFlat: 0,
+      wet: false,
     })
+  })
+
+  it('keeps a wet player wet, for the burns', () => {
+    expect(defenceOf({ ...worked, wet: true }).wet).toBe(true)
   })
 
   it("carries the item's modifiers and its parry refund", () => {

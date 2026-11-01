@@ -81,6 +81,17 @@ describe('idleOf', () => {
     ).toEqual({ kind: 'resisted', by: { kind: 'group', id: 'GP_Fader' } })
   })
 
+  it('names Wet, in the rain, as already resisting: the fire mead against a Fuling shaman', () => {
+    const shaman = creatureHits(creature('GoblinShaman'))
+    const dry = against(worn, shaman)
+
+    expect(idleOf(effectOf('Potion_barleywine'), dry)).toBeNull()
+    expect(idleOf(effectOf('Potion_barleywine'), { ...dry, wet: true })).toEqual({
+      kind: 'resisted',
+      by: { kind: 'weather' },
+    })
+  })
+
   it("names a complete set's bonus: the Fenris blessing against a Cultist's Flames", () => {
     const fenris: Gear = {
       ...bare,

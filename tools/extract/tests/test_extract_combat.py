@@ -301,6 +301,36 @@ class ExtractCombatTests(unittest.TestCase):
             "biomes": ["mountain"],
         })
 
+    def test_wet_resists_fire_and_weakens_to_frost_and_lightning_where_it_rains(self):
+        self.assertEqual(self.data["wet"], {
+            "name": {"fr": "Humide", "en": "Wet"},
+            "ttl": 120,
+            "modifiers": {"fire": "resistant", "frost": "weak", "lightning": "weak"},
+            "biomes": ["meadows", "blackForest", "swamp", "plains", "ocean"],
+        })
+
+    def test_the_magic_barrier_absorbs_by_the_blood_magic_of_its_caster(self):
+        self.assertEqual(self.data["barrier"], {
+            "name": {"fr": "Barrière magique", "en": "Magic barrier"},
+            "staff": {"fr": "Bâton de protection", "en": "Staff of Protection"},
+            "skill": {"fr": "Magie du sang", "en": "Blood Magic"},
+            "absorb": 200,
+            "absorbPerSkill": 5,
+            "ttlPerLevel": 60,
+            "maxLevel": 4,
+            "radius": 5,
+        })
+
+    def test_a_hit_keeps_its_chop_and_pickaxe_for_the_barrier(self):
+        stomp = self.attack("Lox", "lox_stomp")["hits"][0]
+        self.assertEqual((stomp["damages"], stomp["toolDamage"]), ({"blunt": 120}, 200))
+
+    def test_attacks_merged_across_weapons_keep_the_heaviest_tools_for_the_barrier(self):
+        # The sword's slash deals 30 chop, the axe's 80: the player takes them alike, the barrier the heavier.
+        slash = self.attack("JotunWarrior", "JotunWarrior2HAxe_attack_slash")
+        self.assertEqual(slash["ids"], ["JotunWarrior2HSword_attack_slash", "JotunWarrior2HAxe_attack_slash"])
+        self.assertEqual(slash["hits"][0]["toolDamage"], 80)
+
     def test_burning_spirit_and_poison_deal_what_a_hit_leaves_the_player_over_time(self):
         self.assertEqual(self.data["player"]["overTime"], {
             "burning": {"ttl": 5, "interval": 1},

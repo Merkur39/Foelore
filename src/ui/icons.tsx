@@ -44,6 +44,13 @@ export const WorldIcon = (props: IconProps) => (
   </Icon>
 )
 
+/** Rain from a cloud: Wet, in Your setup. */
+export const RainIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M7 15a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 8a3.5 3.5 0 0 1 0 7H7zM8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5" />
+  </Icon>
+)
+
 export const SettingsIcon = (props: IconProps) => (
   <Icon {...props}>
     <path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1" />

@@ -23,6 +23,8 @@ export interface Hit {
   readonly scaling?: HitScaling
   /** Generic damage (DamageTypes.m_damage): no guard, resistance, armor or stagger; scaled by stars only. */
   readonly trueDamage?: number
+  /** Chop and pickaxe: no player takes them, but a Magic barrier counts them. */
+  readonly toolDamage?: number
 }
 
 export type Guard = 'block' | 'parry'
@@ -160,7 +162,7 @@ export function resolveHit(
   // Character.RPC_Damage takes fire, spirit and poison out of the hit and hands them to their status effects.
   const { fire = 0, spirit = 0, poison = 0 } = pastArmor
   const rules = defence.overTime
-  const burned = fire > 0 ? burning(rules.burning, fire) : null
+  const burned = fire > 0 ? burning(rules.burning, fire, defence.wet) : null
   const haunted = spirit > 0 ? burning(rules.spirit, spirit) : null
   const poisoned = poison > 0 ? poisoning(rules.poison, poison) : null
   const overTime = [burned, haunted, poisoned].reduce((sum, part) => sum + (part?.damage ?? 0), 0)
@@ -181,4 +183,20 @@ export function resolveHit(
     stamina,
     bar: { before, shield, armor, limit },
   }
+}
+
+/** What a Magic barrier makes of an attack's hit (SE_Shield.OnDamaged): it counts the whole hit once the world, the
+ * stars and the roll scaled it (HitData.GetTotalDamage: chop, pickaxe and true damage included) and absorbs it,
+ * until what it took exceeds its capacity, so the hit that overflows it is absorbed whole: `hits` such hits. */
+export function barrierTakes(
+  capacity: number,
+  hit: Hit,
+  world: World,
+  { stars, roll = 1 }: { readonly stars: number; readonly roll?: number },
+): { readonly counted: number; readonly hits: number } {
+  const [typedFactor, trueFactor] = scalingOf(hit.scaling ?? 'attack', world, stars, roll)
+  const counted =
+    (totalDamage(hit.damages) + (hit.toolDamage ?? 0)) * typedFactor +
+    (hit.trueDamage ?? 0) * trueFactor
+  return { counted, hits: Math.floor(capacity / counted) + 1 }
 }

@@ -413,8 +413,7 @@ describe('Your gear', () => {
         group: ['GP_Fader'],
       },
     }
-    const group = (dialog: HTMLElement) =>
-      within(dialog).getByRole('region', { name: 'Pouvoirs du groupe' })
+    const group = (dialog: HTMLElement) => within(dialog).getByRole('region', { name: 'Du groupe' })
 
     it('lists them under what you carry, how long each lasts and what it changes', async () => {
       const user = userEvent.setup()
@@ -427,7 +426,7 @@ describe('Your gear', () => {
       expect(section).toHaveTextContent('5 min · Feu ×0,5')
       expect(section).toHaveTextContent('tu titubes 2× moins vite')
       expect(section).toHaveTextContent(
-        "Ceux qu'un joueur lance à moins de 10 m de toi ; à allumer comme les tiens.",
+        "Ce qu'un joueur lance près de toi ; à allumer comme les tiens. La Barrière magique dépend de la Magie du sang de qui la lance.",
       )
     })
 
@@ -440,7 +439,7 @@ describe('Your gear', () => {
         within(section)
           .getAllByRole('button')
           .map((button) => button.textContent),
-      ).toEqual(['Ajouter un pouvoir du groupe'])
+      ).toEqual(['Ajouter un pouvoir du groupe', 'Ajouter une barrière magique'])
     })
 
     it('adds one neither yours nor added yet, swaps one, and takes one off', async () => {
@@ -503,13 +502,79 @@ describe('Your gear', () => {
       await openContext(user)
       await user.click(screen.getByRole('link', { name: /^Your gear:/ }))
       const dialog = await screen.findByRole('dialog', { name: 'Your gear' })
-      const section = within(dialog).getByRole('region', { name: 'Group powers' })
+      const section = within(dialog).getByRole('region', { name: 'From the group' })
 
       expect(within(section).getByRole('button', { name: 'Power: Fader' })).toBeInTheDocument()
       expect(section).toHaveTextContent(
-        'Those a player casts within 10 m of you; switch them on like yours.',
+        'What a player casts near you; switch it on like yours. The Magic barrier hangs on the Blood Magic of its caster.',
       )
       expect(within(section).getByRole('button', { name: 'Add a group power' })).toBeInTheDocument()
+      expect(
+        within(section).getByRole('button', { name: 'Add a Magic barrier' }),
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe("the group's Magic barrier", () => {
+    const group = (dialog: HTMLElement) => within(dialog).getByRole('region', { name: 'Du groupe' })
+    const bloodMagic = (dialog: HTMLElement) =>
+      within(dialog).getByRole('textbox', { name: 'Magie du sang de qui la lance' })
+
+    it('adds the barrier a player casts, by their Blood Magic, kept once saved', async () => {
+      const user = userEvent.setup()
+      const { store } = renderWithStore(<App />, fr)
+      const dialog = await openGear(user)
+
+      await user.click(
+        within(group(dialog)).getByRole('button', { name: 'Ajouter une barrière magique' }),
+      )
+      expect(dialog).toHaveAccessibleName('Barrière magique')
+      expect(dialog).toHaveTextContent(
+        'Le Bâton de protection la pose sur qui le lance et sur les joueurs à moins de 5 m, pour 1 à 4 min selon son niveau.',
+      )
+      expect(bloodMagic(dialog)).toHaveValue('0')
+      expect(dialog).toHaveTextContent(/Elle absorbe\s*200/)
+      expect(within(dialog).queryByRole('button', { name: 'Retirer la barrière' })).toBeNull()
+
+      await user.click(within(dialog).getByRole('button', { name: 'Plus de Magie du sang' }))
+      expect(dialog).toHaveTextContent(/Elle absorbe\s*205/)
+      await user.clear(bloodMagic(dialog))
+      await user.type(bloodMagic(dialog), '20')
+      expect(dialog).toHaveTextContent(/Elle absorbe\s*300/)
+      await user.click(within(dialog).getByRole('button', { name: 'Ajouter' }))
+
+      expect(dialog).toHaveAccessibleName('Ton équipement')
+      expect(
+        within(group(dialog)).getByRole('button', {
+          name: 'Barrière magique : Lancée avec Magie du sang 20',
+        }),
+      ).toBeInTheDocument()
+      expect(group(dialog)).toHaveTextContent('1 à 4 min · absorbe 300')
+      expect(
+        within(group(dialog)).queryByRole('button', { name: 'Ajouter une barrière magique' }),
+      ).toBeNull()
+      await user.click(within(dialog).getByRole('button', { name: 'Valider' }))
+
+      expect(store.getState().gear.carried?.barrier).toBe(20)
+    })
+
+    it('changes its Blood Magic, or takes it off', async () => {
+      const user = userEvent.setup()
+      const carried = { trinket: null, power: null, drinks: [], group: [], barrier: 20 }
+      const { store } = renderWithStore(<App />, { language: 'fr', gear: { ...WORN, carried } })
+      const dialog = await openGear(user)
+
+      await user.click(within(group(dialog)).getByRole('button', { name: /^Barrière magique : / }))
+      expect(bloodMagic(dialog)).toHaveValue('20')
+      await user.click(within(dialog).getByRole('button', { name: 'Retirer la barrière' }))
+
+      expect(dialog).toHaveAccessibleName('Ton équipement')
+      expect(
+        within(group(dialog)).getByRole('button', { name: 'Ajouter une barrière magique' }),
+      ).toBeInTheDocument()
+      await user.click(within(dialog).getByRole('button', { name: 'Valider' }))
+
+      expect(store.getState().gear.carried?.barrier).toBeUndefined()
     })
   })
 

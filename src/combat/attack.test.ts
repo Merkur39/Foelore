@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { attackDamage, attackVerdicts, hardestHit, hardestRange, type AttackHit } from './attack'
+import {
+  attackBarrier,
+  attackDamage,
+  attackVerdicts,
+  hardestHit,
+  hardestRange,
+  type AttackHit,
+} from './attack'
 import type { Defence } from './block'
 import type { World } from './world'
 
@@ -165,5 +172,18 @@ describe('attackDamage', () => {
 
   it('lists nothing for an attack that only summons', () => {
     expect(attackDamage([], 0)).toBeNull()
+  })
+})
+
+describe('attackBarrier', () => {
+  it("takes the heaviest hit of an attack, counting its chop and pickaxe: the Troll's ground slam", () => {
+    // The weapon's 70 blunt with 140 of tools, then the area's 50 with 80: 210 against 130.
+    const slam = [blunt(70, { toolDamage: 140 }), blunt(50, { toolDamage: 80 })]
+
+    expect(attackBarrier(300, slam, world, 0)).toEqual({ counted: 210, hits: 2 })
+  })
+
+  it('has nothing to take of an attack that only summons', () => {
+    expect(attackBarrier(300, [], world, 0)).toBeNull()
   })
 })

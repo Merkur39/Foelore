@@ -35,6 +35,8 @@ export interface GameHit {
   readonly damages: Damages
   /** Generic damage: no block, armour or resistance stops it, and only stars scale it. */
   readonly trueDamage?: number
+  /** Chop and pickaxe: no player takes them, but a Magic barrier counts them. */
+  readonly toolDamage?: number
   readonly staggerMultiplier: number
   readonly blockable: boolean
   readonly dodgeable: boolean
@@ -301,6 +303,27 @@ export interface GameData {
     /** Multiplies the health regeneration meanwhile. */
     readonly healthRegen: number
     readonly biomes: readonly BiomeId[]
+  }
+  /** Wet (SE_Wet), in the rain or in water: its resistances merge like an effect's, it burns the shorter,
+   * and it lasts `ttl` s once out of the rain. `biomes`: where it rains. */
+  readonly wet: {
+    readonly name: Localized
+    readonly ttl: number
+    readonly modifiers: DamageModifiers
+    readonly biomes: readonly BiomeId[]
+  }
+  /** The Magic barrier (SE_Shield) the `staff` casts on its caster and the players around: it absorbs
+   * `absorb` + `absorbPerSkill` × the caster's `skill`, for `ttlPerLevel` s × the staff's level. */
+  readonly barrier: {
+    readonly name: Localized
+    readonly staff: Localized
+    readonly skill: Localized
+    readonly absorb: number
+    readonly absorbPerSkill: number
+    readonly ttlPerLevel: number
+    readonly maxLevel: number
+    /** Metres around the caster it covers. */
+    readonly radius: number
   }
   readonly biomes: readonly { readonly id: BiomeId; readonly name: Localized }[]
   readonly damageTypes: Readonly<Record<DamageType, Localized>>

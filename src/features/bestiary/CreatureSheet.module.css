@@ -554,3 +554,10 @@
     border: 0;
   }
 }
+
+/* What the group's Magic barrier takes of an attack, while it is on. */
+.barrier {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--secondary);
+}

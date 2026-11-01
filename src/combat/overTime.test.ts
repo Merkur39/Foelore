@@ -21,6 +21,14 @@ describe('burning', () => {
     expect(burning(rules.burning, 1)).toEqual({ damage: 1, seconds: 5 })
   })
 
+  it('keeps only its first tick, a fifth of the dose, on a wet player: its time runs six times as fast', () => {
+    expect(burning(rules.burning, 2.9, true)).toEqual({ damage: 0.58, seconds: 5 / 6 })
+  })
+
+  it('lights no burn on a wet player either when a tick would deal under 0.2', () => {
+    expect(burning(rules.burning, 0.9, true)).toEqual({ damage: 0, seconds: 0 })
+  })
+
   it('shares spirit between its own 6 ticks over 3 s', () => {
     expect(burning(rules.spirit, 1)).toEqual({ damage: 0, seconds: 0 })
     expect(burning(rules.spirit, 1.5)).toEqual({ damage: 1.5, seconds: 3 })
