@@ -107,6 +107,14 @@
       "h": 844,
       "title": "Ton équipement · une boisson de plus"
     },
+    "Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "is_interactive": true
+    },
     "Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -353,6 +361,15 @@
       "h": 900,
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill"
+    },
+    "Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "is_interactive": true
     },
     "Desktop-Attaque.dc.html": {
       "x": 0,
@@ -670,6 +687,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "braise"
     },
+    "Braise-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "braise",
+      "is_interactive": true
+    },
     "Braise-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -947,6 +973,16 @@
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill",
       "page": "braise"
+    },
+    "Braise-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "braise",
+      "is_interactive": true
     },
     "Braise-Desktop-Attaque.dc.html": {
       "x": 0,
@@ -1251,6 +1287,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "brume"
     },
+    "Brume-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "brume",
+      "is_interactive": true
+    },
     "Brume-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -1528,6 +1573,16 @@
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill",
       "page": "brume"
+    },
+    "Brume-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "brume",
+      "is_interactive": true
     },
     "Brume-Desktop-Attaque.dc.html": {
       "x": 0,
@@ -1832,6 +1887,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "jour"
     },
+    "Jour-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "jour",
+      "is_interactive": true
+    },
     "Jour-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -2109,6 +2173,16 @@
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill",
       "page": "jour"
+    },
+    "Jour-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "jour",
+      "is_interactive": true
     },
     "Jour-Desktop-Attaque.dc.html": {
       "x": 0,
@@ -2413,6 +2487,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "runes"
     },
+    "Runes-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "runes",
+      "is_interactive": true
+    },
     "Runes-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -2690,6 +2773,16 @@
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill",
       "page": "runes"
+    },
+    "Runes-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "runes",
+      "is_interactive": true
     },
     "Runes-Desktop-Attaque.dc.html": {
       "x": 0,
@@ -2994,6 +3087,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "graphite"
     },
+    "Graphite-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "graphite",
+      "is_interactive": true
+    },
     "Graphite-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -3271,6 +3373,16 @@
       "title": "Ton équipement · une boisson de plus · desktop",
       "expand": "fill",
       "page": "graphite"
+    },
+    "Graphite-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "graphite",
+      "is_interactive": true
     },
     "Graphite-Desktop-Attaque.dc.html": {
       "x": 0,
@@ -3575,6 +3687,15 @@
       "title": "Ton équipement · une boisson de plus",
       "page": "parchemin"
     },
+    "Parchemin-Equipement-Barriere.dc.html": {
+      "x": 2350,
+      "y": 3792,
+      "w": 390,
+      "h": 844,
+      "title": "Ton équipement · la barrière magique",
+      "page": "parchemin",
+      "is_interactive": true
+    },
     "Parchemin-Monde.dc.html": {
       "x": 0,
       "y": 5056,
@@ -3853,6 +3974,16 @@
       "expand": "fill",
       "page": "parchemin"
     },
+    "Parchemin-Desktop-Equipement-Barriere.dc.html": {
+      "x": 7600,
+      "y": 12992,
+      "w": 1440,
+      "h": 900,
+      "title": "Ton équipement · la barrière magique · desktop",
+      "expand": "fill",
+      "page": "parchemin",
+      "is_interactive": true
+    },
     "Parchemin-Desktop-Attaque.dc.html": {
       "x": 0,
       "y": 14312,
@@ -4073,7 +4204,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270
+      "maxW": 2740
     },
     "m-row5": {
       "kind": "title1",
@@ -4122,7 +4253,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520
+      "maxW": 9040
     },
     "d-row4": {
       "kind": "title1",
@@ -4217,7 +4348,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "braise"
     },
     "m-row5-braise": {
@@ -4273,7 +4404,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "braise"
     },
     "d-row4-braise": {
@@ -4337,7 +4468,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "brume"
     },
     "m-row5-brume": {
@@ -4393,7 +4524,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "brume"
     },
     "d-row4-brume": {
@@ -4457,7 +4588,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "jour"
     },
     "m-row5-jour": {
@@ -4513,7 +4644,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "jour"
     },
     "d-row4-jour": {
@@ -4577,7 +4708,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "runes"
     },
     "m-row5-runes": {
@@ -4633,7 +4764,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "runes"
     },
     "d-row4-runes": {
@@ -4697,7 +4828,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "graphite"
     },
     "m-row5-graphite": {
@@ -4753,7 +4884,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "graphite"
     },
     "d-row4-graphite": {
@@ -4817,7 +4948,7 @@
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
+      "maxW": 2740,
       "page": "parchemin"
     },
     "m-row5-parchemin": {
@@ -4873,7 +5004,7 @@
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
+      "maxW": 9040,
       "page": "parchemin"
     },
     "d-row4-parchemin": {
@@ -4924,6 +5055,7 @@
     "Equipement-Cape.dc.html",
     "Equipement-Bibelot.dc.html",
     "Equipement-Boisson.dc.html",
+    "Equipement-Barriere.dc.html",
     "Monde.dc.html",
     "Contexte.dc.html",
     "Reglages.dc.html",
@@ -4955,6 +5087,7 @@
     "Desktop-Equipement-Cape.dc.html",
     "Desktop-Equipement-Bibelot.dc.html",
     "Desktop-Equipement-Boisson.dc.html",
+    "Desktop-Equipement-Barriere.dc.html",
     "Desktop-Attaque.dc.html",
     "Desktop-Recherche.dc.html",
     "Desktop-Monde.dc.html",
@@ -4992,6 +5125,7 @@
     "Braise-Equipement-Cape.dc.html",
     "Braise-Equipement-Bibelot.dc.html",
     "Braise-Equipement-Boisson.dc.html",
+    "Braise-Equipement-Barriere.dc.html",
     "Braise-Monde.dc.html",
     "Braise-Contexte.dc.html",
     "Braise-Reglages.dc.html",
@@ -5023,6 +5157,7 @@
     "Braise-Desktop-Equipement-Cape.dc.html",
     "Braise-Desktop-Equipement-Bibelot.dc.html",
     "Braise-Desktop-Equipement-Boisson.dc.html",
+    "Braise-Desktop-Equipement-Barriere.dc.html",
     "Braise-Desktop-Attaque.dc.html",
     "Braise-Desktop-Recherche.dc.html",
     "Braise-Desktop-Monde.dc.html",
@@ -5056,6 +5191,7 @@
     "Brume-Equipement-Cape.dc.html",
     "Brume-Equipement-Bibelot.dc.html",
     "Brume-Equipement-Boisson.dc.html",
+    "Brume-Equipement-Barriere.dc.html",
     "Brume-Monde.dc.html",
     "Brume-Contexte.dc.html",
     "Brume-Reglages.dc.html",
@@ -5087,6 +5223,7 @@
     "Brume-Desktop-Equipement-Cape.dc.html",
     "Brume-Desktop-Equipement-Bibelot.dc.html",
     "Brume-Desktop-Equipement-Boisson.dc.html",
+    "Brume-Desktop-Equipement-Barriere.dc.html",
     "Brume-Desktop-Attaque.dc.html",
     "Brume-Desktop-Recherche.dc.html",
     "Brume-Desktop-Monde.dc.html",
@@ -5120,6 +5257,7 @@
     "Jour-Equipement-Cape.dc.html",
     "Jour-Equipement-Bibelot.dc.html",
     "Jour-Equipement-Boisson.dc.html",
+    "Jour-Equipement-Barriere.dc.html",
     "Jour-Monde.dc.html",
     "Jour-Contexte.dc.html",
     "Jour-Reglages.dc.html",
@@ -5151,6 +5289,7 @@
     "Jour-Desktop-Equipement-Cape.dc.html",
     "Jour-Desktop-Equipement-Bibelot.dc.html",
     "Jour-Desktop-Equipement-Boisson.dc.html",
+    "Jour-Desktop-Equipement-Barriere.dc.html",
     "Jour-Desktop-Attaque.dc.html",
     "Jour-Desktop-Recherche.dc.html",
     "Jour-Desktop-Monde.dc.html",
@@ -5184,6 +5323,7 @@
     "Runes-Equipement-Cape.dc.html",
     "Runes-Equipement-Bibelot.dc.html",
     "Runes-Equipement-Boisson.dc.html",
+    "Runes-Equipement-Barriere.dc.html",
     "Runes-Monde.dc.html",
     "Runes-Contexte.dc.html",
     "Runes-Reglages.dc.html",
@@ -5215,6 +5355,7 @@
     "Runes-Desktop-Equipement-Cape.dc.html",
     "Runes-Desktop-Equipement-Bibelot.dc.html",
     "Runes-Desktop-Equipement-Boisson.dc.html",
+    "Runes-Desktop-Equipement-Barriere.dc.html",
     "Runes-Desktop-Attaque.dc.html",
     "Runes-Desktop-Recherche.dc.html",
     "Runes-Desktop-Monde.dc.html",
@@ -5248,6 +5389,7 @@
     "Graphite-Equipement-Cape.dc.html",
     "Graphite-Equipement-Bibelot.dc.html",
     "Graphite-Equipement-Boisson.dc.html",
+    "Graphite-Equipement-Barriere.dc.html",
     "Graphite-Monde.dc.html",
     "Graphite-Contexte.dc.html",
     "Graphite-Reglages.dc.html",
@@ -5279,6 +5421,7 @@
     "Graphite-Desktop-Equipement-Cape.dc.html",
     "Graphite-Desktop-Equipement-Bibelot.dc.html",
     "Graphite-Desktop-Equipement-Boisson.dc.html",
+    "Graphite-Desktop-Equipement-Barriere.dc.html",
     "Graphite-Desktop-Attaque.dc.html",
     "Graphite-Desktop-Recherche.dc.html",
     "Graphite-Desktop-Monde.dc.html",
@@ -5312,6 +5455,7 @@
     "Parchemin-Equipement-Cape.dc.html",
     "Parchemin-Equipement-Bibelot.dc.html",
     "Parchemin-Equipement-Boisson.dc.html",
+    "Parchemin-Equipement-Barriere.dc.html",
     "Parchemin-Monde.dc.html",
     "Parchemin-Contexte.dc.html",
     "Parchemin-Reglages.dc.html",
@@ -5343,6 +5487,7 @@
     "Parchemin-Desktop-Equipement-Cape.dc.html",
     "Parchemin-Desktop-Equipement-Bibelot.dc.html",
     "Parchemin-Desktop-Equipement-Boisson.dc.html",
+    "Parchemin-Desktop-Equipement-Barriere.dc.html",
     "Parchemin-Desktop-Attaque.dc.html",
     "Parchemin-Desktop-Recherche.dc.html",
     "Parchemin-Desktop-Monde.dc.html",

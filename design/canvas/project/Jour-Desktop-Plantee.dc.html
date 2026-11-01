@@ -60,6 +60,11 @@ textarea::placeholder{color:#656C73}
         <span class="bw-label" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Normal</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #50575F">1 JOUEUR · ×1</span></span>
         <svg class="bw-label" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#656C73" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
       </a>
+      <button type="button" role="switch" aria-checked="{{ wetChecked }}" aria-label="Humide, dans la Forêt noire" onClick="{{ toggleWet }}" class="bw-chip" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 4px 8px 12px; box-sizing: border-box; border: 1px solid {{ wetBorder }}; border-radius: 6px; color: #1B1F23; text-align: left">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#1F5F94" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M7 15a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 8a3.5 3.5 0 0 1 0 7H7z"></path><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"></path></svg>
+        <span class="bw-label" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Humide</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; line-height: 14px; color: #50575F; white-space: nowrap">FEU ×0,5<br>GLACE, FOUDRE ×1,5</span></span>
+        <span class="bw-label" style="flex: none; width: 44px; height: 32px; display: flex; align-items: center; justify-content: center"><span aria-hidden="true" style="position: relative; width: 38px; height: 22px; box-sizing: border-box; border: 1px solid {{ wetTrackBorder }}; border-radius: 12px; background: {{ wetTrack }}; transition: background 0.15s, border-color 0.15s"><span style="position: absolute; top: 1px; left: {{ wetKnob }}; width: 18px; height: 18px; border-radius: 50%; background: {{ wetKnobColor }}; transition: left 0.15s"></span></span></span>
+      </button>
       <a href="Jour-Desktop-Reglages.dc.html" class="bw-link" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 15px; color: #50575F; text-decoration: none"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg><span class="bw-label">Réglages</span></a>
     </div>
   </nav>
@@ -80,7 +85,7 @@ textarea::placeholder{color:#656C73}
           <button type="button" aria-label="Biome précédent : Prairies" style="width: 44px; height: 48px; display: flex; align-items: center; justify-content: center; color: #50575F"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
           <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px">
             <span style="font-size: 15px; font-weight: 500">Forêt noire</span>
-            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #50575F">BIOME 2 SUR 8 · 8 CRÉATURES</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #50575F">BIOME 2 SUR 8 · 8 CRÉATURES{{ wetTag }}</span>
           </div>
           <button type="button" aria-label="Biome suivant : Marais" style="width: 44px; height: 48px; display: flex; align-items: center; justify-content: center; color: #50575F"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
         </div>
@@ -145,7 +150,7 @@ textarea::placeholder{color:#656C73}
           <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap">
             <div style="display: flex; flex-direction: column; gap: 4px">
               <h2 id="m-name" style="margin: 0; font-size: 28px; font-weight: 500">Troll</h2>
-              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #50575F">FORÊT NOIRE</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #50575F">FORÊT NOIRE{{ wetTag }}</span>
             </div>
             <div role="group" aria-label="Étoiles" style="display: flex; border: 1px solid #D3CDC1; border-radius: 4px; overflow: hidden">
               <sc-for list="{{ starOpts }}" as="s" hint-placeholder-count="3">
@@ -220,7 +225,7 @@ textarea::placeholder{color:#656C73}
             </div>
             <sc-for list="{{ attacks }}" as="a" hint-placeholder-count="3">
               <div role="row" class="bw-grid" style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 80px repeat(3, minmax(0, 1.2fr)) 96px; gap: 12px; align-items: center; min-height: 52px; padding: 0 16px; border-top: 1px solid #E6E1D7; font-size: 14px">
-                <span role="cell" style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span>{{ a.name }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #50575F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin-right: 3px"><path d="{{ a.t1d }}"></path></svg>{{ a.t1 }}<sc-if value="{{ a.hasT2 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin: 0 3px 0 6px"><path d="{{ a.t2d }}"></path></svg>{{ a.t2 }}</sc-if><span class="bw-range-tag"> · {{ a.range }}</span></span></span>
+                <span role="cell" style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span>{{ a.name }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #50575F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin-right: 3px"><path d="{{ a.t1d }}"></path></svg>{{ a.t1 }}<sc-if value="{{ a.hasT2 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin: 0 3px 0 6px"><path d="{{ a.t2d }}"></path></svg>{{ a.t2 }}</sc-if><span class="bw-range-tag"> · {{ a.range }}</span></span><sc-if value="{{ a.hasBarrier }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 16px; color: #50575F">{{ a.barrier }}</span></sc-if></span>
                 <span role="cell" class="bw-range" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #50575F">{{ a.range }}</span>
                 <span role="cell" style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 16px">{{ a.dmg }}</span>
                 <span role="cell" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; color: {{ a.bColor }}">{{ a.bTxt }}</span>
@@ -351,7 +356,8 @@ class Component extends DCLogic {
       { id: 'broche', name: 'Broche en fer', tag: "BIBELOT · 30 S DÈS 65 D'ADRÉNALINE" },
       { id: 'masse', name: "Masse-d'Os", tag: 'POUVOIR · 5 MIN' },
       { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' },
-      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' }
+      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' },
+      { id: 'barriere', name: 'Barrière magique', tag: 'DU GROUPE · ABSORBE 300 · 1 À 4 MIN' }
     ];
     const on = st.fx;
     const names = FX.filter((e) => on.indexOf(e.id) !== -1).map((e) => e.name);
@@ -391,6 +397,26 @@ class Component extends DCLogic {
     };
   }
   renderVals() {
+    return Object.assign(this.boardVals(), this.wetVals());
+  }
+  // « Humide », the weather of the Bestiary's biome (the Black Forest, where it rains): a switch in Ton contexte,
+  // counted for every creature of the biome until it is switched off or the biome changes.
+  wetVals() {
+    const wet = !!(this.state || {}).wet;
+    return {
+      wet: wet,
+      wetChecked: String(wet),
+      toggleWet: () => this.setState({ wet: !wet }),
+      wetTrack: wet ? '#1F5F94' : '#D3CDC1',
+      wetTrackBorder: wet ? '#1F5F94' : '#656C73',
+      wetKnob: wet ? '17px' : '1px',
+      wetKnobColor: wet ? '#F4F1EA' : '#50575F',
+      wetBorder: wet ? '#1F5F94' : '#D3CDC1',
+      wetTag: wet ? ' · HUMIDE' : '',
+      menuLabel: 'Ton contexte : VD 81 ×1' + (wet ? ', humide' : '')
+    };
+  }
+  boardVals() {
     const fmt = (n, d) => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: d == null ? 1 : d });
     const armor = (dmg, ac) => (ac <= 0 || dmg <= 0) ? Math.max(0, dmg) : (ac < dmg / 2 ? dmg - ac : Math.min(1, dmg / (ac * 4)) * dmg);
     const bp = 72 * (1 + 25 / 200), ac = 45, T = 60, pb = 1.5;
@@ -417,6 +443,15 @@ class Component extends DCLogic {
     const DT = { blunt: { label: 'CONTONDANT', d: 'M13 3l8 8-4 4-8-8zM13 11l-9 9' }, slash: { label: 'COUPANT', d: 'M4 14L14 4M7 19L19 7M13 20l7-7' }, pierce: { label: 'PERFORANT', d: 'M20 4l-7 3 4 4zM15 9L4 20' }, fire: { label: 'FEU', d: 'M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11 9 11 6 12 3z' }, frost: { label: 'GIVRE', d: 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9' }, lightning: { label: 'FOUDRE', d: 'M13 3L5 14h6l-1 7 8-11h-6l1-7z' }, poison: { label: 'POISON', d: 'M12 3c3 4.5 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-6.5 6-11z' }, spirit: { label: 'ESPRIT', d: 'M6 20V11a6 6 0 0 1 12 0v9l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5zM10 11h.01M14 11h.01' } };
     const typeVals = (keys) => ({ t1: DT[keys[0]].label, t1d: DT[keys[0]].d, hasT2: keys.length > 1, t2: keys.length > 1 ? DT[keys[1]].label : '', t2d: keys.length > 1 ? DT[keys[1]].d : '' });
     const typeWords = (keys) => keys.map((k) => DT[k].label.toLowerCase()).join(' et ');
+    // The Magic barrier, a group's (Staff_shield): 300 to absorb (Blood Magic 20). It counts the whole hit, the
+    // Troll's chop (100) and pickaxe (40) too, scaled by the stars, and takes whole the hit that overflows it; the
+    // verdicts stay those once it breaks.
+    const shielded = this.state.fx.indexOf('barriere') !== -1;
+    const barrierOf = (x) => {
+      const counted = (x.a.dmg + 140) * mult;
+      const hits = Math.floor(300 / counted) + 1;
+      return { hasBarrier: shielded, barrier: 'Barrière : ' + hits + (hits > 1 ? ' coups' : ' coup') + ' (compte ' + fmt(counted, 0) + ')' };
+    };
     const attacks = base.map((a) => {
       const hit = a.dmg * mult;
       return { a: a, hit: hit, b: verdict(hit, bp), p: verdict(hit, bp * pb) };
@@ -462,7 +497,7 @@ class Component extends DCLogic {
       stagTxt: fmt(180 * (stars + 1), 0),
       advice: advice,
       adviceColor: colors[adviceState],
-      attacks: attacks.map((x) => Object.assign(typeVals(x.a.types), {
+      attacks: attacks.map((x) => Object.assign(typeVals(x.a.types), barrierOf(x), {
         name: x.a.name, range: x.a.range, dmg: fmt(x.hit, 0),
         bTxt: words[x.b], bColor: colors[x.b], pTxt: words[x.p], pColor: colors[x.p],
         simLabel: 'Simuler : ' + x.a.name + ', ' + fmt(x.hit, 0) + ' dégâts'

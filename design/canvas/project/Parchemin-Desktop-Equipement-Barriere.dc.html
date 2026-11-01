@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Ton équipement — la barrière magique · Parchemin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+:root{color-scheme:light}
+*{scrollbar-width:thin;scrollbar-color:#CDBFA3 transparent}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#CDBFA3;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#685B4A}
+button,select,input{font:inherit;color:inherit;margin:0}
+button{background:none;border:0;padding:0;cursor:pointer}
+a{color:#24467A}a:hover{color:#1A3560}
+</style>
+</helmet>
+<div style="position: relative; height: 100vh; min-height: 680px; box-sizing: border-box; display: flex; flex-wrap: wrap; background: #EFE7D6; color: #2B2219; font-family: 'IBM Plex Sans', system-ui, sans-serif">
+  <div aria-hidden="true" style="flex: 0 0 248px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; padding: 20px 14px; border-right: 1px solid #CDBFA3">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 10px; height: 40px; font-size: 16px; font-weight: 500">Foelore</div>
+    <div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+      <span style="height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 6px; background: #E3D3B0; color: #24467A">Bestiaire</span>
+      <span style="height: 44px; display: flex; align-items: center; padding: 0 12px; color: #5E5141">Simulation</span>
+      <span style="height: 44px; display: flex; align-items: center; padding: 0 12px; color: #5E5141">Arsenal</span>
+      <span style="height: 44px; display: flex; align-items: center; padding: 0 12px; color: #5E5141">Mémo</span>
+    </div>
+  </div>
+  <div aria-hidden="true" style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px">
+    <span style="font-size: 26px; font-weight: 500">Bestiaire</span>
+    <div style="display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 24px">
+      <div style="height: 560px; border-radius: 8px; background: #F9F4E8"></div>
+      <div style="height: 420px; border-radius: 8px; background: #F9F4E8"></div>
+    </div>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(4, 6, 7, 0.72); display: flex; align-items: center; justify-content: center; padding: 32px; box-sizing: border-box">
+    <div role="dialog" aria-modal="true" aria-labelledby="d-title" style="width: min(600px, 100%); max-height: 100%; display: flex; flex-direction: column; background: #F9F4E8; border: 1px solid #CDBFA3; border-radius: 10px; overflow: hidden">
+      <header style="display: flex; align-items: center; gap: 8px; padding: 12px 12px 12px 24px; border-bottom: 1px solid #CDBFA3">
+        <a href="Parchemin-Desktop-Equipement.dc.html" aria-label="Retour à Ton équipement, sans rien changer" style="flex: none; width: 40px; height: 40px; margin-left: -12px; display: flex; align-items: center; justify-content: center; color: #5E5141"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></a><span style="flex: 1; display: flex; align-items: baseline; gap: 8px"><span style="font-size: 14px; color: #685B4A">Ton équipement ·</span><h2 id="d-title" style="margin: 0; font-size: 18px; font-weight: 500">Barrière magique</h2></span>
+        <a href="Parchemin-Desktop-Bestiaire.dc.html" aria-label="Fermer sans enregistrer" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #5E5141"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+      </header>
+
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+      <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #5E5141">Le Bâton de protection la pose sur qui le lance et sur les joueurs à moins de 5&nbsp;m, pour 1 à 4&nbsp;min selon son niveau. Tu l’allumes ensuite sur la fiche d’une créature ou dans la Simulation.</p>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="b-blood" style="font-size: 11px; letter-spacing: 0.08em; color: #5E5141">MAGIE DU SANG DE QUI LA LANCE</label>
+        <div style="display: flex; align-items: center; border: 1px solid #CDBFA3; border-radius: 4px; background: #EFE7D6">
+          <button type="button" onClick="{{ less }}" aria-label="Moins de Magie du sang" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+          <input id="b-blood" type="text" inputmode="numeric" value="{{ blood }}" style="flex: 1; min-width: 0; width: 100%; height: 44px; text-align: center; background: transparent; border: 0; font-family: 'IBM Plex Mono', monospace; font-size: 17px">
+          <button type="button" onClick="{{ more }}" aria-label="Plus de Magie du sang" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #CDBFA3; border-radius: 6px; background: #EFE7D6">
+        <span style="font-size: 11px; letter-spacing: 0.08em; color: #5E5141">ELLE ABSORBE</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px">{{ absorb }}</span>
+        <span style="font-size: 12px; line-height: 1.45; color: #685B4A">200, plus 5 par niveau de Magie du sang. Elle compte tout le coup, hache et pioche comprises, et absorbe en entier celui qui la brise.</span>
+      </div>
+      </div>
+
+      <footer style="display: flex; align-items: center; gap: 10px; padding: 16px 24px; border-top: 1px solid #CDBFA3">
+        <a href="Parchemin-Desktop-Equipement.dc.html" style="display: inline-flex; align-items: center; height: 40px; font-size: 14px; color: #24467A; text-decoration: none">Retirer la barrière</a>
+        <span style="flex: 1"></span>
+        <a href="Parchemin-Desktop-Equipement.dc.html" style="display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 4px; font-size: 14px; font-weight: 500; background: #24467A; color: #EFE7D6; text-decoration: none">Valider</a>
+      </footer>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { blood: 20 };
+  }
+  // SE_Shield: 200, plus 5 per Blood Magic level of the caster.
+  renderVals() {
+    const blood = this.state.blood;
+    const set = (value) => this.setState({ blood: Math.max(0, Math.min(100, value)) });
+    return { blood: String(blood), absorb: String(200 + 5 * blood), less: () => set(blood - 1), more: () => set(blood + 1) };
+  }
+}
+</script>
+</body>
+</html>

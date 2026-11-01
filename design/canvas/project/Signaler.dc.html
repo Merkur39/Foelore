@@ -118,6 +118,7 @@ a{color:#8EBDE3}a:hover{color:#B5D4F0}
           <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
             <span style="font-size: 14px">{{ a.name }}</span>
             <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #97A5AA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin-right: 3px"><path d="{{ a.t1d }}"></path></svg>{{ a.t1 }}<sc-if value="{{ a.hasT2 }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="12" height="12" style="vertical-align: -2px; margin: 0 3px 0 6px"><path d="{{ a.t2d }}"></path></svg>{{ a.t2 }}</sc-if> · {{ a.tags }}</span>
+            <sc-if value="{{ a.hasBarrier }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 16px; color: #97A5AA">{{ a.barrier }}</span></sc-if>
           </span>
           <span style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{ a.dmg }}</span>
           <span aria-hidden="true" style="display: flex; gap: 4px">
@@ -214,7 +215,8 @@ class Component extends DCLogic {
       { id: 'broche', name: 'Broche en fer', tag: "BIBELOT · 30 S DÈS 65 D'ADRÉNALINE" },
       { id: 'masse', name: "Masse-d'Os", tag: 'POUVOIR · 5 MIN' },
       { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' },
-      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' }
+      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' },
+      { id: 'barriere', name: 'Barrière magique', tag: 'DU GROUPE · ABSORBE 300 · 1 À 4 MIN' }
     ];
     const on = st.fx;
     const names = FX.filter((e) => on.indexOf(e.id) !== -1).map((e) => e.name);
@@ -280,6 +282,15 @@ class Component extends DCLogic {
     const DT = { blunt: { label: 'CONTONDANT', d: 'M13 3l8 8-4 4-8-8zM13 11l-9 9' }, slash: { label: 'COUPANT', d: 'M4 14L14 4M7 19L19 7M13 20l7-7' }, pierce: { label: 'PERFORANT', d: 'M20 4l-7 3 4 4zM15 9L4 20' }, fire: { label: 'FEU', d: 'M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11 9 11 6 12 3z' }, frost: { label: 'GIVRE', d: 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9' }, lightning: { label: 'FOUDRE', d: 'M13 3L5 14h6l-1 7 8-11h-6l1-7z' }, poison: { label: 'POISON', d: 'M12 3c3 4.5 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-6.5 6-11z' }, spirit: { label: 'ESPRIT', d: 'M6 20V11a6 6 0 0 1 12 0v9l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5zM10 11h.01M14 11h.01' } };
     const typeVals = (keys) => ({ t1: DT[keys[0]].label, t1d: DT[keys[0]].d, hasT2: keys.length > 1, t2: keys.length > 1 ? DT[keys[1]].label : '', t2d: keys.length > 1 ? DT[keys[1]].d : '' });
     const typeWords = (keys) => keys.map((k) => DT[k].label.toLowerCase()).join(' et ');
+    // The Magic barrier, a group's (Staff_shield): 300 to absorb (Blood Magic 20). It counts the whole hit, the
+    // Troll's chop (100) and pickaxe (40) too, scaled by the stars, and takes whole the hit that overflows it; the
+    // verdicts stay those once it breaks.
+    const shielded = this.state.fx.indexOf('barriere') !== -1;
+    const barrierOf = (x) => {
+      const counted = (x.a.dmg + 140) * mult;
+      const hits = Math.floor(300 / counted) + 1;
+      return { hasBarrier: shielded, barrier: 'Barrière : ' + hits + (hits > 1 ? ' coups' : ' coup') + ' (compte ' + fmt(counted, 0) + ')' };
+    };
     const attacks = base.map((a) => {
       const hit = a.dmg * mult;
       return { a: a, hit: hit, b: verdict(hit, bp), p: verdict(hit, bp * pb) };
@@ -307,10 +318,10 @@ class Component extends DCLogic {
       hpTxt: fmt(600 * (stars + 1), 0),
       stagTxt: fmt(180 * (stars + 1), 0),
       advice: { text: advice.text, color: colors[advice.s], isOk: advice.s === 'ok', isWarn: advice.s === 'warn', isBad: advice.s === 'bad' },
-      attacks: attacks.map((x) => Object.assign(typeVals(x.a.types), {
+      attacks: attacks.map((x) => Object.assign(typeVals(x.a.types), barrierOf(x), {
         name: x.a.name, tags: x.a.tags, dmg: fmt(x.hit, 0),
         bColor: colors[x.b], bBorder: borders[x.b], pColor: colors[x.p], pBorder: borders[x.p],
-        aria: x.a.name + ', ' + typeWords(x.a.types) + ', ' + fmt(x.hit, 0) + ' dégâts. Blocage : ' + words[x.b] + '. Parade : ' + words[x.p] + '. Esquivable. Ouvrir la simulation.'
+        aria: x.a.name + ', ' + typeWords(x.a.types) + ', ' + fmt(x.hit, 0) + ' dégâts. Blocage : ' + words[x.b] + '. Parade : ' + words[x.p] + '. Esquivable. ' + (shielded ? barrierOf(x).barrier + '. ' : '') + 'Ouvrir la simulation.'
       }))
     };
   }
