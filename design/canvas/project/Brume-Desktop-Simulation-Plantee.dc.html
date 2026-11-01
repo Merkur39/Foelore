@@ -43,6 +43,11 @@ a{color:#BBA6F7}a:hover{color:#D5C8FB}
         <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Normal</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #A9A2BF">1 JOUEUR · ×1</span></span>
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D86A4" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
       </a>
+      <button type="button" role="switch" aria-checked="{{ wetChecked }}" aria-label="Humide, dans la Forêt noire" onClick="{{ toggleWet }}" class="bw-chip" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 4px 8px 12px; box-sizing: border-box; border: 1px solid {{ wetBorder }}; border-radius: 6px; color: #E9E5F3; text-align: left">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#BBA6F7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M7 15a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 8a3.5 3.5 0 0 1 0 7H7z"></path><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"></path></svg>
+        <span class="bw-label" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Humide</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; line-height: 14px; color: #A9A2BF; white-space: nowrap">FEU ×0,5<br>GLACE, FOUDRE ×1,5</span></span>
+        <span class="bw-label" style="flex: none; width: 44px; height: 32px; display: flex; align-items: center; justify-content: center"><span aria-hidden="true" style="position: relative; width: 38px; height: 22px; box-sizing: border-box; border: 1px solid {{ wetTrackBorder }}; border-radius: 12px; background: {{ wetTrack }}; transition: background 0.15s, border-color 0.15s"><span style="position: absolute; top: 1px; left: {{ wetKnob }}; width: 18px; height: 18px; border-radius: 50%; background: {{ wetKnobColor }}; transition: left 0.15s"></span></span></span>
+      </button>
       <a href="Brume-Desktop-Reglages.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 15px; color: #A9A2BF; text-decoration: none"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Réglages</a>
     </div>
   </nav>
@@ -147,6 +152,7 @@ a{color:#BBA6F7}a:hover{color:#D5C8FB}
 
         <section aria-labelledby="d-res" style="display: flex; flex-direction: column; gap: 16px">
           <h2 id="d-res" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Résultat</h2>
+          <sc-if value="{{ barrier.on }}" hint-placeholder-val="{{ false }}"><div style="flex: none; display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 1.4; color: #A9A2BF"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="9"></circle><path d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5"></path></svg><span>{{ barrier.text }}</span></div></sc-if>
           <div style="display: flex; align-items: center; gap: 10px; font-size: 18px; color: {{ advice.color }}">
             <sc-if value="{{ advice.isOk }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg></sc-if>
             <sc-if value="{{ advice.isWarn }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg></sc-if>
@@ -223,7 +229,8 @@ class Component extends DCLogic {
       { id: 'broche', name: 'Broche en fer', tag: "BIBELOT · 30 S DÈS 65 D'ADRÉNALINE" },
       { id: 'masse', name: "Masse-d'Os", tag: 'POUVOIR · 5 MIN' },
       { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' },
-      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' }
+      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' },
+      { id: 'barriere', name: 'Barrière magique', tag: 'DU GROUPE · ABSORBE 300 · 1 À 4 MIN' }
     ];
     const on = st.fx;
     const names = FX.filter((e) => on.indexOf(e.id) !== -1).map((e) => e.name);
@@ -263,6 +270,26 @@ class Component extends DCLogic {
     };
   }
   renderVals() {
+    return Object.assign(this.boardVals(), this.wetVals());
+  }
+  // « Humide », the weather of the Bestiary's biome (the Black Forest, where it rains): a switch in Ton contexte,
+  // counted for every creature of the biome until it is switched off or the biome changes.
+  wetVals() {
+    const wet = !!(this.state || {}).wet;
+    return {
+      wet: wet,
+      wetChecked: String(wet),
+      toggleWet: () => this.setState({ wet: !wet }),
+      wetTrack: wet ? '#BBA6F7' : '#342D47',
+      wetTrackBorder: wet ? '#BBA6F7' : '#8D86A4',
+      wetKnob: wet ? '17px' : '1px',
+      wetKnobColor: wet ? '#110F18' : '#A9A2BF',
+      wetBorder: wet ? '#BBA6F7' : '#342D47',
+      wetTag: wet ? ' · HUMIDE' : '',
+      menuLabel: 'Ton contexte : VD 81 ×1' + (wet ? ', humide' : '')
+    };
+  }
+  boardVals() {
     const fmt = (n, d) => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: d == null ? 1 : d });
     const armor = (dmg, ac) => (ac <= 0 || dmg <= 0) ? Math.max(0, dmg) : (ac < dmg / 2 ? dmg - ac : Math.min(1, dmg / (ac * 4)) * dmg);
     const bp = 72 * (1 + 25 / 200), ac = 45, T = 60, pb = 1.5;
@@ -362,6 +389,12 @@ class Component extends DCLogic {
       fine: !st.crashed,
       retry: () => this.setState({ crashed: false }),
       fx: this.fxCard('d', { gel: 'pas de glace' }),
+      // The Magic barrier, a group's: 300 to absorb; it counts the whole hit, the Troll's chop and pickaxe (140) too.
+      barrier: (() => {
+        const counted = hit + 140 * [1, 1.5, 2][st.stars];
+        const hits = Math.floor(300 / counted) + 1;
+        return { on: on.indexOf('barriere') !== -1, text: 'Barrière magique : elle prend ' + hits + (hits > 1 ? ' coups' : ' coup') + ' comme celui-ci (compte ' + fmt(counted, 0) + '), puis :' };
+      })(),
       isAttack: isAttack,
       isValue: !isAttack,
       modeOpts: [['attack', "Attaque d'un monstre"], ['value', 'Valeur libre']].map(([id, label]) => ({

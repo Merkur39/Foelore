@@ -2,7 +2,7 @@
 
 The mockups live in a Claude Design artifact: [Foelore — design](https://claude.ai/artifact/DDGhnVebZ9JkXRbWsa2dse)
 (artifact type `https://claude.ai/artifact/QKN21svewxgyPb6SYRqWnd`). **The artifact is the source of truth**;
-`canvas/project/` is a local working copy of **v211** (canvas.json + every `.dc.html` board).
+`canvas/project/` is a local working copy of **v215** (canvas.json + every `.dc.html` board).
 
 ## Layout of the canvas
 
@@ -42,20 +42,23 @@ The mockups live in a Claude Design artifact: [Foelore — design](https://claud
   `Equipement-Boisson` (« Une boisson de plus », from « Ajouter une boisson »), each with its `Desktop-` board (the
   dialog widened to the category's table, « Choisir » on each row), and `Arrivee-Casque` / `Desktop-Arrivee-Casque`
   under the question's step. In Play, a row opens its list (the helmet, legs, chest, power and a carried drink have
-  no board of their own) and a pick or the back arrow returns. Written once by `scripts/choix/origine.mjs`.
+  no board of their own) and a pick or the back arrow returns. Written once by `scripts/choix/origine.mjs`. Since v215
+  (#69), the Magic barrier's row of « Du groupe » opens `Equipement-Barriere` / `Desktop-Equipement-Barriere`, in the
+  same frame but a form, not a list: the caster's Blood Magic in a − / + field (in Play, what it absorbs follows, 200 + 5
+  per level), « Valider » and « Retirer la barrière ». Written once by `scripts/humide/barriere.mjs`.
 - Ton monde (`Monde`, `Desktop-Monde`, and the first arrival's `Arrivee-Monde`, `Desktop-Arrivee-Monde`), v197: « Ce
   que ça donne » holds the four effects of the Combat setting, the fourth « Taille et vitesse au sol » (the game's
   `enemyspeedsize`), in two columns on a desktop; its note says size and speed hold outside dungeons only, and that
   the pace of attacks never changes.
 
-## Track pages, removed from the canvas (v196, v208, v211)
+## Track pages, removed from the canvas (v196, v208, v211, v214)
 
 A version of the canvas holds at most 511 files. Once every track below was carried into Origine, the owner had their
-pages removed (2026-10-31; Nouveautés and Dégâts on 2026-11-01, in v208; Pouvoirs in v211): their boards are in this repository's
-history (and in the canvas's versions up to v195, v207 and v210), and their generators still write them
+pages removed (2026-10-31; Nouveautés and Dégâts on 2026-11-01, in v208; Pouvoirs in v211; Humide et Barrière in v214): their boards are in this repository's
+history (and in the canvas's versions up to v195, v207, v210 and v213), and their generators still write them
 (`scripts/arsenal/build.mjs --tracks`, `scripts/equipement-c3/`, `scripts/choix/build.mjs`, which needs the Origine
-boards from before `origine.mjs`, `scripts/degats/`, and `scripts/pouvoirs/`, which needs the Origine boards from before
-its `origine.mjs`).
+boards from before `origine.mjs`, `scripts/degats/`, `scripts/pouvoirs/`, which needs the Origine boards from before
+its `origine.mjs`, and `scripts/humide/`, likewise).
 
 - Page **Nouveautés · pistes** (`Nouveautes-*`, v198): What's new, as verbose as it was (`Nouveautes-Auj`, the notes of
   `src/app/releases.ts` at the time), and three tracks on a phone sharing one rewritten copy, a short title and at
@@ -124,6 +127,34 @@ its `origine.mjs`).
   `Desktop-Arsenal` tag one's own power ÉQUIPÉ (« Équiper »), the group's DU GROUPE, both at the head of the powers,
   the desktop's lede for powers reading « Équiper un pouvoir en fait le tien dans Ton équipement ». The first arrival
   keeps no « Pouvoirs du groupe ».
+- Page **Humide et Barrière · pistes** (`Humide-A` to `Humide-C`, v212, #69): where Wet (« Humide », the game's word)
+  and the Staff of Protection's Magic barrier are switched on, and how a sheet says they are, in two scenes. Eikthyr
+  in the Meadows' rain against an early gear (Wood shield level 1, Blocking 0, rags, 45 HP, nothing carried): lightning
+  weak makes the blocked Charge and Stomp stagger (20,5 on a limit of 18), and the advice turns from « bloque le
+  reste » to « pare le reste ». The Lox against the mockups' gear and what Origine carries, under a barrier cast with
+  Blood Magic 20 (300 to absorb): it takes 3 Bites but 1 Stomp, which it counts 320 with its chop and pickaxe. Track A,
+  both at the end of the card « Avec tes effets temporaires » (Humide where it rains, the barrier everywhere, its
+  Blood Magic set under it once on), each attack saying how many hits the barrier takes; track B, Humide in « Ton
+  contexte » for the whole biome and its list, the barrier declared in Ton équipement under « Du groupe » and switched
+  in the card; track C, switched as in A, the barrier as a reserve above the attacks and in the Simulation, the
+  verdicts left as they are once it breaks. Static, written by `scripts/humide/` (`data.mts` from the app's engine,
+  Wet as an effect of its game modifiers and the barrier's count from the game's rules; `build.mjs`; `add.mjs` lays
+  out the page). The owner picked B; its desktop, right of its phones (v213): `Humide-B-Desktop-1`, the Bestiaire in
+  the Meadows' rain, Humide a chip with a switch under Ton monde in the sidebar's « TON CONTEXTE » (only where it
+  rains), the biome reading HUMIDE and Eikthyr's sheet « PRAIRIES · HUMIDE »; `-2`, the Ton équipement dialog with « Du
+  groupe » (Fader's power, then the barrier with its Blood Magic); `-3`, the Plains with Humide off and the Lox's sheet,
+  its card's barrier on and each attack saying what it takes (1440×1080, so the table shows). Approved by the owner on 2026-11-01 (v213), and carried into Origine and its themes (v214) by
+  `scripts/humide/origine.mjs` (once). Humide, where the Bestiary's biome rains (the Black Forest does): a row « MÉTÉO ·
+  Humide » with a switch under Ton monde in the phone's context sheet (`Bestiaire`, `Main`, `Arsenal`,
+  `Arsenal-Recherche`, `Memo`; on, the context button shows the rain and the Bestiaire's biome reads HUMIDE), a chip
+  with a switch under Ton monde in the desktop's sidebar (`Desktop-Bestiaire`, `Desktop-Combat`, `Desktop-Arsenal`,
+  `Desktop-Arsenal-Recherche`, `Desktop-Memo`; its icon alone where the sidebar folds, below 1400 px), the desktop
+  sheet reading « FORÊT NOIRE · HUMIDE »; the Troll deals blunt only, so no verdict moves. The barrier: `Profil` and
+  `Desktop-Equipement` read « Du groupe », the barrier « Lancée avec Magie du sang 20 » after Fader's power; the card
+  of `Monstre`, `Desktop-Bestiaire`, `Main` and `Desktop-Combat` gains it, « DU GROUPE · ABSORBE 300 · 1 À 4 MIN »;
+  on, each of the Troll's attacks says how many such hits it takes, counting its chop and pickaxe (140, as every
+  attack of the game's Troll carries): « Barrière : 2 coups (compte 270) », and the Simulation says it above the
+  advice (« elle prend 2 coups comme celui-ci (compte 270), puis : »), the cards reading what comes once it breaks.
 - Page **Simulation · pistes** (`Sim-*`, `SimB-*`): archive of the three Simulation tracks, never regenerated.
 - Page **Menu · pistes** (`Menu-A` to `Menu-C`): the three tracks for Ton équipement and Ton monde on a
   phone. The phone boards carry track C's summary button (VD and enemy scale) opening track B's bottom
