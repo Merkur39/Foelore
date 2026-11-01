@@ -231,7 +231,8 @@ class Component extends DCLogic {
     const FX = [
       { id: 'broche', name: 'Broche en fer', tag: "BIBELOT · 30 S DÈS 65 D'ADRÉNALINE" },
       { id: 'masse', name: "Masse-d'Os", tag: 'POUVOIR · 5 MIN' },
-      { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' }
+      { id: 'gel', name: 'Hydromel de résistance au gel', tag: 'BOISSON · 10 MIN' },
+      { id: 'fader', name: 'Pouvoir de Fader', tag: 'POUVOIR DU GROUPE · 5 MIN' }
     ];
     const on = st.fx;
     const names = FX.filter((e) => on.indexOf(e.id) !== -1).map((e) => e.name);
@@ -301,11 +302,13 @@ class Component extends DCLogic {
     const isAttack = st.mode === 'attack';
     const hit = isAttack ? 130 * [1, 1.5, 2][st.stars] : st.value;
     // What is on in « Avec tes effets temporaires », for an attack: the Brooch's armor, Bonemass's blunt resistance
-    // past the shield and its block stamina.
+    // past the shield and its block stamina, and Fader's power, a friend's, which halves the stagger at the shield and
+    // at the armor (Character.AddStaggerDamage).
     const on = isAttack ? st.fx : [];
     const fxArmor = on.indexOf('broche') !== -1 ? 20 : 0;
     const masse = on.indexOf('masse') !== -1;
     const fxBlunt = masse ? 0.75 : 1, fxShare = masse ? -1 : 0, fxFlat = masse ? -5 : 0;
+    const fxStagger = on.indexOf('fader') !== -1 ? 0.5 : 1;
 
     const colors = { ok: '#22703E', warn: '#8C5800', bad: '#B23A30' };
     const fills = { ok: '#79C291', warn: '#E6AE4A', bad: '#E07A70' };
@@ -316,20 +319,20 @@ class Component extends DCLogic {
       const power = parry ? bp * pb : bp;
       const passes = armor(h, power);
       const bar0 = T * st.barPct / 100;
-      const broke = bar0 + passes >= T;
+      const broke = bar0 + passes * fxStagger >= T;
       // SEMan.ModifyBlockStaminaUsage: each effect its share of the drain and a flat amount; a parry that holds pays twice.
       const drain = (d) => d + d * fxShare + fxFlat;
       const cost = parry ? (broke ? drain(0) : drain(0) + drain(0)) : drain(10 * Math.min(1, (h - passes) / power));
       const taken = broke ? armor(h * fxBlunt, ac + fxArmor) : armor(passes * fxBlunt, ac + fxArmor);
       const shown = taken > 0.1 ? taken : 0;
-      const staggered = broke || bar0 + passes + shown >= T;
+      const staggered = broke || bar0 + (passes + shown) * fxStagger >= T;
       const state = broke ? 'bad' : (staggered ? 'warn' : 'ok');
-      const segs = [bar0, passes, shown].reduce((acc, v) => {
+      const segs = [bar0, passes * fxStagger, shown * fxStagger].reduce((acc, v) => {
         const used = acc.reduce((s, x) => s + x, 0);
         acc.push(Math.min(100 - used, (Math.max(0, v) / T) * 100));
         return acc;
       }, []);
-      const total = Math.min(T, bar0 + passes + shown);
+      const total = Math.min(T, bar0 + (passes + shown) * fxStagger);
       return {
         shown: shown, total: total, staggered: staggered, segs: segs,
         state: state, mode: mode, word: words[state], color: colors[state], fill: fills[state],

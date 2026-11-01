@@ -4036,154 +4036,6 @@
       "expand": "fill",
       "page": "parchemin",
       "is_interactive": true
-    },
-    "Nouveautes-Auj.dc.html": {
-      "x": 0,
-      "y": 0,
-      "w": 1440,
-      "h": 1120,
-      "title": "Nouveautés — aujourd'hui",
-      "page": "nouveautes"
-    },
-    "Nouveautes-A.dc.html": {
-      "x": 0,
-      "y": 1320,
-      "w": 1440,
-      "h": 1120,
-      "title": "A · Notes de patch",
-      "page": "nouveautes"
-    },
-    "Nouveautes-B.dc.html": {
-      "x": 0,
-      "y": 2640,
-      "w": 1440,
-      "h": 1120,
-      "title": "B · Mises à jour nommées",
-      "page": "nouveautes"
-    },
-    "Nouveautes-C.dc.html": {
-      "x": 0,
-      "y": 3960,
-      "w": 1440,
-      "h": 1120,
-      "title": "C · À essayer",
-      "page": "nouveautes"
-    },
-    "Nouveautes-Textes.dc.html": {
-      "x": 0,
-      "y": 5280,
-      "w": 1440,
-      "h": 1980,
-      "title": "Les textes, réécrits",
-      "page": "nouveautes"
-    },
-    "Nouveautes-A1.dc.html": {
-      "x": 1640,
-      "y": 1320,
-      "w": 1440,
-      "h": 1120,
-      "title": "A · Itération 1",
-      "page": "nouveautes"
-    },
-    "Nouveautes-A1-Desktop.dc.html": {
-      "x": 3280,
-      "y": 1320,
-      "w": 1440,
-      "h": 900,
-      "title": "A · Itération 1 · desktop",
-      "page": "nouveautes"
-    },
-    "Degats-Auj.dc.html": {
-      "x": 0,
-      "y": 0,
-      "w": 1736,
-      "h": 1220,
-      "title": "Aujourd’hui · le haut du jet, sans le dire",
-      "page": "degats"
-    },
-    "Degats-A.dc.html": {
-      "x": 0,
-      "y": 1620,
-      "w": 1736,
-      "h": 1220,
-      "title": "A · Des fourchettes, sur la carte",
-      "page": "degats"
-    },
-    "Degats-A-Desktop.dc.html": {
-      "x": 1816,
-      "y": 1620,
-      "w": 1440,
-      "h": 900,
-      "title": "A · desktop",
-      "page": "degats"
-    },
-    "Degats-B.dc.html": {
-      "x": 0,
-      "y": 3240,
-      "w": 1736,
-      "h": 1220,
-      "title": "B · « Jusqu’à », et une ligne",
-      "page": "degats"
-    },
-    "Degats-B-Desktop.dc.html": {
-      "x": 1816,
-      "y": 3240,
-      "w": 1440,
-      "h": 900,
-      "title": "B · desktop",
-      "page": "degats"
-    },
-    "Degats-C.dc.html": {
-      "x": 0,
-      "y": 4860,
-      "w": 1736,
-      "h": 1220,
-      "title": "C · Le plus fort sur la carte, le détail replié",
-      "page": "degats"
-    },
-    "Degats-C-Desktop.dc.html": {
-      "x": 1816,
-      "y": 4860,
-      "w": 1440,
-      "h": 900,
-      "title": "C · desktop",
-      "page": "degats"
-    },
-    "Degats-C1.dc.html": {
-      "x": 0,
-      "y": 6480,
-      "w": 2580,
-      "h": 1220,
-      "title": "Itération 1 · C, avec « Détails »",
-      "is_interactive": true,
-      "page": "degats"
-    },
-    "Degats-C1-Desktop.dc.html": {
-      "x": 2660,
-      "y": 6480,
-      "w": 1440,
-      "h": 900,
-      "title": "Itération 1 · C · desktop",
-      "is_interactive": true,
-      "page": "degats"
-    },
-    "Degats-C2.dc.html": {
-      "x": 0,
-      "y": 8100,
-      "w": 2580,
-      "h": 1220,
-      "title": "Itération 2 · C, les barres en fourchette",
-      "is_interactive": true,
-      "page": "degats"
-    },
-    "Degats-C2-Desktop.dc.html": {
-      "x": 2660,
-      "y": 8100,
-      "w": 1440,
-      "h": 900,
-      "title": "Itération 2 · C · desktop",
-      "is_interactive": true,
-      "page": "degats"
     }
   },
   "createdOnFiles": {
@@ -4200,56 +4052,49 @@
       "text": "Bestiaire",
       "x": 0,
       "y": -300,
-      "maxW": 1330,
-      "w": 240
+      "maxW": 1330
     },
     "m-row2": {
       "kind": "title1",
       "text": "Simulation",
       "x": 0,
       "y": 964,
-      "maxW": 1330,
-      "w": 240
+      "maxW": 1330
     },
     "m-row3": {
       "kind": "title1",
       "text": "Arsenal et mémo",
       "x": 0,
       "y": 2228,
-      "maxW": 1330,
-      "w": 240
+      "maxW": 1330
     },
     "m-row4": {
       "kind": "title1",
       "text": "Ton équipement",
       "x": 0,
       "y": 3492,
-      "maxW": 2270,
-      "w": 240
+      "maxW": 2270
     },
     "m-row5": {
       "kind": "title1",
       "text": "Fenêtres et système",
       "x": 0,
       "y": 4756,
-      "maxW": 2760,
-      "w": 240
+      "maxW": 2760
     },
     "m-row6": {
       "kind": "title1",
       "text": "Tes retours",
       "x": 0,
       "y": 6020,
-      "maxW": 1800,
-      "w": 240
+      "maxW": 1800
     },
     "m-row7": {
       "kind": "title1",
       "text": "Plantages",
       "x": 0,
       "y": 7284,
-      "maxW": 2270,
-      "w": 240
+      "maxW": 2270
     },
     "m-row8": {
       "kind": "title1",
@@ -4263,48 +4108,42 @@
       "text": "Desktop · écrans principaux",
       "x": 0,
       "y": 10052,
-      "maxW": 4480,
-      "w": 240
+      "maxW": 4480
     },
     "d-row2": {
       "kind": "title1",
       "text": "Desktop · arsenal et mémo",
       "x": 0,
       "y": 11372,
-      "maxW": 4480,
-      "w": 240
+      "maxW": 4480
     },
     "d-row3": {
       "kind": "title1",
       "text": "Desktop · ton équipement",
       "x": 0,
       "y": 12692,
-      "maxW": 7520,
-      "w": 240
+      "maxW": 7520
     },
     "d-row4": {
       "kind": "title1",
       "text": "Desktop · fenêtres",
       "x": 0,
       "y": 14012,
-      "maxW": 7520,
-      "w": 240
+      "maxW": 7520
     },
     "d-row5": {
       "kind": "title1",
       "text": "Desktop · tes retours",
       "x": 0,
       "y": 15332,
-      "maxW": 6000,
-      "w": 240
+      "maxW": 6000
     },
     "d-row6": {
       "kind": "title1",
       "text": "Desktop · plantages",
       "x": 0,
       "y": 16652,
-      "maxW": 7520,
-      "w": 240
+      "maxW": 7520
     },
     "d-row7": {
       "kind": "title1",
@@ -4355,8 +4194,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row2-braise": {
       "kind": "title1",
@@ -4364,8 +4202,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row3-braise": {
       "kind": "title1",
@@ -4373,8 +4210,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row4-braise": {
       "kind": "title1",
@@ -4382,8 +4218,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row5-braise": {
       "kind": "title1",
@@ -4391,8 +4226,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row6-braise": {
       "kind": "title1",
@@ -4400,8 +4234,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row7-braise": {
       "kind": "title1",
@@ -4409,8 +4242,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "m-row8-braise": {
       "kind": "title1",
@@ -4426,8 +4258,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row2-braise": {
       "kind": "title1",
@@ -4435,8 +4266,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row3-braise": {
       "kind": "title1",
@@ -4444,8 +4274,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row4-braise": {
       "kind": "title1",
@@ -4453,8 +4282,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row5-braise": {
       "kind": "title1",
@@ -4462,8 +4290,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row6-braise": {
       "kind": "title1",
@@ -4471,8 +4298,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "braise",
-      "w": 240
+      "page": "braise"
     },
     "d-row7-braise": {
       "kind": "title1",
@@ -4488,8 +4314,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row2-brume": {
       "kind": "title1",
@@ -4497,8 +4322,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row3-brume": {
       "kind": "title1",
@@ -4506,8 +4330,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row4-brume": {
       "kind": "title1",
@@ -4515,8 +4338,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row5-brume": {
       "kind": "title1",
@@ -4524,8 +4346,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row6-brume": {
       "kind": "title1",
@@ -4533,8 +4354,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row7-brume": {
       "kind": "title1",
@@ -4542,8 +4362,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "m-row8-brume": {
       "kind": "title1",
@@ -4559,8 +4378,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row2-brume": {
       "kind": "title1",
@@ -4568,8 +4386,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row3-brume": {
       "kind": "title1",
@@ -4577,8 +4394,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row4-brume": {
       "kind": "title1",
@@ -4586,8 +4402,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row5-brume": {
       "kind": "title1",
@@ -4595,8 +4410,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row6-brume": {
       "kind": "title1",
@@ -4604,8 +4418,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "brume",
-      "w": 240
+      "page": "brume"
     },
     "d-row7-brume": {
       "kind": "title1",
@@ -4621,8 +4434,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row2-jour": {
       "kind": "title1",
@@ -4630,8 +4442,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row3-jour": {
       "kind": "title1",
@@ -4639,8 +4450,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row4-jour": {
       "kind": "title1",
@@ -4648,8 +4458,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row5-jour": {
       "kind": "title1",
@@ -4657,8 +4466,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row6-jour": {
       "kind": "title1",
@@ -4666,8 +4474,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row7-jour": {
       "kind": "title1",
@@ -4675,8 +4482,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "m-row8-jour": {
       "kind": "title1",
@@ -4692,8 +4498,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row2-jour": {
       "kind": "title1",
@@ -4701,8 +4506,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row3-jour": {
       "kind": "title1",
@@ -4710,8 +4514,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row4-jour": {
       "kind": "title1",
@@ -4719,8 +4522,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row5-jour": {
       "kind": "title1",
@@ -4728,8 +4530,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row6-jour": {
       "kind": "title1",
@@ -4737,8 +4538,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "jour",
-      "w": 240
+      "page": "jour"
     },
     "d-row7-jour": {
       "kind": "title1",
@@ -4754,8 +4554,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row2-runes": {
       "kind": "title1",
@@ -4763,8 +4562,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row3-runes": {
       "kind": "title1",
@@ -4772,8 +4570,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row4-runes": {
       "kind": "title1",
@@ -4781,8 +4578,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row5-runes": {
       "kind": "title1",
@@ -4790,8 +4586,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row6-runes": {
       "kind": "title1",
@@ -4799,8 +4594,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row7-runes": {
       "kind": "title1",
@@ -4808,8 +4602,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "m-row8-runes": {
       "kind": "title1",
@@ -4825,8 +4618,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row2-runes": {
       "kind": "title1",
@@ -4834,8 +4626,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row3-runes": {
       "kind": "title1",
@@ -4843,8 +4634,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row4-runes": {
       "kind": "title1",
@@ -4852,8 +4642,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row5-runes": {
       "kind": "title1",
@@ -4861,8 +4650,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row6-runes": {
       "kind": "title1",
@@ -4870,8 +4658,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "runes",
-      "w": 240
+      "page": "runes"
     },
     "d-row7-runes": {
       "kind": "title1",
@@ -4887,8 +4674,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row2-graphite": {
       "kind": "title1",
@@ -4896,8 +4682,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row3-graphite": {
       "kind": "title1",
@@ -4905,8 +4690,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row4-graphite": {
       "kind": "title1",
@@ -4914,8 +4698,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row5-graphite": {
       "kind": "title1",
@@ -4923,8 +4706,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row6-graphite": {
       "kind": "title1",
@@ -4932,8 +4714,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row7-graphite": {
       "kind": "title1",
@@ -4941,8 +4722,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "m-row8-graphite": {
       "kind": "title1",
@@ -4958,8 +4738,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row2-graphite": {
       "kind": "title1",
@@ -4967,8 +4746,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row3-graphite": {
       "kind": "title1",
@@ -4976,8 +4754,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row4-graphite": {
       "kind": "title1",
@@ -4985,8 +4762,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row5-graphite": {
       "kind": "title1",
@@ -4994,8 +4770,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row6-graphite": {
       "kind": "title1",
@@ -5003,8 +4778,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "graphite",
-      "w": 240
+      "page": "graphite"
     },
     "d-row7-graphite": {
       "kind": "title1",
@@ -5020,8 +4794,7 @@
       "x": 0,
       "y": -300,
       "maxW": 1330,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row2-parchemin": {
       "kind": "title1",
@@ -5029,8 +4802,7 @@
       "x": 0,
       "y": 964,
       "maxW": 1330,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row3-parchemin": {
       "kind": "title1",
@@ -5038,8 +4810,7 @@
       "x": 0,
       "y": 2228,
       "maxW": 1330,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row4-parchemin": {
       "kind": "title1",
@@ -5047,8 +4818,7 @@
       "x": 0,
       "y": 3492,
       "maxW": 2270,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row5-parchemin": {
       "kind": "title1",
@@ -5056,8 +4826,7 @@
       "x": 0,
       "y": 4756,
       "maxW": 2760,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row6-parchemin": {
       "kind": "title1",
@@ -5065,8 +4834,7 @@
       "x": 0,
       "y": 6020,
       "maxW": 1800,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row7-parchemin": {
       "kind": "title1",
@@ -5074,8 +4842,7 @@
       "x": 0,
       "y": 7284,
       "maxW": 2270,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "m-row8-parchemin": {
       "kind": "title1",
@@ -5091,8 +4858,7 @@
       "x": 0,
       "y": 10052,
       "maxW": 4480,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row2-parchemin": {
       "kind": "title1",
@@ -5100,8 +4866,7 @@
       "x": 0,
       "y": 11372,
       "maxW": 4480,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row3-parchemin": {
       "kind": "title1",
@@ -5109,8 +4874,7 @@
       "x": 0,
       "y": 12692,
       "maxW": 7520,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row4-parchemin": {
       "kind": "title1",
@@ -5118,8 +4882,7 @@
       "x": 0,
       "y": 14012,
       "maxW": 7520,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row5-parchemin": {
       "kind": "title1",
@@ -5127,8 +4890,7 @@
       "x": 0,
       "y": 15332,
       "maxW": 6000,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row6-parchemin": {
       "kind": "title1",
@@ -5136,8 +4898,7 @@
       "x": 0,
       "y": 16652,
       "maxW": 7520,
-      "page": "parchemin",
-      "w": 240
+      "page": "parchemin"
     },
     "d-row7-parchemin": {
       "kind": "title1",
@@ -5146,39 +4907,6 @@
       "y": 17972,
       "maxW": 7520,
       "page": "parchemin"
-    },
-    "nouveautes-row1": {
-      "kind": "title1",
-      "text": "Nouveautés",
-      "x": 0,
-      "y": -300,
-      "maxW": 1440,
-      "page": "nouveautes",
-      "w": 240
-    },
-    "degats-row1": {
-      "kind": "title1",
-      "text": "Dégâts · le jet du jeu, la brûlure et le poison (#64)",
-      "x": 0,
-      "y": -300,
-      "maxW": 3256,
-      "page": "degats"
-    },
-    "degats-row2": {
-      "kind": "title1",
-      "text": "Itération 1 · C, avec « Détails »",
-      "x": 0,
-      "y": 6180,
-      "maxW": 4100,
-      "page": "degats"
-    },
-    "degats-row3": {
-      "kind": "title1",
-      "text": "Itération 2 · C, les barres en fourchette",
-      "x": 0,
-      "y": 7800,
-      "maxW": 4100,
-      "page": "degats"
     }
   },
   "order": [
@@ -5633,25 +5361,7 @@
     "Parchemin-Desktop-Arrivee-Biome.dc.html",
     "Parchemin-Desktop-Arrivee-Equipement.dc.html",
     "Parchemin-Desktop-Arrivee-Casque.dc.html",
-    "Parchemin-Desktop-Arrivee-Monde.dc.html",
-    "Nouveautes-Auj.dc.html",
-    "Nouveautes-A.dc.html",
-    "Nouveautes-B.dc.html",
-    "Nouveautes-C.dc.html",
-    "Nouveautes-Textes.dc.html",
-    "Nouveautes-A1.dc.html",
-    "Nouveautes-A1-Desktop.dc.html",
-    "Degats-Auj.dc.html",
-    "Degats-A.dc.html",
-    "Degats-A-Desktop.dc.html",
-    "Degats-B.dc.html",
-    "Degats-B-Desktop.dc.html",
-    "Degats-C.dc.html",
-    "Degats-C-Desktop.dc.html",
-    "Degats-C1.dc.html",
-    "Degats-C1-Desktop.dc.html",
-    "Degats-C2.dc.html",
-    "Degats-C2-Desktop.dc.html"
+    "Parchemin-Desktop-Arrivee-Monde.dc.html"
   ],
   "pages": [
     {
@@ -5673,14 +5383,6 @@
     {
       "id": "encaisses",
       "name": "Encaisses"
-    },
-    {
-      "id": "nouveautes",
-      "name": "Nouveautés · pistes"
-    },
-    {
-      "id": "degats",
-      "name": "Dégâts · pistes"
     },
     {
       "id": "braise",
@@ -5726,10 +5428,6 @@
     "version-row1",
     "competence-row1",
     "encaisses-row1",
-    "nouveautes-row1",
-    "degats-row1",
-    "degats-row2",
-    "degats-row3",
     "m-row1-braise",
     "m-row2-braise",
     "m-row3-braise",

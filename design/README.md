@@ -2,7 +2,7 @@
 
 The mockups live in a Claude Design artifact: [Foelore — design](https://claude.ai/artifact/DDGhnVebZ9JkXRbWsa2dse)
 (artifact type `https://claude.ai/artifact/QKN21svewxgyPb6SYRqWnd`). **The artifact is the source of truth**;
-`canvas/project/` is a local working copy of **v206** (canvas.json + every `.dc.html` board).
+`canvas/project/` is a local working copy of **v211** (canvas.json + every `.dc.html` board).
 
 ## Layout of the canvas
 
@@ -22,6 +22,41 @@ The mockups live in a Claude Design artifact: [Foelore — design](https://claud
 - Page **Encaisses** (`Encaisses`): the « Ce que tu encaisses » card on a 360 px phone, as it jumped, and two
   steady layouts; track B (the legend under the title, numbers alone on each guard's line) is the one
   carried into the phone Ton équipement board. Made by hand as well.
+- The desktop Bestiaire board is a fluid page that carries track B itself: classes and a `max-width: 1399px`
+  media query in its helmet, which the search board inherits. Play it narrower than 1400 px to see it.
+- Generated from the Bestiaire boards: `Bestiaire-Recherche`, `Desktop-Bestiaire-Recherche`, and `Contexte`
+  (« Ton contexte », the phone Bestiaire with its context sheet open). Generated the same way, `Signaler` (Monstre
+  with its report sheet open) and `Desktop-Signaler` (the desktop Bestiaire with its report dialog open), a line
+  picked; `Merci` and `Desktop-Merci`, the Bestiaire with its thank-you sheet or dialog open; `Plantee` and
+  `Desktop-Plantee`, the creature sheet and the desktop Bestiaire with the sheet crashed; `Ligne-Plantee` and
+  `Desktop-Ligne-Plantee`, the Troll's row failed (on desktop, its sheet beside it too); `Arsenal-Ligne-Plantee`
+  and `Desktop-Arsenal-Ligne-Plantee`, a shield's row failed; `Simulation-Plantee` and
+  `Desktop-Simulation-Plantee`, the Simulation crashed. With `Secours`, they make the « Plantages » rows of
+  Origine, phone and desktop.
+- Réglages boards carry the seven palettes themselves (live preview); their state line must stay
+  `this.state = { theme: 'origine', lang: 'auto' };` for the theme copies.
+- Page **Origine**, row « Ton équipement » (v196): `Profil` and its lists. Each row of Ton équipement and of the first
+  arrival's question 2 names what it holds with a chevron, and opens its list (track A of « Équipement → Arsenal »,
+  approved in v195): `Equipement-Tenu` (« Ce que tu tiens », the pills Boucliers, Armes, Autres), `Equipement-Cape`
+  (« Ta cape », « Aucune cape » first; it stands for every piece), `Equipement-Bibelot` (« Ton bibelot ») and
+  `Equipement-Boisson` (« Une boisson de plus », from « Ajouter une boisson »), each with its `Desktop-` board (the
+  dialog widened to the category's table, « Choisir » on each row), and `Arrivee-Casque` / `Desktop-Arrivee-Casque`
+  under the question's step. In Play, a row opens its list (the helmet, legs, chest, power and a carried drink have
+  no board of their own) and a pick or the back arrow returns. Written once by `scripts/choix/origine.mjs`.
+- Ton monde (`Monde`, `Desktop-Monde`, and the first arrival's `Arrivee-Monde`, `Desktop-Arrivee-Monde`), v197: « Ce
+  que ça donne » holds the four effects of the Combat setting, the fourth « Taille et vitesse au sol » (the game's
+  `enemyspeedsize`), in two columns on a desktop; its note says size and speed hold outside dungeons only, and that
+  the pace of attacks never changes.
+
+## Track pages, removed from the canvas (v196, v208, v211)
+
+A version of the canvas holds at most 511 files. Once every track below was carried into Origine, the owner had their
+pages removed (2026-10-31; Nouveautés and Dégâts on 2026-11-01, in v208; Pouvoirs in v211): their boards are in this repository's
+history (and in the canvas's versions up to v195, v207 and v210), and their generators still write them
+(`scripts/arsenal/build.mjs --tracks`, `scripts/equipement-c3/`, `scripts/choix/build.mjs`, which needs the Origine
+boards from before `origine.mjs`, `scripts/degats/`, and `scripts/pouvoirs/`, which needs the Origine boards from before
+its `origine.mjs`).
+
 - Page **Nouveautés · pistes** (`Nouveautes-*`, v198): What's new, as verbose as it was (`Nouveautes-Auj`, the notes of
   `src/app/releases.ts` at the time), and three tracks on a phone sharing one rewritten copy, a short title and at
   most one sentence of detail per note (`Nouveautes-Textes`, French and English, with each note's kind and track B's
@@ -56,39 +91,39 @@ The mockups live in a Claude Design artifact: [Foelore — design](https://claud
   `Desktop-Combat` roll their example hit (√U(0.75, 1)), fold « Détails » under the cards (the Troll's 130 blocked
   staggers 1 time in 3) and draw the cards' bars as ranges while it is open; `Simulation-Plantee` and its desktop
   follow from `build_bestiary_search.py`.
-- The desktop Bestiaire board is a fluid page that carries track B itself: classes and a `max-width: 1399px`
-  media query in its helmet, which the search board inherits. Play it narrower than 1400 px to see it.
-- Generated from the Bestiaire boards: `Bestiaire-Recherche`, `Desktop-Bestiaire-Recherche`, and `Contexte`
-  (« Ton contexte », the phone Bestiaire with its context sheet open). Generated the same way, `Signaler` (Monstre
-  with its report sheet open) and `Desktop-Signaler` (the desktop Bestiaire with its report dialog open), a line
-  picked; `Merci` and `Desktop-Merci`, the Bestiaire with its thank-you sheet or dialog open; `Plantee` and
-  `Desktop-Plantee`, the creature sheet and the desktop Bestiaire with the sheet crashed; `Ligne-Plantee` and
-  `Desktop-Ligne-Plantee`, the Troll's row failed (on desktop, its sheet beside it too); `Arsenal-Ligne-Plantee`
-  and `Desktop-Arsenal-Ligne-Plantee`, a shield's row failed; `Simulation-Plantee` and
-  `Desktop-Simulation-Plantee`, the Simulation crashed. With `Secours`, they make the « Plantages » rows of
-  Origine, phone and desktop.
-- Réglages boards carry the seven palettes themselves (live preview); their state line must stay
-  `this.state = { theme: 'origine', lang: 'auto' };` for the theme copies.
-- Page **Origine**, row « Ton équipement » (v196): `Profil` and its lists. Each row of Ton équipement and of the first
-  arrival's question 2 names what it holds with a chevron, and opens its list (track A of « Équipement → Arsenal »,
-  approved in v195): `Equipement-Tenu` (« Ce que tu tiens », the pills Boucliers, Armes, Autres), `Equipement-Cape`
-  (« Ta cape », « Aucune cape » first; it stands for every piece), `Equipement-Bibelot` (« Ton bibelot ») and
-  `Equipement-Boisson` (« Une boisson de plus », from « Ajouter une boisson »), each with its `Desktop-` board (the
-  dialog widened to the category's table, « Choisir » on each row), and `Arrivee-Casque` / `Desktop-Arrivee-Casque`
-  under the question's step. In Play, a row opens its list (the helmet, legs, chest, power and a carried drink have
-  no board of their own) and a pick or the back arrow returns. Written once by `scripts/choix/origine.mjs`.
-- Ton monde (`Monde`, `Desktop-Monde`, and the first arrival's `Arrivee-Monde`, `Desktop-Arrivee-Monde`), v197: « Ce
-  que ça donne » holds the four effects of the Combat setting, the fourth « Taille et vitesse au sol » (the game's
-  `enemyspeedsize`), in two columns on a desktop; its note says size and speed hold outside dungeons only, and that
-  the pace of attacks never changes.
-
-## Track pages, removed from the canvas (v196)
-
-A version of the canvas holds at most 511 files. Once every track below was carried into Origine, the owner had their
-pages removed (2026-10-31): their boards are in this repository's history (and in the canvas's versions up to
-v195), and their generators still write them (`scripts/arsenal/build.mjs --tracks`, `scripts/equipement-c3/`,
-`scripts/choix/build.mjs`, which needs the Origine boards from before `origine.mjs`).
-
+- Page **Pouvoirs · pistes** (`Pouvoirs-*`, v207, #79): several forsaken powers at once, as a group shares them (a
+  player's own power, given to every player within 10 m when cast), never tied to Your world's player count. The
+  mockups' gear (Silver shield level 3, Blocking 25, iron level 1 and the wolf cape level 3, armor 45) against the Lox:
+  Bonemass, the player's own, leaves the Bite blocked staggering; Fader's, a friend's, makes every block hold; Moder's,
+  another friend's, changes nothing (no frost). `Pouvoirs-Auj`, today: one power, the list swaps it. Track A, powers
+  like drinks (« Ajouter un pouvoir », « Un pouvoir de plus », nothing says whose); track B, one's own power apart from
+  the group's (a section « Pouvoirs du groupe » in Ton équipement, « Pouvoir du groupe » on the card's rows); track C,
+  the group's on the card only (« Du groupe » lists every power but one's own: a switch for those that change a hit
+  against the creature, the others named on one line; nothing kept), Ton équipement unchanged. Four phones a track,
+  no desktop. Static, written by `scripts/pouvoirs/` (`data.mts` from the app's engine and models, `build.mjs`, which
+  takes Ton équipement from `Profil` and shows it scrolled to « Ce que tu emportes », `add.mjs`). The owner picked B.
+  Iteration 1 (v208, under the tracks): `Pouvoirs-B1`, five phones: Ton équipement with « Ce que tu emportes » as it
+  is and « Pouvoirs du groupe » under it; « Un pouvoir du groupe » (without one's own nor those added); a group power's
+  list (swap it, or « Retirer ce pouvoir »); « Ton pouvoir », the group's tagged DU GROUPE (picking one takes it out of
+  the group); the Lox's sheet, whose card answers in Play (the Brooch, Bonemass, Fader's: the advice and the verdicts
+  follow the engine's eight states, `data.mts` › `states`), the card in Ton équipement's order then the group's,
+  « POUVOIR DU GROUPE · 5 MIN ». `Pouvoirs-B1-Desktop`, the Ton équipement dialog from `Desktop-Equipement`, scrolled to
+  the two sections. On the owner's feedback (v209): one's own power reads ÉQUIPÉ, not EMPORTÉ (« Ton pouvoir », whose
+  « Aucun pouvoir » says « retire le tien », and the Arsenal, whose action reads « Équiper »), and
+  `Pouvoirs-B1-Retours` draws the Arsenal's powers on a phone (the generator imports `scripts/arsenal/build.mjs`; one's
+  own, then the group's tagged DU GROUPE, at the head) beside three wordings for a row a group's power makes useless,
+  on the Fuling shaman with the fire mead and Fader's power on (« un pouvoir du groupe résiste déjà » was not
+  understood); `Pouvoirs-B1-Arsenal-Desktop`, the Arsenal's powers on a desktop. The owner picked C (v210), for every
+  reason of that kind: « Ne change rien : déjà couvert par ta cape », « … par ton pouvoir », « … par le Pouvoir de
+  Fader ». Approved by the owner on
+  2026-11-01 (v210), and carried into Origine and its themes (v211) by `scripts/pouvoirs/origine.mjs` (once): `Profil`
+  and `Desktop-Equipement` gain « Pouvoirs du groupe » under « Ce que tu emportes » (Fader's power, a friend's, and
+  « Ajouter un pouvoir du groupe »); the card « Avec tes effets temporaires » of `Monstre`, `Desktop-Bestiaire`, `Main`
+  and `Desktop-Combat` gains it after the drinks, « POUVOIR DU GROUPE · 5 MIN », its stagger ×0,5 at the shield and at
+  the armor as the engine has it (the Troll then blocks everything: « Tu bloques tout sans tituber »); `Arsenal` and
+  `Desktop-Arsenal` tag one's own power ÉQUIPÉ (« Équiper »), the group's DU GROUPE, both at the head of the powers,
+  the desktop's lede for powers reading « Équiper un pouvoir en fait le tien dans Ton équipement ». The first arrival
+  keeps no « Pouvoirs du groupe ».
 - Page **Simulation · pistes** (`Sim-*`, `SimB-*`): archive of the three Simulation tracks, never regenerated.
 - Page **Menu · pistes** (`Menu-A` to `Menu-C`): the three tracks for Ton équipement and Ton monde on a
   phone. The phone boards carry track C's summary button (VD and enemy scale) opening track B's bottom
