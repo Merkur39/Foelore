@@ -4,17 +4,19 @@ import { DAMAGE_TYPES, type DamageType } from '@/combat/damage'
 import { resolveHit, type Guard, type Hit } from '@/combat/hit'
 import { mergeModifiers, type DamageModifiers } from '@/combat/modifiers'
 import type { World } from '@/combat/world'
+import { game } from '@/data'
 import type { ArmorSlot, GameCreature, GameRuleEffect } from '@/data/types'
 import { fightersOf } from '@/features/bestiary/model'
 import { changesNoHit, isCarried, type CarriedKind } from '@/features/gear/carried'
 import { pieceOf, setEffects, SLOTS } from '@/features/gear/pieces'
 
-/** What already resists a damage type as well as an effect would: a group's power by its id. */
+/** What already resists a damage type as well as an effect would: a group's power by its id, Wet. */
 export type Holder =
   | { readonly kind: 'piece'; readonly slot: ArmorSlot }
   | { readonly kind: 'set' }
   | { readonly kind: CarriedKind }
   | { readonly kind: 'group'; readonly id: string }
+  | { readonly kind: 'weather' }
 
 /** Why an effect changes nothing in a fight, its main reason first: it changes no hit at all, none of its
  * types is dealt, or what is dealt is already resisted; `nothing` when none says it. */
@@ -24,13 +26,15 @@ export type Idle =
   | { readonly kind: 'resisted'; readonly by: Holder }
   | { readonly kind: 'nothing' }
 
-/** A fight as the sheet or the Simulation shows it: the gear, the effects switched on, and the hits. */
+/** A fight as the sheet or the Simulation shows it: the gear, the effects switched on, Wet if it is on,
+ * and the hits. */
 export interface Against {
   readonly gear: Gear
   readonly on: readonly GameRuleEffect[]
   readonly hits: readonly Hit[]
   readonly world: World
   readonly stars: number
+  readonly wet?: boolean
 }
 
 /** Every hit a creature deals over its phases: its attacks, then trampling and its death. */
@@ -47,11 +51,11 @@ const GUARDS: readonly Guard[] = ['block', 'parry']
  * stamina, the bar or a verdict, under either guard. Else why it changes nothing. */
 export function idleOf(
   effect: GameRuleEffect,
-  { gear, on, hits, world, stars }: Against,
+  { gear, on, hits, world, stars, wet = false }: Against,
 ): Idle | null {
   const others = on.filter((other) => other.id !== effect.id)
-  const without = gearDefence(gear, others)
-  const within = gearDefence(gear, [...others, effect])
+  const without = gearDefence(gear, others, wet)
+  const within = gearDefence(gear, [...others, effect], wet)
   const changes = hits.some((hit) =>
     GUARDS.some((guard) => {
       const options = { guard, stars, barBefore: 0 }
@@ -61,7 +65,7 @@ export function idleOf(
       )
     }),
   )
-  return changes ? null : reasonOf(effect, gear, others, hits)
+  return changes ? null : reasonOf(effect, gear, others, hits, wet)
 }
 
 const changed = (modifiers: DamageModifiers = {}) =>
@@ -72,6 +76,7 @@ function reasonOf(
   gear: Gear,
   others: readonly GameRuleEffect[],
   hits: readonly Hit[],
+  wet: boolean,
 ): Idle {
   if (changesNoHit(effect)) return { kind: 'noHit' }
   const types = changed(effect.modifiers)
@@ -94,6 +99,7 @@ function reasonOf(
         : { kind: other.kind },
       modifiers: other.modifiers ?? {},
     })),
+    ...(wet ? [{ by: { kind: 'weather' } as const, modifiers: game.wet.modifiers }] : []),
   ]
   // A holder whose state the effect's would not replace (HitData.DamageModifiers.ShouldOverride).
   for (const type of dealt) {

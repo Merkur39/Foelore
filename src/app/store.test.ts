@@ -167,6 +167,18 @@ describe('createStore', () => {
     })
   })
 
+  it("keeps the group's Magic barrier by the Blood Magic of its caster, a whole level of 0 to 100", () => {
+    const barrierOf = (barrier: unknown) => {
+      const carried = { trinket: null, power: null, drinks: [], group: [], barrier }
+      const saved = { gear: { ...changed.gear, carried } }
+      return createStore(memoryStorage(JSON.stringify(saved))).getState().gear.carried?.barrier
+    }
+
+    expect(barrierOf(20)).toBe(20)
+    expect(barrierOf(0)).toBe(0)
+    for (const wrong of [101, -1, 2.5, '20', null]) expect(barrierOf(wrong)).toBeUndefined()
+  })
+
   it('carries nothing when what is saved as carried is not a list of effects at all', () => {
     const saved = { gear: { ...changed.gear, carried: { trinket: 7, drinks: 'mead' } } }
 

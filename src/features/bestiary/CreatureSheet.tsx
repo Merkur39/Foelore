@@ -3,7 +3,8 @@ import type { Route } from '@/app/routes'
 import { RouteLink } from '@/app/RouteLink'
 import { creatureHealth, staggerThreshold, toInflict } from '@/combat/creature'
 import { game } from '@/data'
-import type { AttackVerdicts } from '@/combat/attack'
+import { attackBarrier, type AttackVerdicts } from '@/combat/attack'
+import type { World } from '@/combat/world'
 import type { GameCreature, GameHit } from '@/data/types'
 import { EffectsCard } from '@/features/effects/EffectsCard'
 import { useLit } from '@/features/effects/lit'
@@ -13,6 +14,8 @@ import type { Crash } from '@/features/report/model'
 import { useCreatureOrigin } from '@/features/report/origins'
 import { ReportLink } from '@/features/report/ReportLink'
 import { useOpenReport } from '@/features/report/useReport'
+import { useWet } from '@/features/weather/wet'
+import type { Catalog } from '@/i18n/fr'
 import { formatNumber } from '@/i18n/format'
 import { useLanguage, useT } from '@/i18n/useT'
 import { DamageTypeIcon } from '@/ui/DamageTypeIcon'
@@ -73,7 +76,7 @@ export function CreatureSheet({
 }) {
   const t = useT()
   const language = useLanguage()
-  const { on } = useLit(creature)
+  const { on, barrier } = useLit(creature)
   const { defence, world } = useFight(on)
   const [stars, setStars] = useState(creature.stars.min)
   const assessment = assess(creature, defence, world, stars)
@@ -91,7 +94,7 @@ export function CreatureSheet({
     ).values(),
   ]
   const threshold = staggerThreshold(creature, stars)
-  const biome = game.biomes.find((candidate) => candidate.id === place.biome)?.name[language]
+  const biome = useBiomeLine(place)
   const name = creatureName(creature, language)
 
   const health = formatNumber(creatureHealth(creature.health, stars), language)
@@ -106,6 +109,7 @@ export function CreatureSheet({
     health,
     toInflict: inflict,
     on,
+    barrier: barrier?.on ?? false,
   })
 
   const parry: { tone: Tone; text: string } = !assessment.canParry
@@ -131,9 +135,19 @@ export function CreatureSheet({
       <EffectsCard creature={creature} hits={creatureHits(creature)} stars={stars} />
       <Modifiers creature={creature} />
       {layout === 'page' ? (
-        <AttackList creature={creature} assessment={assessment} place={place} />
+        <AttackList
+          creature={creature}
+          assessment={assessment}
+          place={place}
+          barrier={shieldOf(barrier, world, stars, t)}
+        />
       ) : (
-        <AttackTable creature={creature} assessment={assessment} place={place} />
+        <AttackTable
+          creature={creature}
+          assessment={assessment}
+          place={place}
+          barrier={shieldOf(barrier, world, stars, t)}
+        />
       )}
       <ReportLink origin={report} label={t.report.fromCreature} />
     </>
@@ -196,8 +210,7 @@ function PageHeader({
   readonly place: Place
 }) {
   const t = useT()
-  const language = useLanguage()
-  const biome = game.biomes.find((candidate) => candidate.id === place.biome)?.name[language]
+  const biome = useBiomeLine(place)
   return (
     <div className={styles.pageHeader}>
       <RouteLink
@@ -454,10 +467,12 @@ function AttackList({
   creature,
   assessment,
   place,
+  barrier,
 }: {
   readonly creature: GameCreature
   readonly assessment: Assessment
   readonly place: Place
+  readonly barrier: Shield
 }) {
   const t = useT()
   const language = useLanguage()
@@ -485,11 +500,13 @@ function AttackList({
           </PhaseHeading>
           {own.map((assessed) => {
             const { attack, damage, verdicts } = assessed
+            const shield = barrier(attack.hits, damage)
             const content = (
               <>
                 <span className={styles.attackName}>
                   <span className={styles.attackTitle}>{attack.name[language]}</span>
                   <AttackTags attack={attack} />
+                  {shield && <span className={styles.barrier}>{shield}</span>}
                 </span>
                 <span className={styles.damage}>{damageText(damage, language)}</span>
                 {verdicts ? <AttackPills verdicts={verdicts} /> : <span />}
@@ -499,7 +516,7 @@ function AttackList({
               <RouteLink
                 key={attack.ids[0]}
                 to={simulationRoute(assessed)}
-                aria-label={`${summary(attack, damage, verdicts)} ${t.creature.openSimulation}`}
+                aria-label={`${summary(attack, damage, verdicts)}${shield ? ` ${shield}.` : ''} ${t.creature.openSimulation}`}
                 className={styles.attackRow}
               >
                 {content}
@@ -524,10 +541,12 @@ function AttackTable({
   creature,
   assessment,
   place,
+  barrier,
 }: {
   readonly creature: GameCreature
   readonly assessment: Assessment
   readonly place: Place
+  readonly barrier: Shield
 }) {
   const t = useT()
   const language = useLanguage()
@@ -565,6 +584,7 @@ function AttackTable({
               ) : null,
               ...own.map((assessed) => {
                 const { attack, damage, verdicts } = assessed
+                const shield = barrier(attack.hits, damage)
                 return (
                   <tr key={`${fighter.id}/${attack.ids[0] ?? ''}`}>
                     <th scope="row" className={styles.attackCell}>
@@ -575,6 +595,7 @@ function AttackTable({
                         rangeClassName={styles.rangeInCell}
                         className={styles.cellTags}
                       />
+                      {shield && <span className={styles.barrier}>{shield}</span>}
                     </th>
                     <td className={`${styles.range ?? ''} ${styles.rangeColumn ?? ''}`}>
                       {attack.kind === 'summon'
@@ -814,4 +835,36 @@ function HazardTableRows({
       })}
     </>
   )
+}
+
+/** The biome a sheet is shown in, by its game name, with Wet beside it while it is on there. */
+function useBiomeLine(place: Place) {
+  const t = useT()
+  const language = useLanguage()
+  const wet = useWet()
+  const name = game.biomes.find((candidate) => candidate.id === place.biome)?.name[language]
+  if (name === undefined || !wet.on || wet.biome !== place.biome) return name
+  return t.weather.beside(name, game.wet.name[language])
+}
+
+/** What the group's Magic barrier says under an attack, while it is on: how many such hits it takes, and
+ * what it counts when not what the attack lists (its chop and pickaxe, the world). */
+type Shield = (hits: readonly GameHit[], damage: number | null) => string | null
+
+function shieldOf(
+  barrier: { readonly capacity: number; readonly on: boolean } | null,
+  world: World,
+  stars: number,
+  t: Catalog,
+): Shield {
+  return (hits, damage) => {
+    if (!barrier?.on) return null
+    const taken = attackBarrier(barrier.capacity, hits, world, stars)
+    if (taken === null) return null
+    const counted = Math.round(taken.counted)
+    return t.barrier.hits(
+      taken.hits,
+      damage !== null && counted === Math.round(damage) ? null : counted,
+    )
+  }
 }

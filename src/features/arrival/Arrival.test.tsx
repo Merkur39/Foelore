@@ -83,9 +83,7 @@ describe('The first arrival', () => {
     const dialog = await answerWhere(user, 'Forêt noire')
 
     expect(within(dialog).getByRole('region', { name: 'Ce que tu emportes' })).toBeInTheDocument()
-    expect(
-      within(dialog).queryByRole('region', { name: 'Pouvoirs du groupe' }),
-    ).not.toBeInTheDocument()
+    expect(within(dialog).queryByRole('region', { name: 'Du groupe' })).not.toBeInTheDocument()
   })
 
   it('opens a row’s list under the question’s step, and comes back to the question', async () => {

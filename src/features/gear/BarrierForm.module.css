@@ -1,0 +1,86 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lede {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--secondary);
+}
+
+.absorbs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+
+.capacity {
+  font-family: var(--font-mono);
+  font-size: 24px;
+}
+
+.how {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--faint);
+}
+
+/* Done first on a phone, the way out under it; side by side on a desktop. */
+.actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+
+.done {
+  height: 48px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 500;
+}
+
+.remove {
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.done:focus-visible,
+.remove:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .done {
+    height: 40px;
+    margin-left: auto;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .remove {
+    min-height: 40px;
+  }
+}

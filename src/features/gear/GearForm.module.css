@@ -210,7 +210,8 @@
 }
 
 .carriedRow + .carriedRow,
-.carriedRow + .add {
+.carriedRow + .add,
+.add + .add {
   border-top: 1px solid var(--line-soft);
 }
 

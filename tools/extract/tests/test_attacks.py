@@ -35,8 +35,8 @@ class AttacksTests(unittest.TestCase):
         self.assertEqual(bite["kind"], "melee")
         self.assertEqual(
             bite["hits"],
-            [{"damages": {"pierce": 210}, "staggerMultiplier": 0.8, "blockable": True, "dodgeable": True,
-              "scaling": "attack", "source": "weapon"}],
+            [{"damages": {"pierce": 210}, "toolDamage": 600, "staggerMultiplier": 0.8, "blockable": True,
+              "dodgeable": True, "scaling": "attack", "source": "weapon"}],
         )
 
     def test_melee_attack_ignores_its_projectile_field(self):
@@ -50,6 +50,13 @@ class AttacksTests(unittest.TestCase):
         mace = self.attack("Skeleton_DeepNorth", "skeleton_mace_DeepNorth")
         self.assertEqual(mace["hits"][0]["damages"], {"blunt": 80, "frost": 10})
         self.assertEqual(mace["hits"][0]["trueDamage"], 15)
+
+    def test_chop_and_pickaxe_are_kept_apart_for_the_magic_barrier(self):
+        # SE_Shield.OnDamaged counts HitData.GetTotalDamage, which adds them, though no player takes them.
+        stomp = self.attack("Lox", "lox_stomp")["hits"][0]
+        self.assertEqual((stomp["damages"], stomp["toolDamage"]), ({"blunt": 120}, 200))
+        self.assertNotIn("toolDamage", self.attack("Lox", "lox_bite")["hits"][0])
+        self.assertEqual(self.attack("Eikthyr", "Eikthyr_antler")["hits"][0]["toolDamage"], 2000)
 
     def test_projectile_takes_the_attack_hit_over_its_own_damage(self):
         bow = self.attack("Charred_Archer", "charred_bow")
@@ -89,10 +96,10 @@ class AttacksTests(unittest.TestCase):
         self.assertEqual(
             slam["hits"],
             [
-                {"damages": {"blunt": 70}, "staggerMultiplier": 1, "blockable": True, "dodgeable": True,
-                 "scaling": "attack", "source": "weapon"},
-                {"damages": {"blunt": 50}, "staggerMultiplier": 1, "blockable": True, "dodgeable": True,
-                 "scaling": "world", "source": "aoe", "radius": 3},
+                {"damages": {"blunt": 70}, "toolDamage": 140, "staggerMultiplier": 1, "blockable": True,
+                 "dodgeable": True, "scaling": "attack", "source": "weapon"},
+                {"damages": {"blunt": 50}, "toolDamage": 80, "staggerMultiplier": 1, "blockable": True,
+                 "dodgeable": True, "scaling": "world", "source": "aoe", "radius": 3},
             ],
         )
 
@@ -142,8 +149,8 @@ class AttacksTests(unittest.TestCase):
         bolt = self.attack("JotunWitch", "JotunWitch_attack_lightningbolt")
         self.assertEqual(
             bolt["hits"],
-            [{"damages": {"lightning": 110, "spirit": 15}, "staggerMultiplier": 1, "blockable": True, "dodgeable": True,
-              "scaling": "attack", "source": "projectile", "radius": 3, "ticks": {"every": 0.52}}],
+            [{"damages": {"lightning": 110, "spirit": 15}, "toolDamage": 20, "staggerMultiplier": 1, "blockable": True,
+              "dodgeable": True, "scaling": "attack", "source": "projectile", "radius": 3, "ticks": {"every": 0.52}}],
         )
 
     # ------------------------------------------------------------------ SpawnAbility
@@ -152,8 +159,8 @@ class AttacksTests(unittest.TestCase):
         self.assertEqual(fissure["kind"], "area")
         self.assertEqual(
             fissure["hits"],
-            [{"damages": {"fire": 120, "spirit": 80}, "staggerMultiplier": 1, "blockable": False, "dodgeable": False,
-              "scaling": "none", "source": "aoe", "radius": 11, "count": 15, "countMin": 12,
+            [{"damages": {"fire": 120, "spirit": 80}, "toolDamage": 80, "staggerMultiplier": 1, "blockable": False,
+              "dodgeable": False, "scaling": "none", "source": "aoe", "radius": 11, "count": 15, "countMin": 12,
               "ticks": {"every": 0.52, "max": 29, "delay": 4}}],
         )
 
@@ -162,8 +169,8 @@ class AttacksTests(unittest.TestCase):
         self.assertEqual(meteors["kind"], "projectile")
         self.assertEqual(
             meteors["hits"],
-            [{"damages": {"blunt": 40, "fire": 120}, "staggerMultiplier": 1, "blockable": True, "dodgeable": True,
-              "scaling": "world", "source": "projectile", "radius": 5, "count": 10}],
+            [{"damages": {"blunt": 40, "fire": 120}, "toolDamage": 100, "staggerMultiplier": 1, "blockable": True,
+              "dodgeable": True, "scaling": "world", "source": "projectile", "radius": 5, "count": 10}],
         )
 
     def test_spawn_count_excludes_the_maximum(self):
@@ -204,8 +211,8 @@ class AttacksTests(unittest.TestCase):
 
     # ------------------------------------------------------------------ effects and death
     def test_death_explosions_are_owner_less_hits_of_the_creature(self):
-        explosion = {"damages": {"blunt": 70, "fire": 30}, "staggerMultiplier": 1, "blockable": False,
-                     "dodgeable": True, "scaling": "none", "source": "aoe", "radius": 6}
+        explosion = {"damages": {"blunt": 70, "fire": 30}, "toolDamage": 320, "staggerMultiplier": 1,
+                     "blockable": False, "dodgeable": True, "scaling": "none", "source": "aoe", "radius": 6}
         self.assertEqual(self.creatures["BlobLava"]["onDeath"], [explosion])
         self.assertEqual(
             self.creatures["Writhan"]["onDeath"][0]["damages"], {"blunt": 60, "poison": 40},
@@ -215,8 +222,8 @@ class AttacksTests(unittest.TestCase):
     def test_self_destruct_explodes_through_its_trigger_effect_and_its_death(self):
         blow_up = self.attack("BlobLava", "blobLava_attack_aoe")
         self.assertEqual(blow_up["kind"], "area")
-        explosion = {"damages": {"blunt": 70, "fire": 30}, "staggerMultiplier": 1, "blockable": False,
-                     "dodgeable": True, "scaling": "none", "source": "aoe", "radius": 6}
+        explosion = {"damages": {"blunt": 70, "fire": 30}, "toolDamage": 320, "staggerMultiplier": 1,
+                     "blockable": False, "dodgeable": True, "scaling": "none", "source": "aoe", "radius": 6}
         self.assertEqual(blow_up["hits"], [explosion, dict(explosion, onDeath=True)])
 
     def test_disabled_trigger_effect_is_not_followed(self):

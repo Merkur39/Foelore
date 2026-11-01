@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
+import { game } from '@/data'
 import { FirstArrival } from '@/features/arrival/FirstArrival'
 import { ArsenalScreen } from '@/features/arsenal/ArsenalScreen'
 import { BestiaryScreen } from '@/features/bestiary/BestiaryScreen'
@@ -25,6 +26,7 @@ import { SettingsModal } from '@/features/settings/SettingsModal'
 import { AttackPicker } from '@/features/simulation/AttackPicker'
 import { findAttack, refOf } from '@/features/simulation/model'
 import { SimulationScreen } from '@/features/simulation/SimulationScreen'
+import { useWetState, WetContext } from '@/features/weather/wet'
 import { WorldModal } from '@/features/world/WorldModal'
 import { useLanguage, useT } from '@/i18n/useT'
 import styles from './App.module.css'
@@ -99,6 +101,11 @@ function Shell({ onPreview }: { readonly onPreview: (preview: Preview) => void }
   const lit = useLitState(
     creature?.id ?? (simulated ? (findAttack(simulated)?.creature.id ?? null) : null),
   )
+  // Wet holds for the biome the Bestiary shows, and dries off when it shows another.
+  const weather = useWetState(
+    screen === 'bestiary' ? placeOf(route, saved.biome).biome : null,
+    saved.biome ?? game.biomes[0]!.id,
+  )
   // A creature's sheet takes the whole screen of a phone, bars included.
   const detail = !isDesktop && creature !== null
   const title = creature ? creatureName(creature, language) : t.screens[screen]
@@ -119,47 +126,49 @@ function Shell({ onPreview }: { readonly onPreview: (preview: Preview) => void }
   return (
     <OpenReportContext value={setReport}>
       <LitContext value={lit}>
-        <div className={isDesktop ? styles.desktop : styles.phone}>
-          {isDesktop ? <Sidebar screen={screen} links={links} /> : !detail && <TopBar />}
-          {/* Each screen under its own net, which another tab leaves behind: the bars stay. */}
-          <CrashBoundary
-            key={screen}
-            fallback={(crash, retry) => (
-              <ScreenCrash screen={screen} crash={crash} onRetry={retry} />
-            )}
-          >
-            {screen === 'bestiary' ? (
-              <BestiaryScreen route={route} />
-            ) : screen === 'simulation' ? (
-              <SimulationScreen route={route} />
-            ) : screen === 'arsenal' ? (
-              <ArsenalScreen route={route} />
-            ) : (
-              <GuideScreen route={route} />
-            )}
-          </CrashBoundary>
-          {!isDesktop && !detail && <TabBar screen={screen} links={links} />}
-          {modal === 'settings' && <SettingsModal onPreview={onPreview} />}
-          {modal === 'attack' && <AttackPicker />}
-          {modal === 'gear' && <GearModal />}
-          {modal === 'world' && <WorldModal />}
-          {modal === 'reports' && <ReportsModal />}
-          {modal === 'news' && <NewsModal />}
-          {modal === 'notices' && <NoticesModal />}
-          {/* Opened before the sheets below: each of them shows over the questions, the offer to
+        <WetContext value={weather}>
+          <div className={isDesktop ? styles.desktop : styles.phone}>
+            {isDesktop ? <Sidebar screen={screen} links={links} /> : !detail && <TopBar />}
+            {/* Each screen under its own net, which another tab leaves behind: the bars stay. */}
+            <CrashBoundary
+              key={screen}
+              fallback={(crash, retry) => (
+                <ScreenCrash screen={screen} crash={crash} onRetry={retry} />
+              )}
+            >
+              {screen === 'bestiary' ? (
+                <BestiaryScreen route={route} />
+              ) : screen === 'simulation' ? (
+                <SimulationScreen route={route} />
+              ) : screen === 'arsenal' ? (
+                <ArsenalScreen route={route} />
+              ) : (
+                <GuideScreen route={route} />
+              )}
+            </CrashBoundary>
+            {!isDesktop && !detail && <TabBar screen={screen} links={links} />}
+            {modal === 'settings' && <SettingsModal onPreview={onPreview} />}
+            {modal === 'attack' && <AttackPicker />}
+            {modal === 'gear' && <GearModal />}
+            {modal === 'world' && <WorldModal />}
+            {modal === 'reports' && <ReportsModal />}
+            {modal === 'news' && <NewsModal />}
+            {modal === 'notices' && <NoticesModal />}
+            {/* Opened before the sheets below: each of them shows over the questions, the offer to
             install included, which comes first at a first launch. */}
-          {!saved.onboarding && <FirstArrival />}
-          {fixes.length > 0 && <ThanksSheet fixes={fixes} onClose={dismissFixes} />}
-          {installOffer && <InstallOffer way={installOffer} onClose={leaveInstallOffer} />}
-          {report && (
-            <ReportSheet
-              origin={report}
-              onClose={() => {
-                setReport(null)
-              }}
-            />
-          )}
-        </div>
+            {!saved.onboarding && <FirstArrival />}
+            {fixes.length > 0 && <ThanksSheet fixes={fixes} onClose={dismissFixes} />}
+            {installOffer && <InstallOffer way={installOffer} onClose={leaveInstallOffer} />}
+            {report && (
+              <ReportSheet
+                origin={report}
+                onClose={() => {
+                  setReport(null)
+                }}
+              />
+            )}
+          </div>
+        </WetContext>
       </LitContext>
     </OpenReportContext>
   )

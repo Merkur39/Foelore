@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { App } from '@/app/App'
 import type { Store } from '@/app/store'
-import { MOCKUP_GEAR, MOCKUP_PIECES, renderWithStore } from '../../../test/utils'
+import { MOCKUP_GEAR, MOCKUP_PIECES, openContext, renderWithStore } from '../../../test/utils'
 import { setViewportWidth } from '../../../test/viewport'
 
 const list = () => screen.getByRole('list', { name: 'Créatures du biome' })
@@ -463,6 +463,39 @@ describe('Bestiary', () => {
       expect(read('Pare-le : en bloquant, tu titubes')).toBe(true)
     })
 
+    it("switches the group's Magic barrier on, and each attack says how many such hits it takes", async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/bestiary/plains/Lox')
+      const carried = { ...CARRYING.carried, barrier: 20 }
+      renderWithStore(<App />, { language: 'fr', gear: { ...CARRYING, carried } })
+
+      await user.click(card())
+      expect(effects()).toHaveTextContent('Du groupe · absorbe 300 · 1 à 4 min')
+      await user.click(effect('Barrière magique'))
+
+      expect(card()).toHaveTextContent('Barrière magique')
+      expect(screen.getByRole('link', { name: /^Morsure,/ })).toHaveTextContent(
+        'Barrière : 3 coups',
+      )
+      expect(screen.getByRole('link', { name: /^Piétinement,/ })).toHaveTextContent(
+        'Barrière : 1 coup (compte 320)',
+      )
+      // The verdicts are those once it breaks.
+      expect(read('Pare-le : en bloquant, tu titubes')).toBe(true)
+    })
+
+    it('has a card for the barrier alone, when nothing else is carried', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/bestiary/plains/Lox')
+      const carried = { trinket: null, power: null, drinks: [], group: [], barrier: 0 }
+      renderWithStore(<App />, { language: 'fr', gear: { ...CARRYING, carried } })
+
+      await user.click(card())
+
+      expect(effects()).toHaveTextContent('Du groupe · absorbe 200 · 1 à 4 min')
+      expect(effect('Barrière magique')).not.toBeChecked()
+    })
+
     it("lists the group's powers after the drinks, and counts them: Fader's has the Lox blocked whole", async () => {
       const user = userEvent.setup()
       window.history.replaceState(null, '', '#/bestiary/plains/Lox')
@@ -567,6 +600,82 @@ describe('Bestiary', () => {
       ).toHaveAccessibleDescription('Trinket · 30 s from 65 adrenaline')
       expect(group).toHaveTextContent('Changes nothing: no frost')
       expect(group).toHaveTextContent('Holds until you change creature.')
+    })
+  })
+
+  describe('in the rain', () => {
+    // A Wood shield level 1, no skill, rags, 45 HP: where Wet's lightning weakness makes Eikthyr's blocked
+    // Charge and Stomp stagger.
+    const EARLY = {
+      blocker: 'ShieldWood',
+      level: 1,
+      skill: 0,
+      armor: 0,
+      maxHealth: 45,
+      pieces: {
+        chest: { id: 'ArmorRagsChest', level: 1 },
+        legs: { id: 'ArmorRagsLegs', level: 1 },
+      },
+    }
+    const wet = () => screen.getByRole('switch', { name: 'Humide' })
+
+    it('switches Wet on in your setup, for every creature of the biome', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, { language: 'fr', gear: EARLY })
+      expect(row('Eikthyr')).toHaveTextContent('Esquive « Coup de bois », bloque le reste')
+
+      await openContext(user)
+      expect(wet()).not.toBeChecked()
+      expect(screen.getByRole('dialog', { name: 'Ton contexte' })).toHaveTextContent(
+        'Feu ×0,5 · Glace et Foudre ×1,5',
+      )
+      await user.click(wet())
+
+      expect(wet()).toBeChecked()
+      expect(row('Eikthyr')).toHaveTextContent('Esquive « Coup de bois », pare le reste')
+      expect(screen.getByRole('group', { name: 'Biome' })).toHaveTextContent(
+        'Biome 1 sur 9 · 8 créatures · Humide',
+      )
+      expect(
+        screen.getByRole('button', { name: /^Ton contexte : .*, humide$/ }),
+      ).toBeInTheDocument()
+    })
+
+    it('offers no Wet where it never rains', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/bestiary/mountain')
+      renderWithStore(<App />, { language: 'fr', gear: EARLY })
+
+      await openContext(user)
+
+      expect(screen.queryByRole('switch', { name: 'Humide' })).not.toBeInTheDocument()
+    })
+
+    it('dries off as another biome is shown', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, { language: 'fr', gear: EARLY })
+      await openContext(user)
+      await user.click(wet())
+      await user.click(screen.getByRole('button', { name: 'Biome suivant : Forêt noire' }))
+
+      expect(await screen.findByText('Biome 2 sur 9 · 12 créatures')).toBeInTheDocument()
+      expect(wet()).not.toBeChecked()
+    })
+
+    it('reads beside the biome of the sheet, and in the sidebar on a desktop', async () => {
+      const user = userEvent.setup()
+      setViewportWidth('desktop')
+      window.history.replaceState(null, '', '#/bestiary/meadows/Eikthyr')
+      renderWithStore(<App />, { language: 'en', gear: EARLY })
+
+      await user.click(screen.getByRole('switch', { name: 'Wet' }))
+
+      expect(screen.getByRole('region', { name: 'Eikthyr' })).toHaveTextContent('Meadows · Wet')
+      expect(
+        within(screen.getByRole('region', { name: 'Eikthyr' })).getByText(
+          'Dodge “Antler”, parry the rest',
+        ),
+      ).toBeInTheDocument()
     })
   })
 

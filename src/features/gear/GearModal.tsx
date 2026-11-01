@@ -4,9 +4,10 @@ import { useAppState, useUpdate } from '@/app/useAppState'
 import type { Equip } from '@/app/routes'
 import { closeModal, useRoute } from '@/app/useRoute'
 import { game } from '@/data'
-import { useT } from '@/i18n/useT'
+import { useLanguage, useT } from '@/i18n/useT'
 import { Modal } from '@/ui/Modal'
-import { isCarried } from './carried'
+import { BarrierForm } from './BarrierForm'
+import { isCarried, NOTHING_CARRIED, withBarrier } from './carried'
 import { GearForm } from './GearForm'
 import { GearListView } from './GearLists'
 import { pickInto, type GearList } from './lists'
@@ -41,7 +42,36 @@ export function GearModal() {
   const { equip } = useRoute()
   const [draft, setDraft] = useState<Gear>(() => startingGear(saved.gear, equip))
   const [list, setList] = useState<GearList | null>(null)
+  const [barrier, setBarrier] = useState(false)
   const heading = useListHeading()
+  const language = useLanguage()
+  const carried = draft.carried ?? NOTHING_CARRIED
+
+  if (barrier) {
+    return (
+      <Modal
+        title={game.barrier.name[language]}
+        kicker={t.gear.title}
+        closeLabel={t.modal.close}
+        back={{
+          label: t.lists.back,
+          onBack: () => {
+            setBarrier(false)
+          },
+        }}
+        size="medium"
+        onClose={closeModal}
+      >
+        <BarrierForm
+          bloodMagic={carried.barrier}
+          onDone={(bloodMagic) => {
+            setDraft({ ...draft, carried: withBarrier(carried, bloodMagic) })
+            setBarrier(false)
+          }}
+        />
+      </Modal>
+    )
+  }
 
   if (list) {
     const { title, aside } = heading(draft, list)
@@ -94,6 +124,9 @@ export function GearModal() {
           setDraft((current) => ({ ...current, ...change }))
         }}
         onOpenList={setList}
+        onOpenBarrier={() => {
+          setBarrier(true)
+        }}
         withGroup
       />
     </Modal>

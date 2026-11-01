@@ -61,9 +61,12 @@ const themes: Record<Theme, { readonly name: string; readonly description: strin
   parchemin: { name: 'Parchemin', description: 'Clair chaud, encre bleue' },
 }
 
+// « des Prairies », « de la Forêt noire »: de and the article of each biome's name.
+const ofArticles = { 'les ': 'des ', 'la ': 'de la ', 'le ': 'du ', "l'": "de l'" } as const
+
 // The article of each biome's name, for « Voir la Forêt noire »: the names are the game's, the articles
 // are not.
-const biomeArticles: Record<BiomeId, string> = {
+const biomeArticles: Record<BiomeId, keyof typeof ofArticles> = {
   meadows: 'les ',
   blackForest: 'la ',
   swamp: 'les ',
@@ -74,6 +77,7 @@ const biomeArticles: Record<BiomeId, string> = {
   deepNorth: 'le ',
   ocean: "l'",
 }
+const ofBiome = (biome: BiomeId, name: string) => `${ofArticles[biomeArticles[biome]]}${name}`
 
 /** An attack in one sentence, for screen readers. */
 interface AttackWords {
@@ -96,8 +100,9 @@ export const fr = {
     mainNavigation: 'Navigation principale',
     settings: 'Réglages',
     context: 'Ton contexte',
-    contextSummary: (blockPower: number, enemyScale: number) =>
-      `Ton contexte : VD ${n(blockPower)} ×${n(enemyScale)}`,
+    /** `wet` while Wet is on in the Bestiary's biome. */
+    contextSummary: (blockPower: number, enemyScale: number, wet: boolean) =>
+      `Ton contexte : VD ${n(blockPower)} ×${n(enemyScale)}${wet ? ', humide' : ''}`,
     contextPower: (blockPower: number) => `VD ${n(blockPower)}`,
     contextScale: (enemyScale: number) => `×${n(enemyScale)}`,
     contextNote: 'Chaque verdict en dépend',
@@ -167,10 +172,17 @@ export const fr = {
     addDrink: 'Ajouter une boisson',
     carriedNote:
       "Pas comptés d'office : allume-les sur la fiche d'une créature ou dans la Simulation, quand ils sont actifs.",
-    /** The powers players of the group cast on you: apart from yours, which is one. */
-    group: 'Pouvoirs du groupe',
-    groupNote: "Ceux qu'un joueur lance à moins de 10 m de toi ; à allumer comme les tiens.",
+    /** What players of the group cast on you: their powers, apart from yours, which is one, and a barrier. */
+    group: 'Du groupe',
+    groupNote:
+      "Ce qu'un joueur lance près de toi ; à allumer comme les tiens. La Barrière magique dépend de la Magie du sang de qui la lance.",
     addGroupPower: 'Ajouter un pouvoir du groupe',
+    addBarrier: 'Ajouter une barrière magique',
+    /** The barrier's row, by the caster's skill as the game names it: « Lancée avec Magie du sang 20 ». */
+    barrierCast: (skill: string, level: number) => `Lancée avec ${skill} ${n(level)}`,
+    /** How long it lasts, by the staff's level, and what it absorbs: « 1 à 4 min · absorbe 300 ». */
+    barrierLines: (from: number, to: number, capacity: number) =>
+      `${n(from)} à ${n(to)} min · absorbe ${n(capacity)}`,
   },
   /** The lists the rows of Your gear open, from the Arsenal. */
   lists: {
@@ -310,8 +322,41 @@ export const fr = {
     },
     /** A group's power, by its name in the game. */
     coveredByPower: (power: string) => `déjà couvert par ${theName(power)}`,
+    /** Wet, by its name in the game: « déjà couvert par Humide ». */
+    coveredByWeather: (wet: string) => `déjà couvert par ${wet}`,
     setupLine: (names: readonly string[]) =>
       `Effets temporaires allumés : ${new Intl.ListFormat('fr', { type: 'conjunction' }).format(names)}`,
+  },
+  barrier: {
+    /** Who it covers and for how long, by the staff's name in the game. */
+    lede: (staff: string, radius: number, from: number, to: number) =>
+      `Le ${staff} la pose sur qui le lance et sur les joueurs à moins de ${n(radius)} m, pour ${n(from)} à ${n(to)} min selon son niveau. Tu l'allumes ensuite sur la fiche d'une créature ou dans la Simulation.`,
+    /** By the skill's name in the game. */
+    skill: (skill: string) => `${skill} de qui la lance`,
+    lower: (skill: string) => `Moins de ${skill}`,
+    raise: (skill: string) => `Plus de ${skill}`,
+    absorbs: 'Elle absorbe',
+    how: (base: number, perLevel: number, skill: string) =>
+      `${n(base)}, plus ${n(perLevel)} par niveau de ${skill}. Elle compte tout le coup, hache et pioche comprises, et absorbe en entier celui qui la brise.`,
+    add: 'Ajouter',
+    remove: 'Retirer la barrière',
+    /** On the card: « Du groupe · absorbe 300 · 1 à 4 min ». */
+    tag: (capacity: number, from: number, to: number) =>
+      `Du groupe · absorbe ${n(capacity)} · ${n(from)} à ${n(to)} min`,
+    /** Under an attack: how many such hits it takes; what it counts, when not what the attack lists. */
+    hits: (hits: number, counted: number | null) =>
+      `Barrière : ${n(hits)} ${hits > 1 ? 'coups' : 'coup'}${counted === null ? '' : ` (compte ${n(counted)})`}`,
+    /** Above the Simulation's advice, by its name in the game. */
+    takes: (name: string, hits: number, counted: number) =>
+      `${name} : elle prend ${n(hits)} ${hits > 1 ? 'coups' : 'coup'} comme celui-ci (compte ${n(counted)}), puis :`,
+  },
+  weather: {
+    label: 'Météo',
+    /** Wet holds for the biome the Bestiary shows, by its name in the game. */
+    note: (biome: BiomeId, name: string) =>
+      `Compté pour toutes les créatures ${ofBiome(biome, name)}, jusqu'à ce que tu l'éteignes ou changes de biome.`,
+    /** Beside a biome's name while Wet is on there: « Prairies · Humide ». */
+    beside: (biome: string, wet: string) => `${biome} · ${wet}`,
   },
   world: {
     summary: (difficulty: string, count: number) =>

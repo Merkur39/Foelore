@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Defence } from './block'
 import type { Damages } from './damage'
-import { LOWEST_ROLL, resolveHit, type Hit, type HitOptions } from './hit'
+import { barrierTakes, LOWEST_ROLL, resolveHit, type Hit, type HitOptions } from './hit'
 import type { World } from './world'
 
 // The Player prefab's rules in 1.0.21, with the Burning, Spirit and Poison prefabs'.
@@ -291,6 +291,16 @@ describe('resolveHit', () => {
     expect(result?.taken).toBeCloseTo(0.412, 3)
   })
 
+  it('burns a wet player for its first tick only, the spirit untouched (SE_Burning.UpdateStatusEffect)', () => {
+    const hit = hitOf({ blunt: 20, fire: 100, spirit: 30 })
+    const dry = resolveHit(silverShield, hit, alone(), block)!
+    const wet = resolveHit({ ...silverShield, wet: true }, hit, alone(), block)!
+
+    expect(wet.burning?.damage).toBeCloseTo(dry.burning!.damage / 5, 6)
+    expect(wet.spirit).toEqual(dry.spirit)
+    expect(wet.direct).toBeCloseTo(dry.direct, 6)
+  })
+
   it("tells apart the poison, over 1 + √(5 × dose) s: Bonemass's punch, blocked", () => {
     const result = resolveHit(ironBuckler, hitOf({ blunt: 80, poison: 50 }), alone(), block)
 
@@ -443,5 +453,55 @@ describe('resolveHit, with the gear and effects of the player', () => {
     const costlyParry: Defence = { ...ironBuckler, parryStaminaDrain: 5, blockStaminaGear: -0.2 }
 
     expect(resolveHit(costlyParry, bite, alone(), parry)?.stamina).toBeCloseTo(10, 6)
+  })
+})
+
+// A Magic barrier cast with Blood Magic 20: 200 + 5 × 20 (SE_Shield.SetLevel).
+describe('barrierTakes', () => {
+  it("counts the whole hit and takes whole the one that overflows it: three of the Lox's Bites", () => {
+    expect(barrierTakes(300, hitOf({ slash: 130 }), alone(), { stars: 0 })).toEqual({
+      counted: 130,
+      hits: 3,
+    })
+  })
+
+  it("counts the chop and pickaxe no player takes: one of the Lox's Stomps", () => {
+    const stomp = hitOf({ blunt: 120 }, { toolDamage: 200 })
+
+    expect(barrierTakes(300, stomp, alone(), { stars: 0 })).toEqual({ counted: 320, hits: 1 })
+  })
+
+  it('breaks only once past its capacity: a hit of its size twice', () => {
+    expect(
+      barrierTakes(300, hitOf({ blunt: 160 }, { toolDamage: 140 }), alone(), { stars: 0 }).hits,
+    ).toBe(2)
+  })
+
+  it('counts true damage too', () => {
+    const mace = hitOf({ blunt: 80, frost: 10 }, { trueDamage: 15 })
+
+    expect(barrierTakes(300, mace, alone(), { stars: 0 })).toEqual({ counted: 105, hits: 3 })
+  })
+
+  it('scales the tools with the stars and the roll, as the rest of the hit', () => {
+    const slam = hitOf({ blunt: 70 }, { toolDamage: 140 })
+
+    expect(barrierTakes(300, slam, alone(), { stars: 1 }).counted).toBeCloseTo(315, 6)
+    expect(barrierTakes(300, slam, alone(), { stars: 0, roll: LOWEST_ROLL }).counted).toBeCloseTo(
+      210 * LOWEST_ROLL,
+      6,
+    )
+  })
+
+  it('scales them with the world after the attack, the counted damage it is given', () => {
+    const slam = hitOf({ blunt: 70 }, { toolDamage: 140 })
+    const hard = barrierTakes(300, slam, alone('hard'), { stars: 0 }).counted
+    const normal = barrierTakes(300, slam, alone(), { stars: 0 }).counted
+
+    expect(hard / normal).toBeCloseTo(
+      resolveHit(silverShield, slam, alone('hard'), block)!.received /
+        resolveHit(silverShield, slam, alone(), block)!.received,
+      6,
+    )
   })
 })

@@ -15,6 +15,7 @@ import { leveled } from '@/features/gear/model'
 import { pieceOf, SLOTS } from '@/features/gear/pieces'
 import { formatNumber } from '@/i18n/format'
 import { useLanguage, useT } from '@/i18n/useT'
+import { useWet } from '@/features/weather/wet'
 import type { ReportLine, ReportOrigin } from './model'
 
 /** Reports from Settings › About: nothing on screen to attach, and no kind picked in advance. */
@@ -31,10 +32,16 @@ export const SETTINGS_ORIGIN: ReportOrigin = {
 
 /** Your gear and Your world, as their summaries put them, with the armor, the max health, the pieces
  * worn and the effects switched on: every verdict hangs on them. */
-function useSetupLines(on: readonly GameRuleEffect[]): readonly string[] {
+function useSetupLines(on: readonly GameRuleEffect[], barrier: boolean): readonly string[] {
   const t = useT()
   const language = useLanguage()
   const { gear, world } = useAppState()
+  const wet = useWet().on
+  const lit = [
+    ...on.map((effect) => effect.name[language]),
+    ...(barrier ? [game.barrier.name[language]] : []),
+    ...(wet ? [game.wet.name[language]] : []),
+  ]
   const worn = gear.pieces
     ? SLOTS.flatMap((slot) => {
         const piece = gear.pieces?.[slot]
@@ -52,7 +59,7 @@ function useSetupLines(on: readonly GameRuleEffect[]): readonly string[] {
     ),
     t.gear.bodySummary(gearDefence(gear).armor, gear.maxHealth, worn),
     t.world.summary(presetOf(world).name[language], world.players),
-    ...(on.length > 0 ? [t.effects.setupLine(on.map((effect) => effect.name[language]))] : []),
+    ...(lit.length > 0 ? [t.effects.setupLine(lit)] : []),
   ]
 }
 
@@ -64,6 +71,7 @@ export function useCreatureOrigin({
   health,
   toInflict,
   on,
+  barrier = false,
 }: {
   readonly creature: GameCreature
   readonly stars: number
@@ -72,11 +80,13 @@ export function useCreatureOrigin({
   readonly health: string
   readonly toInflict: string
   readonly on: readonly GameRuleEffect[]
+  /** Whether the group's Magic barrier is on. */
+  readonly barrier?: boolean
 }): ReportOrigin {
   const t = useT()
   const language = useLanguage()
   const summary = useAttackSummary()
-  const setup = useSetupLines(on)
+  const setup = useSetupLines(on, barrier)
   const name = `${creatureName(creature, language)} · ${t.creature.star(stars)}`
   const weaknesses = modifierRows(creature)
     .map(({ part, modifiers }) => {
@@ -135,6 +145,7 @@ export function useSimulationOrigin({
   parry,
   dodgeable,
   on,
+  barrier = false,
 }: {
   /** The attack simulated, null when the hit is a value typed in. */
   readonly found: FoundAttack | null
@@ -145,10 +156,12 @@ export function useSimulationOrigin({
   readonly parry: HitResult | null
   readonly dodgeable: boolean | null
   readonly on: readonly GameRuleEffect[]
+  /** Whether the group's Magic barrier is on. */
+  readonly barrier?: boolean
 }): ReportOrigin {
   const t = useT()
   const language = useLanguage()
-  const setup = useSetupLines(on)
+  const setup = useSetupLines(on, barrier)
   const guard = (label: string, result: HitResult | null) =>
     result === null
       ? `${label} : ${t.creature.cannotParry}`

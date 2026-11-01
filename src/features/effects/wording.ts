@@ -1,5 +1,5 @@
 import { DAMAGE_TYPES } from '@/combat/damage'
-import { damageMultiplier } from '@/combat/modifiers'
+import { damageMultiplier, type DamageModifiers } from '@/combat/modifiers'
 import { game } from '@/data'
 import type { GameRuleEffect } from '@/data/types'
 import { changesNoHit, effectOf, type CarriedEffect } from '@/features/gear/carried'
@@ -17,11 +17,11 @@ export function useEffectWording() {
     return adrenaline === undefined ? duration : t.effects.fromAdrenaline(duration, adrenaline)
   }
 
-  // Each change on its own, the resistances first, by damage types sharing a multiplier.
-  const changes = (effect: GameRuleEffect) => {
+  // By damage types sharing a multiplier, in the order of the types: « Glace et Foudre ×1,5 ».
+  const modifierChanges = (modifiers: DamageModifiers = {}) => {
     const byMultiplier = new Map<number, string[]>()
     for (const type of DAMAGE_TYPES) {
-      const modifier = effect.modifiers?.[type]
+      const modifier = modifiers[type]
       if (modifier === undefined || modifier === 'normal' || modifier === 'ignore') continue
       const multiplier = damageMultiplier(modifier)
       byMultiplier.set(multiplier, [
@@ -29,11 +29,16 @@ export function useEffectWording() {
         game.damageTypes[type][language],
       ])
     }
+    return [...byMultiplier].map(([multiplier, types]) => t.gear.setModifier(types, multiplier))
+  }
+
+  // Each change on its own, the resistances first, by damage types sharing a multiplier.
+  const changes = (effect: GameRuleEffect) => {
     if (changesNoHit(effect)) return [t.effects.noHit]
     const flat = effect.blockStaminaFlat ?? 0
     const block = effect.blockStaminaModifier ?? 0
     return [
-      ...[...byMultiplier].map(([multiplier, types]) => t.gear.setModifier(types, multiplier)),
+      ...modifierChanges(effect.modifiers),
       ...(effect.addArmor ? [t.effects.armor(effect.addArmor)] : []),
       ...(effect.armorMultiplier ? [t.effects.armorTimes(1 + effect.armorMultiplier)] : []),
       ...(effect.parryBonus ? [t.effects.parry(1 + effect.parryBonus)] : []),
@@ -51,6 +56,8 @@ export function useEffectWording() {
   }
 
   return {
+    /** What resistances and weaknesses change, by damage types sharing a multiplier: « Feu ×0,5 ». */
+    modifierChanges,
     /** How long it lasts: « 30 s dès 65 d'adrénaline », « 5 min ». */
     lasting,
     /** What it changes, each change apart, the resistances first: « armure +20 ». */
@@ -76,7 +83,9 @@ export function useEffectWording() {
           return t.effects.idle(
             idle.by.kind === 'group'
               ? t.effects.coveredByPower(effectOf(idle.by.id).name[language])
-              : t.effects.coveredBy[idle.by.kind === 'piece' ? idle.by.slot : idle.by.kind],
+              : idle.by.kind === 'weather'
+                ? t.effects.coveredByWeather(game.wet.name[language])
+                : t.effects.coveredBy[idle.by.kind === 'piece' ? idle.by.slot : idle.by.kind],
           )
         default:
           return t.effects.idleHere

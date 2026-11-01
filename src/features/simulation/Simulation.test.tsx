@@ -207,6 +207,23 @@ describe('Simulation', () => {
       expect(screen.getByText('Bloque-le : tu tiens sans tituber')).toBeInTheDocument()
     })
 
+    it('says above the advice how many such hits the barrier takes, the cards reading what follows', async () => {
+      const user = userEvent.setup()
+      window.history.replaceState(null, '', '#/simulation/Lox/lox_bite')
+      const carried = { ...CARRYING.carried, barrier: 20 }
+      renderWithStore(<App />, { language: 'fr', gear: { ...CARRYING, carried } })
+
+      await user.click(card())
+      await user.click(effect('Barrière magique'))
+
+      expect(
+        screen.getByText(
+          'Barrière magique : elle prend 3 coups comme celui-ci (compte 130), puis :',
+        ),
+      ).toBeInTheDocument()
+      expect(blocking()).toHaveTextContent('15,1 subis')
+    })
+
     it('greys what changes nothing against the attack: no frost in the Bite', async () => {
       const user = userEvent.setup()
       window.history.replaceState(null, '', '#/simulation/Lox/lox_bite')

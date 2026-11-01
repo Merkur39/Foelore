@@ -14,7 +14,7 @@ import { DamageTypeIcon } from '@/ui/DamageTypeIcon'
 import { ChevronRightIcon, MinusIcon, PlusIcon } from '@/ui/icons'
 import { NumberField } from '@/ui/NumberField'
 import { StepButton } from '@/ui/StepButton'
-import { effectOf, NOTHING_CARRIED, type Carried } from './carried'
+import { barrierCapacity, barrierMinutes, effectOf, NOTHING_CARRIED, type Carried } from './carried'
 import { allDrinksCarried, allPowersTaken, type GearList } from './lists'
 import { blockPowerParts, leveled, maxLevel, withstand, type GuardGauge } from './model'
 import { pieceOf, SLOTS, summarize, type Pieces } from './pieces'
@@ -25,19 +25,21 @@ const MAX_HEALTH = 999
 
 /** The fields of « Ton équipement », and what you can take with them in `world`, worked out again as
  * `gear` changes: in its dialog, and as a question of the first arrival. Each row of what is held, worn
- * or carried opens its list (`onOpenList`), where it is picked. The group's powers only with `withGroup`:
- * the first arrival asks for your own gear. */
+ * or carried opens its list (`onOpenList`), where it is picked. What the group casts only with `withGroup`,
+ * its barrier opening its own page (`onOpenBarrier`): the first arrival asks for your own gear. */
 export function GearForm({
   gear,
   world,
   onChange,
   onOpenList,
+  onOpenBarrier,
   withGroup = false,
 }: {
   readonly gear: Gear
   readonly world: World
   readonly onChange: (change: Partial<Gear>) => void
   readonly onOpenList: (list: GearList) => void
+  readonly onOpenBarrier?: () => void
   readonly withGroup?: boolean
 }) {
   const t = useT()
@@ -152,8 +154,10 @@ export function GearForm({
       {withGroup && (
         <GroupSection
           group={(gear.carried ?? NOTHING_CARRIED).group}
+          barrier={(gear.carried ?? NOTHING_CARRIED).barrier}
           full={allPowersTaken(gear)}
           onOpenList={onOpenList}
+          onOpenBarrier={onOpenBarrier}
         />
       )}
     </div>
@@ -289,18 +293,24 @@ function CarriedSection({
   )
 }
 
-/** The powers players of the group cast on you, each its row like yours, and a way to add one neither
- * yours nor the group's yet, while there is any. */
+/** What players of the group cast on you: their powers, each its row like yours, and a way to add one
+ * neither yours nor the group's yet, while there is any; then the Magic barrier, by its caster's Blood
+ * Magic, or a way to add it. */
 function GroupSection({
   group,
+  barrier,
   full,
   onOpenList,
+  onOpenBarrier,
 }: {
   readonly group: readonly string[]
+  readonly barrier: number | undefined
   readonly full: boolean
   readonly onOpenList: (list: GearList) => void
+  readonly onOpenBarrier: (() => void) | undefined
 }) {
   const t = useT()
+  const language = useLanguage()
   const headingId = useId()
   return (
     <section aria-labelledby={headingId} className={styles.section}>
@@ -319,6 +329,28 @@ function GroupSection({
             }}
           />
         ))}
+        {onOpenBarrier && barrier !== undefined && (
+          <div className={styles.carriedRow}>
+            <button
+              type="button"
+              aria-label={t.gear.rowValue(
+                game.barrier.name[language],
+                t.gear.barrierCast(game.barrier.skill[language], barrier),
+              )}
+              className={styles.rowMain}
+              onClick={onOpenBarrier}
+            >
+              <span className={styles.rowLabel}>{game.barrier.name[language]}</span>
+              <span className={styles.rowValue}>
+                {t.gear.barrierCast(game.barrier.skill[language], barrier)}
+              </span>
+              <ChevronRightIcon size={14} className={styles.chevron} />
+            </button>
+            <span className={styles.effectLines}>
+              <span>{t.gear.barrierLines(...barrierMinutes, barrierCapacity(barrier))}</span>
+            </span>
+          </div>
+        )}
         {!full && (
           <button
             type="button"
@@ -329,6 +361,12 @@ function GroupSection({
           >
             <PlusIcon size={16} />
             {t.gear.addGroupPower}
+          </button>
+        )}
+        {onOpenBarrier && barrier === undefined && (
+          <button type="button" className={styles.add} onClick={onOpenBarrier}>
+            <PlusIcon size={16} />
+            {t.gear.addBarrier}
           </button>
         )}
       </div>
