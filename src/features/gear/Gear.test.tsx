@@ -288,6 +288,7 @@ describe('Your gear', () => {
         trinket: 'TrinketIronHealth',
         power: 'GP_Bonemass',
         drinks: ['Potion_frostresist'],
+        group: [],
       },
     }
     const carry = (dialog: HTMLElement) =>
@@ -372,6 +373,7 @@ describe('Your gear', () => {
         trinket: 'TrinketIronHealth',
         power: 'GP_Bonemass',
         drinks: ['Potion_bzerker'],
+        group: [],
       })
     })
 
@@ -398,6 +400,116 @@ describe('Your gear', () => {
       ).toBeInTheDocument()
       expect(section).toHaveTextContent('30 s from 65 adrenaline · armor +20')
       expect(section).toHaveTextContent('blocking gives 5 stamina back')
+    })
+  })
+
+  describe("the group's powers", () => {
+    const GROUP = {
+      ...WORN,
+      carried: {
+        trinket: 'TrinketIronHealth',
+        power: 'GP_Bonemass',
+        drinks: ['Potion_frostresist'],
+        group: ['GP_Fader'],
+      },
+    }
+    const group = (dialog: HTMLElement) =>
+      within(dialog).getByRole('region', { name: 'Pouvoirs du groupe' })
+
+    it('lists them under what you carry, how long each lasts and what it changes', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, { language: 'fr', gear: GROUP })
+      const section = group(await openGear(user))
+
+      expect(
+        within(section).getByRole('button', { name: 'Pouvoir : Pouvoir de Fader' }),
+      ).toBeInTheDocument()
+      expect(section).toHaveTextContent('5 min · Feu ×0,5')
+      expect(section).toHaveTextContent('tu titubes 2× moins vite')
+      expect(section).toHaveTextContent(
+        "Ceux qu'un joueur lance à moins de 10 m de toi ; à allumer comme les tiens.",
+      )
+    })
+
+    it('has only a way to add one at first', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, fr)
+      const section = group(await openGear(user))
+
+      expect(
+        within(section)
+          .getAllByRole('button')
+          .map((button) => button.textContent),
+      ).toEqual(['Ajouter un pouvoir du groupe'])
+    })
+
+    it('adds one neither yours nor added yet, swaps one, and takes one off', async () => {
+      const user = userEvent.setup()
+      const { store } = renderWithStore(<App />, { language: 'fr', gear: GROUP })
+      const dialog = await openGear(user)
+
+      await user.click(within(dialog).getByRole('button', { name: 'Ajouter un pouvoir du groupe' }))
+      expect(dialog).toHaveAccessibleName('Un pouvoir du groupe')
+      expect(dialog).toHaveTextContent(
+        "Déjà là : Masse-d'Os (le tien) et Pouvoir de Fader. Un pouvoir ne compte qu'une fois.",
+      )
+      expect(within(dialog).queryByRole('button', { name: /^Masse-d'Os/ })).not.toBeInTheDocument()
+      expect(
+        within(dialog).queryByRole('button', { name: /^Pouvoir de Fader/ }),
+      ).not.toBeInTheDocument()
+      await user.click(within(dialog).getByRole('button', { name: /^Moder\. / }))
+
+      expect(group(dialog)).toHaveTextContent('5 min · Glace ×0,5')
+      await user.click(within(dialog).getByRole('button', { name: 'Pouvoir : Pouvoir de Fader' }))
+      expect(dialog).toHaveAccessibleName('Pouvoir du groupe')
+      expect(dialog).toHaveTextContent(
+        'Choisis-en un autre pour remplacer le Pouvoir de Fader, ou retire-le.',
+      )
+      await user.click(within(dialog).getByRole('button', { name: /^Retirer ce pouvoir/ }))
+      await user.click(within(dialog).getByRole('button', { name: 'Valider' }))
+
+      expect(store.getState().gear.carried?.group).toEqual(['GP_Moder'])
+    })
+
+    it("tags them in your power's list, and takes one out of the group when it becomes yours", async () => {
+      const user = userEvent.setup()
+      const { store } = renderWithStore(<App />, { language: 'fr', gear: GROUP })
+      const dialog = await openGear(user)
+
+      await user.click(within(dialog).getByRole('button', { name: "Pouvoir : Masse-d'Os" }))
+      expect(dialog).toHaveAccessibleName('Ton pouvoir')
+      expect(within(dialog).getByRole('button', { name: /^Aucun pouvoir/ })).toHaveTextContent(
+        'retire le tien',
+      )
+      expect(
+        within(dialog).getByRole('button', { name: /^Masse-d'Os, équipé\. / }),
+      ).toHaveTextContent('Équipé')
+      await user.click(
+        within(dialog).getByRole('button', { name: /^Pouvoir de Fader, du groupe\. / }),
+      )
+
+      expect(
+        within(dialog).getByRole('button', { name: 'Pouvoir : Pouvoir de Fader' }),
+      ).toBeInTheDocument()
+      expect(within(group(dialog)).queryByRole('button', { name: /^Pouvoir : / })).toBeNull()
+      await user.click(within(dialog).getByRole('button', { name: 'Valider' }))
+
+      expect(store.getState().gear.carried).toMatchObject({ power: 'GP_Fader', group: [] })
+    })
+
+    it('says it in English too', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, { language: 'en', gear: GROUP })
+      await openContext(user)
+      await user.click(screen.getByRole('link', { name: /^Your gear:/ }))
+      const dialog = await screen.findByRole('dialog', { name: 'Your gear' })
+      const section = within(dialog).getByRole('region', { name: 'Group powers' })
+
+      expect(within(section).getByRole('button', { name: 'Power: Fader' })).toBeInTheDocument()
+      expect(section).toHaveTextContent(
+        'Those a player casts within 10 m of you; switch them on like yours.',
+      )
+      expect(within(section).getByRole('button', { name: 'Add a group power' })).toBeInTheDocument()
     })
   })
 
@@ -539,7 +651,10 @@ describe('Your gear', () => {
       const user = userEvent.setup()
       renderWithStore(<App />, {
         language: 'fr',
-        gear: { ...WORN, carried: { trinket: 'TrinketIronHealth', power: null, drinks: [] } },
+        gear: {
+          ...WORN,
+          carried: { trinket: 'TrinketIronHealth', power: null, drinks: [], group: [] },
+        },
       })
       const dialog = await openGear(user)
 

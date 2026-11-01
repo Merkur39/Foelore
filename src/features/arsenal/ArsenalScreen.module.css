@@ -671,6 +671,7 @@ tr.owned {
   font-weight: 400;
 }
 
+.nameCell .tag,
 .nameCell .ownedTag {
   margin-left: 10px;
 }

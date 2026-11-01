@@ -83,8 +83,24 @@ type AnyRow = BlockerRow | PieceRow | EffectRow
 const nameOf = (row: AnyRow): Localized =>
   'blocker' in row ? row.blocker.name : 'piece' in row ? row.piece.name : row.effect.name
 
-const stateOf = (row: AnyRow) =>
-  'carried' in row ? (row.carried ? 'carried' : null) : row.equipped ? 'equipped' : null
+type RowState = 'equipped' | 'carried' | 'group' | null
+
+// Your power is equipped, a trinket or a drink carried; a power the group casts on you is told apart.
+const stateOf = (row: AnyRow): RowState =>
+  'effect' in row
+    ? row.carried
+      ? row.effect.kind === 'power'
+        ? 'equipped'
+        : 'carried'
+      : row.group
+        ? 'group'
+        : null
+    : row.equipped
+      ? 'equipped'
+      : null
+
+/** What is yours: highlighted, and done in a table's action. */
+const owns = (state: RowState) => state === 'equipped' || state === 'carried'
 
 /** A row of the Arsenal that failed while drawing: its item, and a way to report it; the others stay. */
 function BrokenItemRow({
@@ -281,7 +297,7 @@ function Card({
   const language = useLanguage()
   const name = nameOf(row)[language]
   const state = stateOf(row)
-  const className = `${styles.card ?? ''} ${state ? (styles.owned ?? '') : ''}`
+  const className = `${styles.card ?? ''} ${owns(state) ? (styles.owned ?? '') : ''}`
   const content = (
     <>
       <span className={styles.cardTop}>
@@ -289,7 +305,7 @@ function Card({
           <Highlighted text={name} query={query} />
         </span>
         {'blocker' in row && <BlockerType row={row} />}
-        {state && <Tag owned>{state === 'carried' ? t.arsenal.carried : t.arsenal.equipped}</Tag>}
+        {state && <Tag owned={owns(state)}>{t.arsenal[state]}</Tag>}
         <span className={styles.spacer} />
         <ChevronRightIcon size={16} className={styles.chevron} />
       </span>
@@ -534,12 +550,13 @@ function TableRow({
   const language = useLanguage()
   const name = nameOf(row)[language]
   const state = stateOf(row)
-  const carries = 'effect' in row
+  // Your power is equipped too.
+  const carries = 'effect' in row && row.effect.kind !== 'power'
   return (
-    <tr className={state ? styles.owned : undefined}>
+    <tr className={owns(state) ? styles.owned : undefined}>
       <th scope="row" className={styles.nameCell}>
         <Highlighted text={name} query={query} />
-        {state && <Tag owned>{state === 'carried' ? t.arsenal.carried : t.arsenal.equipped}</Tag>}
+        {state && <Tag owned={owns(state)}>{t.arsenal[state]}</Tag>}
       </th>
       {'blocker' in row ? (
         <BlockerCells row={row} shields={shields} />
@@ -549,10 +566,10 @@ function TableRow({
         <EffectCells row={row} />
       )}
       <td className={styles.actionCell}>
-        {state ? (
+        {state !== null && owns(state) ? (
           <span className={styles.ownedAction}>
             <CheckIcon size={16} strokeWidth={2} />
-            {state === 'carried' ? t.arsenal.carried : t.arsenal.equipped}
+            {t.arsenal[state]}
           </span>
         ) : select.kind === 'open' ? (
           <RouteLink

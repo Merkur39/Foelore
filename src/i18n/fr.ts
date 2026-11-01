@@ -10,6 +10,9 @@ const plurals = new Intl.PluralRules('fr')
 const plural = (count: number, one: string, other: string) =>
   `${n(count)} ${plurals.select(count) === 'one' ? one : other}`
 const players = (count: number) => plural(count, 'joueur', 'joueurs')
+// A power by its name in the game, with the article a common noun takes: « le Pouvoir de Fader », « Moder ».
+const theName = (power: string) => (power.startsWith('Pouvoir ') ? `le ${power}` : power)
+const rowState = { equipped: ', équipé', carried: ', emporté', group: ', du groupe' }
 const capitalised = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`
 const listOf = (words: readonly string[]) =>
   new Intl.ListFormat('fr', { type: 'conjunction' }).format(
@@ -164,6 +167,10 @@ export const fr = {
     addDrink: 'Ajouter une boisson',
     carriedNote:
       "Pas comptés d'office : allume-les sur la fiche d'une créature ou dans la Simulation, quand ils sont actifs.",
+    /** The powers players of the group cast on you: apart from yours, which is one. */
+    group: 'Pouvoirs du groupe',
+    groupNote: "Ceux qu'un joueur lance à moins de 10 m de toi ; à allumer comme les tiens.",
+    addGroupPower: 'Ajouter un pouvoir du groupe',
   },
   /** The lists the rows of Your gear open, from the Arsenal. */
   lists: {
@@ -178,6 +185,8 @@ export const fr = {
       power: 'Ton pouvoir',
       drink: 'Ta boisson',
       moreDrink: 'Une boisson de plus',
+      group: 'Pouvoir du groupe',
+      moreGroup: 'Un pouvoir du groupe',
     },
     search: {
       hand: 'Chercher ce que tu tiens',
@@ -189,6 +198,8 @@ export const fr = {
       power: 'Chercher un pouvoir',
       drink: 'Chercher une boisson',
       moreDrink: 'Chercher une boisson',
+      group: 'Chercher un pouvoir',
+      moreGroup: 'Chercher un pouvoir',
     },
     none: {
       helmet: 'Aucun casque',
@@ -198,6 +209,7 @@ export const fr = {
       trinket: 'Aucun bibelot',
       power: 'Aucun pouvoir',
       drink: 'Retirer cette boisson',
+      group: 'Retirer ce pouvoir',
     },
     noneNote: {
       helmet: 'retire celui que tu portes',
@@ -205,7 +217,7 @@ export const fr = {
       legs: 'retire celles que tu portes',
       cape: 'retire celle que tu portes',
       trinket: 'retire celui que tu emportes',
-      power: 'retire celui que tu emportes',
+      power: 'retire le tien',
     },
     /** « 11 capes », by the category's name. */
     count: (count: number, category: string) => `${n(count)} ${category.toLocaleLowerCase('fr')}`,
@@ -239,10 +251,21 @@ export const fr = {
           ? `Ton ${carried[0] ?? ''} est déjà emporté : une boisson ne se prend qu'une fois.`
           : `Tes ${new Intl.ListFormat('fr', { type: 'conjunction' }).format(carried)} sont déjà emportés : une boisson ne se prend qu'une fois.`,
     drinkSwap: (drink: string) => `Choisis-en une autre pour remplacer ton ${drink}, ou retire-le.`,
+    /** Your power and the group's, by their names in the game: a power counts once. */
+    groupOnce: (own: string | null, group: readonly string[]) => {
+      const there = [...(own === null ? [] : [`${own} (le tien)`]), ...group]
+      return there.length === 0
+        ? "Un pouvoir ne compte qu'une fois."
+        : `Déjà là : ${new Intl.ListFormat('fr', { type: 'conjunction' }).format(there)}. Un pouvoir ne compte qu'une fois.`
+    },
+    groupSwap: (power: string) =>
+      `Choisis-en un autre pour remplacer ${theName(power)}, ou retire-le.`,
   },
   /** What one carries, switched on while it lasts: a trinket, a guardian power, drinks. */
   effects: {
     kinds: { trinket: 'Bibelot', power: 'Pouvoir', consumable: 'Boisson' },
+    /** The kind of a power the group casts on you. */
+    groupPower: 'Pouvoir du groupe',
     /** `seconds` in minutes when they make whole minutes: « 5 min », « 30 s ». */
     duration: (seconds: number) =>
       seconds >= 60 && seconds % 60 === 0 ? `${n(seconds / 60)} min` : `${n(seconds)} s`,
@@ -274,16 +297,19 @@ export const fr = {
     idleHere: 'Ne change rien ici',
     idleNoHit: 'Ne change aucun coup',
     notDealt: (types: readonly string[]) => `pas ${noneOf(types)}`,
-    resistedBy: {
-      helmet: 'ton casque résiste déjà',
-      chest: 'ton plastron résiste déjà',
-      legs: 'tes jambières résistent déjà',
-      cape: 'ta cape résiste déjà',
-      set: 'ton ensemble résiste déjà',
-      trinket: 'ton bibelot résiste déjà',
-      power: 'ton pouvoir résiste déjà',
-      consumable: 'ta boisson résiste déjà',
+    /** What already gives as much of what an effect would: « Ne change rien : déjà couvert par ta cape ». */
+    coveredBy: {
+      helmet: 'déjà couvert par ton casque',
+      chest: 'déjà couvert par ton plastron',
+      legs: 'déjà couvert par tes jambières',
+      cape: 'déjà couvert par ta cape',
+      set: 'déjà couvert par ton ensemble',
+      trinket: 'déjà couvert par ton bibelot',
+      power: 'déjà couvert par ton pouvoir',
+      consumable: 'déjà couvert par ta boisson',
     },
+    /** A group's power, by its name in the game. */
+    coveredByPower: (power: string) => `déjà couvert par ${theName(power)}`,
     setupLine: (names: readonly string[]) =>
       `Effets temporaires allumés : ${new Intl.ListFormat('fr', { type: 'conjunction' }).format(names)}`,
   },
@@ -544,6 +570,8 @@ export const fr = {
     },
     carryLede:
       "Lu dans le jeu : les pouvoirs, et les bibelots et boissons qui changent un combat. L'emporter l'ajoute à Ton équipement ; tu l'allumes sur la fiche d'une créature ou dans la Simulation.",
+    powersLede:
+      "Lu dans le jeu : les pouvoirs, et les bibelots et boissons qui changent un combat. Équiper un pouvoir en fait le tien dans Ton équipement ; tu l'allumes sur la fiche d'une créature ou dans la Simulation.",
     sort: 'Trier par',
     columns: {
       type: 'Type',
@@ -571,6 +599,8 @@ export const fr = {
     setSize: (size: number) => `${n(size)} pièces`,
     equipped: 'Équipé',
     carried: 'Emporté',
+    /** A power the group casts on you. */
+    group: 'Du groupe',
     equip: 'Équiper',
     carry: 'Emporter',
     equipLabel: (item: string) => `Équiper : ${item}`,
@@ -579,10 +609,10 @@ export const fr = {
     chooseLabel: (item: string) => `Choisir : ${item}`,
     takeOff: 'Retirer',
     /** A row of a list of Your gear: picking it goes back there with it. */
-    pickLabel: (item: string, state: 'equipped' | 'carried' | null) =>
-      `${item}${state === 'equipped' ? ', équipé' : state === 'carried' ? ', emporté' : ''}. Choisir.`,
-    rowLabel: (item: string, state: 'equipped' | 'carried' | null) =>
-      `${item}${state === 'equipped' ? ', équipé' : state === 'carried' ? ', emporté' : ''}. Ouvrir dans Ton équipement.`,
+    pickLabel: (item: string, state: 'equipped' | 'carried' | 'group' | null) =>
+      `${item}${state === null ? '' : rowState[state]}. Choisir.`,
+    rowLabel: (item: string, state: 'equipped' | 'carried' | 'group' | null) =>
+      `${item}${state === null ? '' : rowState[state]}. Ouvrir dans Ton équipement.`,
     search: "Rechercher dans tout l'Arsenal",
     searchPlaceholder: 'Objet, pièce ou effet, partout',
     searchPlaceholderShort: 'Rechercher partout',

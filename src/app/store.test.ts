@@ -73,7 +73,7 @@ describe('createStore', () => {
       armor: 0,
       maxHealth: 25,
       pieces: {},
-      carried: { trinket: null, power: null, drinks: [] },
+      carried: { trinket: null, power: null, drinks: [], group: [] },
     })
   })
 
@@ -116,13 +116,14 @@ describe('createStore', () => {
       trinket: 'TrinketIronHealth',
       power: 'GP_Bonemass',
       drinks: ['Potion_frostresist', 'Potion_barleywine'],
+      group: ['GP_Fader', 'GP_Moder'],
     }
     createStore(storage).update({ gear: { ...changed.gear, carried } })
 
     expect(createStore(storage).getState().gear.carried).toEqual(carried)
   })
 
-  it('checks what is carried one by one, each in its own kind, a drink once', () => {
+  it('checks what is carried one by one, each in its own kind, a drink and a power once', () => {
     const saved = {
       gear: {
         ...changed.gear,
@@ -136,6 +137,8 @@ describe('createStore', () => {
             3,
             'Potion_bzerker',
           ],
+          // One's own power is no group's, and a power counts once.
+          group: ['GP_Fader', 'GP_Moder', 'Potion_bzerker', 'GP_Fader', 'GP_Queen'],
         },
       },
     }
@@ -146,7 +149,21 @@ describe('createStore', () => {
         trinket: null,
         power: 'GP_Moder',
         drinks: ['Potion_frostresist', 'Potion_bzerker'],
+        group: ['GP_Fader', 'GP_Queen'],
       },
+    })
+  })
+
+  it("gives players of earlier versions no group's power", () => {
+    const saved = {
+      gear: { ...changed.gear, carried: { trinket: null, power: 'GP_Bonemass', drinks: [] } },
+    }
+
+    expect(createStore(memoryStorage(JSON.stringify(saved))).getState().gear.carried).toEqual({
+      trinket: null,
+      power: 'GP_Bonemass',
+      drinks: [],
+      group: [],
     })
   })
 
@@ -155,7 +172,7 @@ describe('createStore', () => {
 
     expect(createStore(memoryStorage(JSON.stringify(saved))).getState().gear).toEqual({
       ...changed.gear,
-      carried: { trinket: null, power: null, drinks: [] },
+      carried: { trinket: null, power: null, drinks: [], group: [] },
     })
     expect(
       createStore(

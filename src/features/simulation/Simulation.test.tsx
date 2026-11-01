@@ -180,6 +180,7 @@ describe('Simulation', () => {
         trinket: 'TrinketIronHealth',
         power: 'GP_Bonemass',
         drinks: ['Potion_frostresist'],
+        group: [],
       },
     }
     const card = () => screen.getByRole('button', { name: /^Avec tes effets temporaires/ })

@@ -140,14 +140,22 @@ export interface EffectRow {
   readonly id: string
   readonly effect: CarriedEffect
   readonly carried: boolean
+  /** A power the group casts on you. */
+  readonly group: boolean
 }
 
-/** What one carries of a kind, in the order of Your gear, what is carried first. */
+/** What one carries of a kind, in the order of Your gear: what is carried first, then the group's. */
 export function effectRows(category: EffectCategory, carried: Carried): EffectRow[] {
   const ids = [carried.trinket, carried.power, ...carried.drinks]
+  const rank = (row: EffectRow) => (row.carried ? 2 : row.group ? 1 : 0)
   return carriable(KINDS[category])
-    .map((effect) => ({ id: effect.id, effect, carried: ids.includes(effect.id) }))
-    .toSorted((a, b) => Number(b.carried) - Number(a.carried))
+    .map((effect) => ({
+      id: effect.id,
+      effect,
+      carried: ids.includes(effect.id),
+      group: carried.group.includes(effect.id),
+    }))
+    .toSorted((a, b) => rank(b) - rank(a))
 }
 
 /** How many items a category lists. */

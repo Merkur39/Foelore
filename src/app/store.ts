@@ -200,16 +200,25 @@ function withPieces({ pieces, ...gear }: Gear): Gear {
 }
 
 // What is carried is checked one by one too: an effect the game no longer has, or of another kind, is
-// dropped, and a drink kept once; what is no record of it at all carries nothing.
+// dropped, a drink kept once, a group's power once and never one's own (players of earlier versions have
+// none); what is no record of it at all carries nothing.
 function withCarried({ carried, ...gear }: Gear): Gear {
   if (!isRecord(carried)) return gear
   const effectId = (kind: CarriedKind, value: unknown) =>
     game.ruleEffects.find((effect) => effect.kind === kind && effect.id === value)?.id ?? null
-  const drinks = Array.isArray(carried.drinks) ? (carried.drinks as unknown[]) : []
+  const listed = (value: unknown, kind: CarriedKind) => [
+    ...new Set(
+      (Array.isArray(value) ? (value as unknown[]) : []).flatMap(
+        (item) => effectId(kind, item) ?? [],
+      ),
+    ),
+  ]
+  const power = effectId('power', carried.power)
   const kept: Carried = {
     trinket: effectId('trinket', carried.trinket),
-    power: effectId('power', carried.power),
-    drinks: [...new Set(drinks.flatMap((drink) => effectId('consumable', drink) ?? []))],
+    power,
+    drinks: listed(carried.drinks, 'consumable'),
+    group: listed(carried.group, 'power').filter((id) => id !== power),
   }
   return { ...gear, carried: kept }
 }

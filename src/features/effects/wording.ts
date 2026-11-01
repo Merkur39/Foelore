@@ -2,7 +2,7 @@ import { DAMAGE_TYPES } from '@/combat/damage'
 import { damageMultiplier } from '@/combat/modifiers'
 import { game } from '@/data'
 import type { GameRuleEffect } from '@/data/types'
-import { changesNoHit, type CarriedEffect } from '@/features/gear/carried'
+import { changesNoHit, effectOf, type CarriedEffect } from '@/features/gear/carried'
 import { useLanguage, useT } from '@/i18n/useT'
 import type { Idle } from './model'
 
@@ -61,8 +61,9 @@ export function useEffectWording() {
       const head = lasting(effect)
       return [first === undefined ? head : t.effects.firstLine(head, first), ...rest]
     },
-    /** « Bibelot · 30 s dès 65 d'adrénaline ». */
-    tag: (effect: CarriedEffect) => t.effects.tag(t.effects.kinds[effect.kind], lasting(effect)),
+    /** « Bibelot · 30 s dès 65 d'adrénaline », « Pouvoir du groupe · 5 min » for a group's power. */
+    tag: (effect: CarriedEffect, group = false) =>
+      t.effects.tag(group ? t.effects.groupPower : t.effects.kinds[effect.kind], lasting(effect)),
     idle(idle: Idle): string {
       switch (idle.kind) {
         case 'noHit':
@@ -73,7 +74,9 @@ export function useEffectWording() {
           )
         case 'resisted':
           return t.effects.idle(
-            t.effects.resistedBy[idle.by.kind === 'piece' ? idle.by.slot : idle.by.kind],
+            idle.by.kind === 'group'
+              ? t.effects.coveredByPower(effectOf(idle.by.id).name[language])
+              : t.effects.coveredBy[idle.by.kind === 'piece' ? idle.by.slot : idle.by.kind],
           )
         default:
           return t.effects.idleHere

@@ -9,11 +9,12 @@ import { fightersOf } from '@/features/bestiary/model'
 import { changesNoHit, isCarried, type CarriedKind } from '@/features/gear/carried'
 import { pieceOf, setEffects, SLOTS } from '@/features/gear/pieces'
 
-/** What already resists a damage type as well as an effect would. */
+/** What already resists a damage type as well as an effect would: a group's power by its id. */
 export type Holder =
   | { readonly kind: 'piece'; readonly slot: ArmorSlot }
   | { readonly kind: 'set' }
   | { readonly kind: CarriedKind }
+  | { readonly kind: 'group'; readonly id: string }
 
 /** Why an effect changes nothing in a fight, its main reason first: it changes no hit at all, none of its
  * types is dealt, or what is dealt is already resisted; `nothing` when none says it. */
@@ -88,7 +89,9 @@ function reasonOf(
       modifiers: set.modifiers ?? {},
     })),
     ...others.filter(isCarried).map((other) => ({
-      by: { kind: other.kind },
+      by: gear.carried?.group.includes(other.id)
+        ? ({ kind: 'group', id: other.id } as const)
+        : { kind: other.kind },
       modifiers: other.modifiers ?? {},
     })),
   ]
