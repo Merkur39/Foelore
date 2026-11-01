@@ -30,6 +30,31 @@ export interface Release {
  */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.15.3',
+    date: '2026-11-01',
+    notes: [
+      {
+        kind: 'fixed',
+        title: { fr: 'Les dégâts suivent le jet du jeu', en: "Damage follows the game's roll" },
+        detail: {
+          fr: 'Détails, sous les cartes, donne chaque coup du jet le plus faible au plus fort.',
+          en: 'Details, under the cards, gives each hit from the lowest roll to the highest.',
+        },
+      },
+      {
+        kind: 'fixed',
+        title: {
+          fr: 'Le feu trop faible pour brûler ne compte plus',
+          en: 'Fire too weak to burn no longer counts',
+        },
+        detail: {
+          fr: 'Feu et poison se lisent à part dans Détails, avec leur durée.',
+          en: 'Fire and poison read apart in Details, with how long they last.',
+        },
+      },
+    ],
+  },
+  {
     version: '1.15.2',
     date: '2026-10-31',
     notes: [
