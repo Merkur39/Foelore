@@ -30,6 +30,31 @@ export interface Release {
  */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.17.0',
+    date: '2026-11-01',
+    notes: [
+      {
+        kind: 'new',
+        title: { fr: 'Humide se compte sous la pluie', en: 'Wet counts in the rain' },
+        detail: {
+          fr: 'Allume-le dans Ton contexte, là où il pleut : il vaut pour tout le biome.',
+          en: 'Switch it on in Your setup, where it rains: it holds for the whole biome.',
+        },
+      },
+      {
+        kind: 'new',
+        title: {
+          fr: 'La Barrière magique du groupe compte ses coups',
+          en: "The group's Magic barrier counts its hits",
+        },
+        detail: {
+          fr: 'Déclare-la dans Ton équipement : chaque attaque dit combien de coups elle prend.',
+          en: 'Declare it in Your gear: each attack says how many hits it takes.',
+        },
+      },
+    ],
+  },
+  {
     version: '1.16.0',
     date: '2026-11-01',
     notes: [
