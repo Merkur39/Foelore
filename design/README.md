@@ -2,7 +2,7 @@
 
 The mockups live in a Claude Design artifact: [Foelore — design](https://claude.ai/artifact/DDGhnVebZ9JkXRbWsa2dse)
 (artifact type `https://claude.ai/artifact/QKN21svewxgyPb6SYRqWnd`). **The artifact is the source of truth**;
-`canvas/project/` is a local working copy of **v201** (canvas.json + every `.dc.html` board).
+`canvas/project/` is a local working copy of **v206** (canvas.json + every `.dc.html` board).
 
 ## Layout of the canvas
 
@@ -35,6 +35,27 @@ The mockups live in a Claude Design artifact: [Foelore — design](https://claud
   Approved by the owner, and carried into Origine and its themes (v200): `Nouveautes` and `Desktop-Nouveautes` (each
   note a kind, a title, an optional detail), and the thank-you sheet of `Bestiaire` and `Desktop-Bestiaire`, whence
   `build_bestiary_search.py` writes `Merci` and `Desktop-Merci`.
+- Page **Dégâts · pistes** (`Degats-*`, v202, #64): the damage a hit deals across the game's roll (every hit an attack
+  builds times √U(0.75, 1)), and the burning and poison that follow it, on four attacks against an Iron Buckler level 3
+  (Blocking 16, armor 48, 140 HP): Moder's Bite (the ticket's case), Moder's Claw (the block breaks 3 times in 4, else
+  staggers), the Cultist's Fireclaw (a burn when blocked, none when parried: too little fire passes), Bonemass's Punch
+  (poison). `Degats-Auj`, the app as it reads them; track A, ranges on the card, burn and poison on a line of their
+  own, how often a verdict comes when the roll changes it; B, « jusqu'à » the top of the roll, burn and poison counted
+  in (« dont »), one line under the cards; C, the cards keep the top, « Ce que le jeu tire » folded under them gives
+  the ranges, the burn and poison apart, and the verdict's odds. Four phones per track, a desktop each (Bonemass's
+  Punch). Static, written by `scripts/degats/` (`data.mts` from the app's engine, `build.mjs`, `add.mjs`). The owner
+  picked C, the fold titled « Détails ». Iteration 1 (v203, under the tracks): `Degats-C1`, six phones whose folds open
+  and close in Play (the Bite folded, as on arrival; the Claw, the Fireclaw, the Punch; Fader's Flame Breath, a hit with
+  its own damage, « Ce coup ne varie pas », one row « LE COUP » since no guard takes it, 0 taken then the whole hit as a
+  burn; the free value 90, rolled like an attack's hit, staggering 1 time in 7), and `Degats-C1-Desktop`. Odds read
+  « p fois sur q », q up to 10, the simplest within 2.5 points. Iteration 2 (v205, under it), on the owner's word:
+  `Degats-C2` and `Degats-C2-Desktop`; while « Détails » is open, each card's own bar is drawn as track A draws it, solid
+  to the lowest roll, hatched to the highest, and folded it is today's again; the text under it, and « Détails »,
+  stay as in iteration 1. (A first iteration 2, in v204, drew a second bar inside « Détails »: not what the owner
+  meant, replaced.) Approved by the owner on 2026-11-01, and carried into Origine and its themes (v206): `Main` and
+  `Desktop-Combat` roll their example hit (√U(0.75, 1)), fold « Détails » under the cards (the Troll's 130 blocked
+  staggers 1 time in 3) and draw the cards' bars as ranges while it is open; `Simulation-Plantee` and its desktop
+  follow from `build_bestiary_search.py`.
 - The desktop Bestiaire board is a fluid page that carries track B itself: classes and a `max-width: 1399px`
   media query in its helmet, which the search board inherits. Play it narrower than 1400 px to see it.
 - Generated from the Bestiaire boards: `Bestiaire-Recherche`, `Desktop-Bestiaire-Recherche`, and `Contexte`
