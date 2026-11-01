@@ -1,4 +1,5 @@
 import { mergeModifiers, type DamageModifiers } from './modifiers'
+import type { OverTimeRules } from './overTime'
 
 /** What an item brings to a block, as the game data lists it. */
 export interface Blocker {
@@ -22,6 +23,8 @@ export interface PlayerRules {
   readonly blockStaminaDrain: number
   /** What a parry costs in stamina (m_perfectBlockStaminaDrain). */
   readonly perfectBlockStaminaDrain: number
+  /** How burning, spirit and poison deal what a hit leaves them. */
+  readonly overTime: OverTimeRules
 }
 
 /** A helmet, chest, legs or cape worn, at its level, with what the game data lists for it. */
@@ -76,6 +79,7 @@ export interface Defence {
   readonly staggerFactor: number
   readonly blockStaminaDrain: number
   readonly parryStaminaDrain: number
+  readonly overTime: OverTimeRules
   /** The player's, the pieces' and the effects', applied past the guard and before the armor
    * (Character.RPC_Damage). */
   readonly modifiers?: DamageModifiers
@@ -139,6 +143,7 @@ export function defenceOf({
     staggerFactor: player.staggerFactor,
     blockStaminaDrain: player.blockStaminaDrain,
     parryStaminaDrain: player.perfectBlockStaminaDrain,
+    overTime: player.overTime,
     // Character.GetDamageModifiers.
     modifiers: mergeModifiers(
       player.modifiers,

@@ -1,6 +1,8 @@
 import { act, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { deviceSpeaks, renderWithStore } from '../../test/utils'
+import { en } from './en'
+import { fr } from './fr'
 import { useT } from './useT'
 
 function GuideTab() {
@@ -41,5 +43,16 @@ describe('useT', () => {
     })
 
     expect(screen.getByText('Mémo')).toBeInTheDocument()
+  })
+})
+
+describe('the wording of « Détails »', () => {
+  it('speaks of spirit damage when too little spirit gets through, as the game does', () => {
+    expect(fr.simulation.details.fizzled('Esprit', 'spirit')).toBe(
+      "trop peu de dégâts d'esprit passent",
+    )
+    expect(en.simulation.details.fizzled('Spirit', 'spirit')).toBe(
+      'too little spirit damage gets through',
+    )
   })
 })

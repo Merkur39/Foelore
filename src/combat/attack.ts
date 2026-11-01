@@ -2,6 +2,7 @@ import { verdictSeverity, worstVerdict } from './advice'
 import type { Defence } from './block'
 import {
   listedDamage,
+  LOWEST_ROLL,
   resolveHit,
   type Guard,
   type Hit,
@@ -47,25 +48,73 @@ export function attackVerdicts(
   return { block, parry: verdictOf('parry'), dodgeable: hits.every((hit) => hit.dodgeable) }
 }
 
-/** The hit of an attack a guard fares worst against: the worst verdict, then the most damage taken.
- * Null when the item cannot parry, or the attack only summons. */
-export function hardestHit(
+function hardest(
   defence: Defence,
   hits: readonly AttackHit[],
   world: World,
   options: HitOptions,
-): HitResult | null {
-  let hardest: HitResult | null = null
+): { hit: AttackHit; result: HitResult } | null {
+  let found: { hit: AttackHit; result: HitResult } | null = null
   for (const hit of hits) {
     const result = resolveHit(defence, hit, world, options)
     if (result === null) return null
     const worse =
-      hardest === null ||
-      verdictSeverity(result.verdict) > verdictSeverity(hardest.verdict) ||
-      (result.verdict === hardest.verdict && result.taken > hardest.taken)
-    if (worse) hardest = result
+      found === null ||
+      verdictSeverity(result.verdict) > verdictSeverity(found.result.verdict) ||
+      (result.verdict === found.result.verdict && result.taken > found.result.taken)
+    if (worse) found = { hit, result }
   }
-  return hardest
+  return found
+}
+
+/** The hit of an attack a guard fares worst against: the worst verdict, then the most damage taken.
+ * Null when the item cannot parry, or the attack only summons. */
+export const hardestHit = (
+  defence: Defence,
+  hits: readonly AttackHit[],
+  world: World,
+  options: HitOptions,
+): HitResult | null => hardest(defence, hits, world, options)?.result ?? null
+
+/** A hit across the game's roll: at its lowest and at its top, and the share of the rolls that end in the
+ * top's verdict. */
+export interface RollRange {
+  readonly low: HitResult
+  readonly top: HitResult
+  readonly odds: number
+  /** False for a hit with its own damage, which the game does not roll. */
+  readonly rolled: boolean
+}
+
+// Width of the roll at which the bisection stops; far below what the interface shows.
+const PRECISION = 1e-9
+
+/**
+ * The hardest hit of an attack, as hardestHit judges it at the top of the roll, across the roll. The roll is
+ * √U, U even over [0.75, 1]; every step of a hit grows with it, so the top's verdict holds from one roll up,
+ * found by bisection, and comes (1 − roll²) / 0.25 of the time.
+ */
+export function hardestRange(
+  defence: Defence,
+  hits: readonly AttackHit[],
+  world: World,
+  options: HitOptions,
+): RollRange | null {
+  const found = hardest(defence, hits, world, { ...options, roll: 1 })
+  if (found === null) return null
+  const { hit, result: top } = found
+  const at = (roll: number) => resolveHit(defence, hit, world, { ...options, roll })!
+  const low = at(LOWEST_ROLL)
+  const rolled = (hit.scaling ?? 'attack') === 'attack'
+  if (low.verdict === top.verdict) return { low, top, odds: 1, rolled }
+  let below = LOWEST_ROLL
+  let from = 1
+  while (from - below > PRECISION) {
+    const middle = (below + from) / 2
+    if (at(middle).verdict === top.verdict) from = middle
+    else below = middle
+  }
+  return { low, top, odds: (1 - from * from) / 0.25, rolled }
 }
 
 /** The largest hit of an attack as the game lists it at these stars; null when it only summons. */

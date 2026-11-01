@@ -1,7 +1,8 @@
 import { applyArmorTo } from './armor'
 import type { Defence } from './block'
-import { overTimeDamage, scaleDamages, staggerDamage, totalDamage, type Damages } from './damage'
+import { MIN_DAMAGE, scaleDamages, staggerDamage, totalDamage, type Damages } from './damage'
 import { applyModifiers } from './modifiers'
+import { burning, poisoning, type OverTime } from './overTime'
 import { worldScale, type World } from './world'
 
 /**
@@ -31,7 +32,12 @@ export interface HitOptions {
   readonly stars: number
   /** Share of the stagger bar already filled before the hit, from 0 to 1. */
   readonly barBefore: number
+  /** The game's roll on a hit an attack builds, from LOWEST_ROLL to 1; its top when left out. */
+  readonly roll?: number
 }
+
+/** Character.GetRandomSkillFactor: every hit an attack builds is multiplied by √U(0.75, 1). */
+export const LOWEST_ROLL = Math.sqrt(0.75)
 
 /**
  * - holds: blocked, no stagger;
@@ -53,18 +59,21 @@ export interface StaggerBar {
 export interface HitResult {
   readonly verdict: Verdict
   readonly staggered: boolean
-  /** The hit after world and stars, before shield and armor. */
+  /** The hit after world, stars and roll, before shield and armor. */
   readonly received: number
+  /** All the hit deals: what lands at once, then what burns, poisons and haunts. */
   readonly taken: number
-  /** The part of `taken` dealt over time: burning, poison, spirit. */
-  readonly overTime: number
+  /** What lands at once: the number the game shows on the hit. */
+  readonly direct: number
+  /** What the status effects deal of `taken` over time; null when none of that type passes the armor. */
+  readonly burning: OverTime | null
+  readonly poison: OverTime | null
+  readonly spirit: OverTime | null
   /** Stamina spent; negative when the parry gives some back. */
   readonly stamina: number
   readonly bar: StaggerBar
 }
 
-// Character.ApplyDamage drops a direct hit of 0.1 or less, and its stagger with it.
-const MIN_DAMAGE = 0.1
 // Attack.GetLevelDamageFactor: each star adds half of the damage.
 const DAMAGE_PER_STAR = 0.5
 
@@ -74,9 +83,15 @@ function verdictOf(blockable: boolean, broken: boolean, staggered: boolean): Ver
   return staggered ? 'staggered' : 'holds'
 }
 
-/** [typed damage factor, true damage factor]: the world never scales true damage (HitData.ApplyModifier). */
-function scalingOf(scaling: HitScaling, world: World, stars: number): [number, number] {
-  const starFactor = 1 + stars * DAMAGE_PER_STAR
+/** [typed damage factor, true damage factor]: the world never scales true damage (HitData.ApplyModifier); the
+ * roll scales both (Attack.ModifyDamage). */
+function scalingOf(
+  scaling: HitScaling,
+  world: World,
+  stars: number,
+  roll: number,
+): [number, number] {
+  const starFactor = (1 + stars * DAMAGE_PER_STAR) * roll
   if (scaling === 'attack') return [worldScale(world).enemy * starFactor, starFactor]
   if (scaling === 'world') return [worldScale(world).enemy, 1]
   return [1, 1]
@@ -114,12 +129,12 @@ export function resolveHit(
   defence: Defence,
   hit: Hit,
   world: World,
-  { guard, stars, barBefore }: HitOptions,
+  { guard, stars, barBefore, roll = 1 }: HitOptions,
 ): HitResult | null {
   const power = guard === 'parry' ? defence.parryPower : defence.blockPower
   if (power === null) return null
 
-  const [typedFactor, trueFactor] = scalingOf(hit.scaling ?? 'attack', world, stars)
+  const [typedFactor, trueFactor] = scalingOf(hit.scaling ?? 'attack', world, stars, roll)
   let damages = scaleDamages(hit.damages, typedFactor)
   const trueDamage = (hit.trueDamage ?? 0) * trueFactor
   const received = totalDamage(damages) + trueDamage
@@ -142,8 +157,14 @@ export function resolveHit(
   }
 
   const pastArmor = applyArmorTo(applyModifiers(damages, defence.modifiers ?? {}), defence.armor)
-  const overTime = overTimeDamage(pastArmor)
-  const direct = totalDamage(pastArmor) - overTime + trueDamage
+  // Character.RPC_Damage takes fire, spirit and poison out of the hit and hands them to their status effects.
+  const { fire = 0, spirit = 0, poison = 0 } = pastArmor
+  const rules = defence.overTime
+  const burned = fire > 0 ? burning(rules.burning, fire) : null
+  const haunted = spirit > 0 ? burning(rules.spirit, spirit) : null
+  const poisoned = poison > 0 ? poisoning(rules.poison, poison) : null
+  const overTime = [burned, haunted, poisoned].reduce((sum, part) => sum + (part?.damage ?? 0), 0)
+  const direct = totalDamage(pastArmor) - fire - spirit - poison + trueDamage
   const landed = direct > MIN_DAMAGE
   const armor = landed ? staggerDamage(pastArmor) * hit.staggerMultiplier * staggerShare : 0
   const staggered = before + shield + armor >= limit
@@ -153,7 +174,10 @@ export function resolveHit(
     staggered,
     received,
     taken: (landed ? direct : 0) + overTime,
-    overTime,
+    direct: landed ? direct : 0,
+    burning: burned,
+    poison: poisoned,
+    spirit: haunted,
     stamina,
     bar: { before, shield, armor, limit },
   }

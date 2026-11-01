@@ -301,6 +301,13 @@ class ExtractCombatTests(unittest.TestCase):
             "biomes": ["mountain"],
         })
 
+    def test_burning_spirit_and_poison_deal_what_a_hit_leaves_the_player_over_time(self):
+        self.assertEqual(self.data["player"]["overTime"], {
+            "burning": {"ttl": 5, "interval": 1},
+            "spirit": {"ttl": 3, "interval": 0.5},
+            "poison": {"baseTtl": 1, "ttlPerDamage": 5, "ttlPower": 0.5, "interval": 1},
+        })
+
     def test_armor_pieces_are_listed_apart_from_the_effects(self):
         pieces = {p["id"]: p for p in self.data["armorPieces"]}
         self.assertEqual(len(pieces), 113)

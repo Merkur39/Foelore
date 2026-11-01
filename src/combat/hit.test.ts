@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import type { Defence } from './block'
 import type { Damages } from './damage'
-import { resolveHit, type Hit, type HitOptions } from './hit'
+import { LOWEST_ROLL, resolveHit, type Hit, type HitOptions } from './hit'
 import type { World } from './world'
 
-// The Player prefab's rules in 1.0.21.
-const rules = { staggerFactor: 0.4, blockStaminaDrain: 10, parryStaminaDrain: 0 }
+// The Player prefab's rules in 1.0.21, with the Burning, Spirit and Poison prefabs'.
+const rules = {
+  staggerFactor: 0.4,
+  blockStaminaDrain: 10,
+  parryStaminaDrain: 0,
+  overTime: {
+    burning: { ttl: 5, interval: 1 },
+    spirit: { ttl: 3, interval: 0.5 },
+    poison: { baseTtl: 1, ttlPerDamage: 5, ttlPower: 0.5, interval: 1 },
+  },
+}
 // Silver shield level 3, blocking skill 25, armor 45, 150 health: the worked example of the
 // « Le combat dans Valheim » page and of the design mockups.
 const silverShield: Defence = {
@@ -251,19 +260,50 @@ describe('resolveHit', () => {
     expect(resolveHit(torch, hitOf({ blunt: 90 }), alone(), parry)?.stamina).toBe(-10)
   })
 
-  it('tells apart what burns over time', () => {
+  it('tells apart what lands at once, the number the game shows', () => {
     const result = resolveHit(silverShield, hitOf({ slash: 45, fire: 45 }), alone(), block)
 
-    expect(result?.overTime).toBeCloseTo(3.47 / 2, 2)
+    expect(result?.direct).toBeCloseTo(3.47 / 2, 2)
+    expect(result?.taken).toBeCloseTo(3.47, 2)
+  })
+
+  it('tells apart the fire that burns over 5 s', () => {
+    const result = resolveHit(silverShield, hitOf({ slash: 45, fire: 45 }), alone(), block)
+
+    expect(result?.burning?.damage).toBeCloseTo(3.47 / 2, 2)
+    expect(result?.burning?.seconds).toBe(5)
+    expect(result?.poison).toBeNull()
   })
 
   it('drops a direct remainder of 0.1 or less but still burns', () => {
     const bare: Defence = { ...silverShield, armor: 0 }
-    const result = resolveHit(bare, hitOf({ blunt: 2, fire: 8 }), alone(), block)
+    const result = resolveHit(bare, hitOf({ blunt: 0.5, fire: 40 }), alone(), block)
 
-    // 10 against 81 leaves 0.31: 0.06 blunt, dropped, and 0.25 fire, burned.
-    expect(result?.taken).toBeCloseTo(0.247, 3)
+    // 40.5 against 81 leaves 5.06: 0.06 blunt, dropped, and 5 fire, burned.
+    expect(result?.taken).toBeCloseTo(5, 2)
     expect(result?.bar.armor).toBe(0)
+  })
+
+  it("counts no fire when too little passes to light a burn: the Cultist's Fireclaw, parried", () => {
+    const result = resolveHit(ironBuckler, hitOf({ slash: 35, fire: 40 }), alone(), parry)
+
+    expect(result?.burning).toEqual({ damage: 0, seconds: 0 })
+    expect(result?.taken).toBeCloseTo(0.412, 3)
+  })
+
+  it("tells apart the poison, over 1 + √(5 × dose) s: Bonemass's punch, blocked", () => {
+    const result = resolveHit(ironBuckler, hitOf({ blunt: 80, poison: 50 }), alone(), block)
+
+    expect(result?.poison?.damage).toBeCloseTo(15.09, 2)
+    expect(result?.poison?.seconds).toBe(9)
+    expect(result?.taken).toBeCloseTo(39.24, 2)
+  })
+
+  it('leaves no spirit to a player who is immune to it, and burns it otherwise', () => {
+    const immune: Defence = { ...silverShield, modifiers: { spirit: 'immune' } }
+
+    expect(resolveHit(immune, hitOf({ spirit: 80 }), alone(), block)?.spirit).toBeNull()
+    expect(resolveHit(silverShield, hitOf({ spirit: 80 }), alone(), block)?.spirit?.seconds).toBe(3)
   })
 
   it("puts the stagger limit at the player's share of max health", () => {
@@ -278,6 +318,39 @@ describe('resolveHit', () => {
     expect(resolveHit(costlier, hitOf({ blunt: 90 }), alone(), block)?.stamina).toBeCloseTo(
       16.05,
       2,
+    )
+  })
+})
+
+describe("resolveHit, along the game's roll", () => {
+  const bite = hitOf({ pierce: 120 })
+
+  it('multiplies the hit an attack builds by the roll: the bite parried at its lowest', () => {
+    const result = resolveHit(ironBuckler, bite, alone(), { ...parry, roll: LOWEST_ROLL })
+
+    expect(result?.received).toBeCloseTo(103.92, 2)
+    expect(result?.taken).toBeCloseTo(3.26, 2)
+    expect((result?.bar.shield ?? 0) + (result?.bar.armor ?? 0)).toBeCloseTo(28.26, 2)
+  })
+
+  it('takes the top of the roll when given none', () => {
+    expect(resolveHit(ironBuckler, bite, alone(), parry)?.received).toBe(120)
+  })
+
+  it('rolls true damage with the rest', () => {
+    const result = resolveHit(silverShield, hitOf({}, { trueDamage: 10 }), alone(), {
+      ...block,
+      roll: 0.9,
+    })
+
+    expect(result?.taken).toBeCloseTo(9, 6)
+  })
+
+  it('never rolls a hit with its own damage', () => {
+    const own = hitOf({ blunt: 90 }, { scaling: 'world' })
+
+    expect(resolveHit(silverShield, own, alone(), { ...block, roll: LOWEST_ROLL })?.received).toBe(
+      90,
     )
   })
 })

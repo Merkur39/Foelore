@@ -2,6 +2,7 @@ import type { ArmorPiece, Blocker, Effect } from '@/combat/block'
 import type { DamageModifier, DamageModifiers } from '@/combat/modifiers'
 import type { DamageType, Damages } from '@/combat/damage'
 import type { HitScaling } from '@/combat/hit'
+import type { OverTimeRules } from '@/combat/overTime'
 import type { Difficulty } from '@/combat/world'
 
 /** A name as the game shows it in French and in English. */
@@ -288,6 +289,8 @@ export interface GameData {
     readonly dodgeStamina: number
     /** Share of the dodge stamina a perfect dodge gives back. */
     readonly perfectDodgeRefund: number
+    /** How burning, spirit and poison deal what a hit leaves the player (SE_Burning, SE_Poison). */
+    readonly overTime: OverTimeRules
   }
   /** The cold that wears the player down where the weather freezes, away from fire and shelter, unless
    * they resist frost (Player.UpdateEnvStatusEffects). */

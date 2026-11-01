@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { attackDamage, attackVerdicts, hardestHit, type AttackHit } from './attack'
+import { attackDamage, attackVerdicts, hardestHit, hardestRange, type AttackHit } from './attack'
 import type { Defence } from './block'
 import type { World } from './world'
 
@@ -12,6 +12,11 @@ const defence: Defence = {
   staggerFactor: 0.4,
   blockStaminaDrain: 10,
   parryStaminaDrain: 0,
+  overTime: {
+    burning: { ttl: 5, interval: 1 },
+    spirit: { ttl: 3, interval: 0.5 },
+    poison: { baseTtl: 1, ttlPerDamage: 5, ttlPower: 0.5, interval: 1 },
+  },
 }
 const world: World = { difficulty: 'normal', players: 1 }
 const blunt = (damage: number, rest: Partial<AttackHit> = {}): AttackHit => ({
@@ -97,6 +102,49 @@ describe('hardestHit', () => {
       }),
     ).toBeNull()
     expect(hardestHit(defence, [], world, block)).toBeNull()
+  })
+})
+
+// Blocked, a blunt hit H passes H² / 200 twice, shield and armor: it staggers from 63.2, breaks from 89.4.
+describe('hardestRange', () => {
+  const block = { guard: 'block', stars: 0, barBefore: 0 } as const
+
+  it('resolves the hit at the lowest roll and at the top', () => {
+    const range = hardestRange(defence, [blunt(10)], world, block)
+
+    expect(range?.low.taken).toBeCloseTo(0.375, 6)
+    expect(range?.top.taken).toBeCloseTo(0.5, 6)
+    expect(range?.rolled).toBe(true)
+    expect(range?.odds).toBe(1)
+  })
+
+  it("gives the share of the rolls that end in the top's verdict when the roll changes it", () => {
+    const range = hardestRange(defence, [blunt(70)], world, block)
+
+    expect(range?.low.verdict).toBe('holds')
+    expect(range?.top.verdict).toBe('staggered')
+    // The roll is √U, U even over [0.75, 1]: it staggers from 63.25 / 70 on.
+    expect(range?.odds).toBeCloseTo((1 - (Math.sqrt(4000) / 70) ** 2) / 0.25, 6)
+  })
+
+  it('keeps a hit with its own damage at one point', () => {
+    const range = hardestRange(defence, [blunt(70, { scaling: 'world' })], world, block)
+
+    expect(range?.rolled).toBe(false)
+    expect(range?.low).toEqual(range?.top)
+    expect(range?.odds).toBe(1)
+  })
+
+  it('ranges the hit of the attack the guard fares worst against', () => {
+    const range = hardestRange(defence, [blunt(10), blunt(70)], world, block)
+
+    expect(range?.top.received).toBe(70)
+  })
+
+  it('has nothing to range with an item that cannot parry', () => {
+    const tower: Defence = { ...defence, parryPower: null }
+
+    expect(hardestRange(tower, [blunt(10)], world, { ...block, guard: 'parry' })).toBeNull()
   })
 })
 

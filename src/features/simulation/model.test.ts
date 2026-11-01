@@ -1,10 +1,30 @@
 import { describe, expect, it } from 'vitest'
 import { game } from '@/data'
-import { findAttack, refOf, simulableCount, simulationRoute, withRecent } from './model'
+import {
+  findAttack,
+  oddsFraction,
+  refOf,
+  simulableCount,
+  simulationRoute,
+  withRecent,
+} from './model'
 
 const slam = { fighter: 'Troll', attack: 'troll_groundslam' }
 const punch = { fighter: 'Troll', attack: 'troll_punch' }
 const kick = { fighter: 'Boar', attack: 'boar_base_attack' }
+
+describe('oddsFraction', () => {
+  it('says a share as the simplest « n in q » that falls within 3 points of it', () => {
+    expect(oddsFraction(0.7468)).toEqual([3, 4])
+    expect(oddsFraction(0.359)).toEqual([1, 3])
+    expect(oddsFraction(0.1317)).toEqual([1, 7])
+  })
+
+  it('takes the nearest when none falls that close, q up to 10', () => {
+    expect(oddsFraction(0.02)).toEqual([1, 10])
+    expect(oddsFraction(0.97)).toEqual([9, 10])
+  })
+})
 
 describe('withRecent', () => {
   it('puts the attack just simulated first, and keeps two', () => {

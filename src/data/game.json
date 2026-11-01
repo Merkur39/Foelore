@@ -89,7 +89,23 @@
     "perfectBlockStaminaDrain": 0,
     "staggerFactor": 0.4,
     "dodgeStamina": 15,
-    "perfectDodgeRefund": 0.5
+    "perfectDodgeRefund": 0.5,
+    "overTime": {
+      "burning": {
+        "ttl": 5,
+        "interval": 1
+      },
+      "spirit": {
+        "ttl": 3,
+        "interval": 0.5
+      },
+      "poison": {
+        "baseTtl": 1,
+        "ttlPerDamage": 5,
+        "ttlPower": 0.5,
+        "interval": 1
+      }
+    }
   },
   "freezing": {
     "name": {

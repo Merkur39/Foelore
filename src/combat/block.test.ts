@@ -11,12 +11,17 @@ import {
 
 const silverShield: Blocker = { blockPower: 60, blockPowerPerLevel: 6, timedBlockBonus: 1.5 }
 const ironTower: Blocker = { blockPower: 52, blockPowerPerLevel: 6, timedBlockBonus: 1 }
-// The Player prefab's rules in 1.0.21.
+// The Player prefab's rules in 1.0.21, with the Burning, Spirit and Poison prefabs'.
 const player: PlayerRules = {
   modifiers: { spirit: 'immune' },
   staggerFactor: 0.4,
   blockStaminaDrain: 10,
   perfectBlockStaminaDrain: 0,
+  overTime: {
+    burning: { ttl: 5, interval: 1 },
+    spirit: { ttl: 3, interval: 0.5 },
+    poison: { baseTtl: 1, ttlPerDamage: 5, ttlPower: 0.5, interval: 1 },
+  },
 }
 // Silver shield level 3, blocking skill 25, armor 45, 150 health: the worked example of the mockups.
 const worked: Profile = {
@@ -79,6 +84,7 @@ describe('defenceOf', () => {
       staggerFactor: 0.4,
       blockStaminaDrain: 10,
       parryStaminaDrain: 0,
+      overTime: player.overTime,
       modifiers: { spirit: 'immune' },
       blockerModifiers: {},
       parryStaminaRegen: 0,

@@ -25,6 +25,7 @@ const defence: Defence = {
   staggerFactor: 0.4,
   blockStaminaDrain: 10,
   parryStaminaDrain: 0,
+  overTime: game.player.overTime,
 }
 const world: World = { difficulty: 'normal', players: 1 }
 

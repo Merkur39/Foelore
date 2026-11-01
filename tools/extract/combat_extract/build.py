@@ -44,7 +44,7 @@ WORLD_PRESET_NAMES[WORLD_PRESETS["Default"]] = "menu_default"
 CHAIN_WINDOW = 0.2  # Attack.Start: a chain goes on when the next swing starts this soon after the last
 CLASSES = sorted(
     set(attack_data.CLASSES) | set(spawns.CLASSES) | set(arsenal.CLASSES) | set(rules.CLASSES)
-    | {"Player", "Game", "WeakSpot", "KeySlider", "KeyButton", "SE_Stats", "MonsterAI"}
+    | {"Player", "Game", "WeakSpot", "KeySlider", "KeyButton", "SE_Stats", "SE_Burning", "SE_Poison", "MonsterAI"}
 )
 TAG = re.compile(r"<[^>]+>")
 WEAK_SPOT = re.compile(r"^weak_?spot_?", re.I)
@@ -356,6 +356,7 @@ def _player(found):
         "staggerFactor": _round(data["m_staggerDamageFactor"]),
         "dodgeStamina": _round(data["m_dodgeStaminaUsage"]),
         "perfectDodgeRefund": _round(data["m_perfectDodgeStaminaReturnMultiplier"]),
+        "overTime": _over_time(found),
     }
 
 
@@ -374,6 +375,25 @@ def _freezing(found, names, biomes):
         "damagePerSecond": _round(-se["m_healthPerTick"] / se["m_tickInterval"]),
         "healthRegen": _round(se["m_healthRegenMultiplier"]),
         "biomes": [biome for biome in biomes if biome in where],
+    }
+
+
+def _over_time(found):
+    """How the status effects Character.RPC_Damage hands the fire, spirit and poison of a hit to deal it over time:
+    Burning and Spirit (SE_Burning) share the dose between m_ttl / m_damageInterval ticks; Poison (SE_Poison)
+    lasts m_baseTTL + (dose × m_TTLPerDamagePlayer) ^ m_TTLPower seconds on a player, a tick every
+    m_damageInterval s."""
+    burning = {row["data"]["m_Name"]: row["data"] for row in found.rows("SE_Burning")}
+    poison = next(row["data"] for row in found.rows("SE_Poison") if row["data"]["m_Name"] == "Poison")
+    return {
+        **{key: {"ttl": _round(burning[name]["m_ttl"]), "interval": _round(burning[name]["m_damageInterval"])}
+           for key, name in (("burning", "Burning"), ("spirit", "Spirit"))},
+        "poison": {
+            "baseTtl": _round(poison["m_baseTTL"]),
+            "ttlPerDamage": _round(poison["m_TTLPerDamagePlayer"]),
+            "ttlPower": _round(poison["m_TTLPower"]),
+            "interval": _round(poison["m_damageInterval"]),
+        },
     }
 
 
