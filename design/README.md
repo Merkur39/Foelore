@@ -2,7 +2,7 @@
 
 The mockups live in a Claude Design artifact: [Foelore — design](https://claude.ai/artifact/DDGhnVebZ9JkXRbWsa2dse)
 (artifact type `https://claude.ai/artifact/QKN21svewxgyPb6SYRqWnd`). **The artifact is the source of truth**;
-`canvas/project/` is a local working copy of **v215** (canvas.json + every `.dc.html` board).
+`canvas/project/` is a local working copy of **v217** (canvas.json + every `.dc.html` board).
 
 ## Layout of the canvas
 
@@ -22,6 +22,13 @@ The mockups live in a Claude Design artifact: [Foelore — design](https://claud
 - Page **Encaisses** (`Encaisses`): the « Ce que tu encaisses » card on a 360 px phone, as it jumped, and two
   steady layouts; track B (the legend under the title, numbers alone on each guard's line) is the one
   carried into the phone Ton équipement board. Made by hand as well.
+- Page **PV et ton monde · pistes** (`PV-*`, v216, #84): how a creature's health reads beside « À infliger », which
+  counts what the world leaves of your hits. The Troll and the Black Forest on Hard with 3 players (×0,53) and Very easy
+  alone (×1,25), the mockups' gear: A, the health to deal in the unit of your hits (1 129, 480), on the sheet and the
+  list; B, the same with « 600 DE BASE » under the sheet's number; C, the game's 600 everywhere and a line under the
+  sheet's stats. The owner picked A; `PV-A-Desktop` (v217, right of A) is the desktop Bestiaire with the Troll's sheet.
+  Origine needs nothing: its boards are on Normal alone, where A reads as before. Written by `scripts/pv/` (`data.mts`
+  from the app's engine, `build.mjs`, `add.mjs`).
 - The desktop Bestiaire board is a fluid page that carries track B itself: classes and a `max-width: 1399px`
   media query in its helmet, which the search board inherits. Play it narrower than 1400 px to see it.
 - Generated from the Bestiaire boards: `Bestiaire-Recherche`, `Desktop-Bestiaire-Recherche`, and `Contexte`
