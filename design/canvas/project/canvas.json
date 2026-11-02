@@ -568,38 +568,6 @@
       "title": "Ce que tu encaisses — deux pistes",
       "page": "encaisses"
     },
-    "PV-A.dc.html": {
-      "x": 0,
-      "y": 0,
-      "w": 1314,
-      "h": 1300,
-      "title": "A · Les PV dans l’unité de tes coups",
-      "page": "pv"
-    },
-    "PV-A-Desktop.dc.html": {
-      "x": 1394,
-      "y": 0,
-      "w": 1440,
-      "h": 900,
-      "title": "A · desktop · Difficile, 3 joueurs",
-      "page": "pv"
-    },
-    "PV-B.dc.html": {
-      "x": 0,
-      "y": 1700,
-      "w": 1314,
-      "h": 1300,
-      "title": "B · Ce qu’il faut infliger, les PV du jeu dessous",
-      "page": "pv"
-    },
-    "PV-C.dc.html": {
-      "x": 0,
-      "y": 3400,
-      "w": 1314,
-      "h": 1300,
-      "title": "C · Les PV du jeu, une ligne explique",
-      "page": "pv"
-    },
     "Braise-Bestiaire.dc.html": {
       "x": 0,
       "y": 0,
@@ -4351,14 +4319,6 @@
       "page": "encaisses",
       "w": 240
     },
-    "pv-row1": {
-      "kind": "title1",
-      "text": "PV et ton monde · les PV dans la même unité qu’À infliger (#84)",
-      "x": 0,
-      "y": -300,
-      "maxW": 2834,
-      "page": "pv"
-    },
     "m-row1-braise": {
       "kind": "title1",
       "text": "Bestiaire",
@@ -5151,10 +5111,6 @@
     "Version.dc.html",
     "Competence.dc.html",
     "Encaisses.dc.html",
-    "PV-A.dc.html",
-    "PV-A-Desktop.dc.html",
-    "PV-B.dc.html",
-    "PV-C.dc.html",
     "Braise-Bestiaire.dc.html",
     "Braise-Bestiaire-Recherche.dc.html",
     "Braise-Monstre.dc.html",
@@ -5574,10 +5530,6 @@
       "name": "Encaisses"
     },
     {
-      "id": "pv",
-      "name": "PV et ton monde · pistes"
-    },
-    {
       "id": "braise",
       "name": "Braise"
     },
@@ -5621,7 +5573,6 @@
     "version-row1",
     "competence-row1",
     "encaisses-row1",
-    "pv-row1",
     "m-row1-braise",
     "m-row2-braise",
     "m-row3-braise",
