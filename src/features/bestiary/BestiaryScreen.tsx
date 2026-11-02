@@ -6,7 +6,7 @@ import { useAppState, useUpdate } from '@/app/useAppState'
 import { useIsDesktop } from '@/app/useMediaQuery'
 import { replaceRoute } from '@/app/useRoute'
 import { attackDamage, attackVerdicts } from '@/combat/attack'
-import { creatureHealth } from '@/combat/creature'
+import { creatureHealth, toInflict } from '@/combat/creature'
 import { game } from '@/data'
 import type { GameAttack, GameCreature } from '@/data/types'
 import { BrokenRow } from '@/features/report/Crash'
@@ -271,7 +271,7 @@ function CreatureRow({
   const stats = [
     biome,
     creature.boss ? t.bestiary.boss : null,
-    t.bestiary.health(creatureHealth(creature.health, stars)),
+    t.bestiary.health(Math.round(toInflict(creatureHealth(creature.health, stars), world))),
   ]
     .filter((part) => part !== null)
     .join(' · ')

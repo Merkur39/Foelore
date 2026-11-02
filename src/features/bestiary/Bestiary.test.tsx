@@ -94,6 +94,32 @@ describe('Bestiary', () => {
     expect(punch()).toHaveTextContent('90')
   })
 
+  it('gives the health to deal in your world, as what to inflict beside it', () => {
+    window.history.replaceState(null, '', '#/bestiary/blackForest/Troll')
+    renderWithStore(<App />, { language: 'fr', world: { difficulty: 'hard', players: 3 } })
+
+    // Your hits count ×0.53 there (0.85 / 1.6): its 600 health take 1,129 of them, as the game shows them.
+    expect(screen.getByRole('group', { name: 'Points de vie' })).toHaveTextContent('1 129')
+    expect(screen.getByRole('group', { name: 'À infliger' })).toHaveTextContent('339')
+  })
+
+  it('lists each creature with the health to deal in your world', () => {
+    window.history.replaceState(null, '', '#/bestiary/blackForest')
+    renderWithStore(<App />, { language: 'fr', world: { difficulty: 'veryEasy', players: 1 } })
+
+    // Your hits count ×1.25 on Very easy: fewer of them bring its 600 health down.
+    expect(row('Troll')).toHaveTextContent('480 PV')
+  })
+
+  it('gives each phase of a boss its health to deal in your world', () => {
+    window.history.replaceState(null, '', '#/bestiary/deepNorth/FrozenKing')
+    renderWithStore(<App />, { language: 'fr', world: { difficulty: 'hard', players: 3 } })
+
+    expect(screen.getByText(/^Phase 1 · 18 824 PV/)).toBeInTheDocument()
+    expect(screen.getByText(/^Phase 2 · 13 176 PV/)).toBeInTheDocument()
+    expect(screen.getByText(/^Phase 3 · 56 471 PV/)).toBeInTheDocument()
+  })
+
   it('holds the advice of every star in its place, the one picked alone read', async () => {
     const user = userEvent.setup()
     window.history.replaceState(null, '', '#/bestiary/mountain/Wolf')

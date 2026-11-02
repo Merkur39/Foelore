@@ -19,5 +19,6 @@ export function staggerThreshold(
   return staggerable && staggerFactor > 0 ? creatureHealth(health, stars) * staggerFactor : null
 }
 
-/** Stagger damage to deal, as your hits list it, once the world has scaled them down. */
-export const toInflict = (threshold: number, world: World) => threshold / worldScale(world).you
+/** Damage to deal, as your hits list it, once the world has scaled them down: to fill a creature's
+ * stagger bar, or to bring its health down, which the world never changes (Character.ApplyDamage). */
+export const toInflict = (amount: number, world: World) => amount / worldScale(world).you

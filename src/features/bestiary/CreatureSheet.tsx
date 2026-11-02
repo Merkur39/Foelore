@@ -1,6 +1,7 @@
 import { Fragment, useId, useState, type ReactNode } from 'react'
 import type { Route } from '@/app/routes'
 import { RouteLink } from '@/app/RouteLink'
+import { useAppState } from '@/app/useAppState'
 import { creatureHealth, staggerThreshold, toInflict } from '@/combat/creature'
 import { game } from '@/data'
 import { attackBarrier, type AttackVerdicts } from '@/combat/attack'
@@ -97,7 +98,10 @@ export function CreatureSheet({
   const biome = useBiomeLine(place)
   const name = creatureName(creature, language)
 
-  const health = formatNumber(creatureHealth(creature.health, stars), language)
+  const health = formatNumber(
+    Math.round(toInflict(creatureHealth(creature.health, stars), world)),
+    language,
+  )
   const inflict =
     threshold === null
       ? t.creature.neverStaggers
@@ -453,10 +457,11 @@ function PhaseHeading({
   readonly children?: ReactNode
 }) {
   const t = useT()
+  const { world } = useAppState()
   if (!creature.phases) return null
   return (
     <span className={styles.phase}>
-      {t.creature.phase(index + 1, fighter.health)}
+      {t.creature.phase(index + 1, Math.round(toInflict(fighter.health, world)))}
       {children}
     </span>
   )
