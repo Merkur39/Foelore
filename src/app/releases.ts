@@ -30,6 +30,23 @@ export interface Release {
  */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.17.1',
+    date: '2026-11-02',
+    notes: [
+      {
+        kind: 'fixed',
+        title: {
+          fr: 'Les PV comptent ton monde, comme À infliger',
+          en: 'Health counts your world, as To stagger does',
+        },
+        detail: {
+          fr: 'En Difficile à 3 joueurs, il faut infliger 1 129 au Troll, pas 600.',
+          en: 'On Hard with 3 players, you must deal 1,129 to the Troll, not 600.',
+        },
+      },
+    ],
+  },
+  {
     version: '1.17.0',
     date: '2026-11-01',
     notes: [
