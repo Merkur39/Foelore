@@ -30,6 +30,23 @@ export interface Release {
  */
 export const RELEASES: readonly Release[] = [
   {
+    version: '1.17.2',
+    date: '2026-11-03',
+    notes: [
+      {
+        kind: 'fixed',
+        title: {
+          fr: "Les listes de Ton équipement s'ouvrent en haut",
+          en: "Your gear's lists open at the top",
+        },
+        detail: {
+          fr: "Et le retour retrouve Ton équipement là où tu l'avais laissé.",
+          en: 'And going back finds Your gear where you left it.',
+        },
+      },
+    ],
+  },
+  {
     version: '1.17.1',
     date: '2026-11-02',
     notes: [
