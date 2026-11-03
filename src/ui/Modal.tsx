@@ -2,6 +2,7 @@ import { useId, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useIsDesktop } from '@/app/useMediaQuery'
 import { BackIcon, CloseIcon } from './icons'
 import styles from './Modal.module.css'
+import { useReturnScroll } from './useReturnScroll'
 
 interface ModalProps {
   readonly title: string
@@ -21,7 +22,8 @@ interface ModalProps {
     readonly onSave: () => void
   }
   /** A page reached from another dialog: its back button replaces the close button on a phone, and
-   * comes before the title on a desktop. */
+   * comes before the title on a desktop. Reached from the dialog's own page, in its place, it opens at
+   * its top, and going back finds that page where it was left. */
   readonly back?: { readonly label: string; readonly onBack: () => void }
   /** A dialog that only shows: on a desktop, one button at its foot closes it. */
   readonly done?: string
@@ -51,6 +53,8 @@ export function Modal({
   const dialog = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const isDesktop = useIsDesktop()
+  const body = useRef<HTMLDivElement>(null)
+  const onScroll = useReturnScroll(body, back !== undefined)
 
   useLayoutEffect(() => {
     if (dialog.current?.open === false) dialog.current.showModal()
@@ -90,7 +94,9 @@ export function Modal({
           </button>
         )}
       </header>
-      <div className={styles.body}>{children}</div>
+      <div ref={body} className={styles.body} onScroll={onScroll}>
+        {children}
+      </div>
       {done && isDesktop && (
         <footer className={styles.footer}>
           <button type="button" className={styles.cancel} onClick={close}>

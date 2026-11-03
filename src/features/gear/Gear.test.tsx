@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { App } from '@/app/App'
@@ -41,6 +41,14 @@ async function pick(
       name: new RegExp(`^(${escaped(item)}[,.] |Choisir : ${escaped(item)}$)`),
     }),
   )
+}
+
+/** The body of a dialog, which scrolls under its header. */
+const body = (dialog: HTMLElement) => dialog.querySelector('header + div')!
+/** Scrolls the body of a dialog, as the player would. */
+function scroll(dialog: HTMLElement, top: number) {
+  body(dialog).scrollTop = top
+  fireEvent.scroll(body(dialog))
 }
 
 describe('Your gear', () => {
@@ -663,6 +671,34 @@ describe('Your gear', () => {
         within(dialog).getByRole('button', { name: 'Cape : Cape en fourrure de loup' }),
       ).toBeInTheDocument()
       expect(store.getState().gear).toEqual(WORN)
+    })
+
+    it('opens a row’s list at its top, wherever Your gear was scrolled to', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, fr)
+      const dialog = await openGear(user)
+      scroll(dialog, 300)
+
+      await user.click(
+        within(dialog).getByRole('button', { name: 'Cape : Cape en fourrure de loup' }),
+      )
+
+      expect(body(dialog).scrollTop).toBe(0)
+    })
+
+    it('comes back to Your gear where it was left, however far its list was scrolled', async () => {
+      const user = userEvent.setup()
+      renderWithStore(<App />, fr)
+      const dialog = await openGear(user)
+      scroll(dialog, 300)
+      await user.click(
+        within(dialog).getByRole('button', { name: 'Cape : Cape en fourrure de loup' }),
+      )
+      scroll(dialog, 500)
+
+      await user.click(within(dialog).getByRole('button', { name: /^Cape des cendres\. / }))
+
+      expect(body(dialog).scrollTop).toBe(300)
     })
 
     it('keeps the level of the piece it replaces, within its own', async () => {
