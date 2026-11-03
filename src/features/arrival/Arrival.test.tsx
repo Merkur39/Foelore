@@ -1,4 +1,4 @@
-import { act, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, within } from '@testing-library/react'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { App } from '@/app/App'
@@ -106,6 +106,27 @@ describe('The first arrival', () => {
       within(dialog).getByRole('button', { name: 'Casque : Casque en bronze' }),
     ).toBeInTheDocument()
     expect(within(dialog).getByRole('button', { name: 'Suivant' })).toBeInTheDocument()
+  })
+
+  it('opens a row’s list at its top, and comes back to the question where it was left', async () => {
+    const user = userEvent.setup()
+    firstLaunch()
+    const dialog = await answerWhere(user, 'Forêt noire')
+    const body = dialog.querySelector('header + div')!
+    const scroll = (top: number) => {
+      body.scrollTop = top
+      fireEvent.scroll(body)
+    }
+    scroll(300)
+
+    await user.click(within(dialog).getByRole('button', { name: 'Casque : Aucun' }))
+
+    expect(body.scrollTop).toBe(0)
+
+    scroll(500)
+    await user.click(within(dialog).getByRole('button', { name: /^Casque en bronze\. / }))
+
+    expect(body.scrollTop).toBe(300)
   })
 
   it('keeps the gear for the end on Suivant, then asks for the world', async () => {

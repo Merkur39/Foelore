@@ -14,6 +14,7 @@ import { useListHeading } from '@/features/gear/useListHeading'
 import { WorldForm } from '@/features/world/WorldForm'
 import { useLanguage, useT } from '@/i18n/useT'
 import { BackIcon } from '@/ui/icons'
+import { useReturnScroll } from '@/ui/useReturnScroll'
 import styles from './FirstArrival.module.css'
 
 const QUESTIONS = 3
@@ -24,7 +25,8 @@ const QUESTIONS = 3
  * behind does not move while they are open. The last button adds the world and opens the Bestiary on
  * the biome picked; Passer, like every other way out (Escape), writes the answers kept and leaves the
  * rest as it is. The questions are behind the player either way. A row of Ton équipement opens its list
- * under the question's step, as in its dialog: picking there, or its back arrow, returns to the question. */
+ * under the question's step, at its top, as in its dialog: picking there, or its back arrow, returns to
+ * the question where it was left. */
 export function FirstArrival() {
   const t = useT()
   const language = useLanguage()
@@ -42,6 +44,8 @@ export function FirstArrival() {
   const [list, setList] = useState<GearList | null>(null)
   const listHeading = useListHeading()
   const listing = step === 1 && list ? listHeading(gear, list) : null
+  const body = useRef<HTMLDivElement>(null)
+  const onScroll = useReturnScroll(body, listing !== null)
 
   useLayoutEffect(() => {
     if (dialog.current?.open === false) dialog.current.showModal()
@@ -121,7 +125,7 @@ export function FirstArrival() {
         )}
       </header>
 
-      <div className={styles.body}>
+      <div ref={body} className={styles.body} onScroll={onScroll}>
         {step === 0 ? (
           <div role="radiogroup" aria-labelledby={titleId} className={styles.biomes}>
             {game.biomes.map((candidate) => (
